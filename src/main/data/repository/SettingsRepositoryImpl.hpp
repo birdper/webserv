@@ -23,7 +23,7 @@ public:
 					  const std::string& serverName) const;
 
 private:
-	Location* findLocationByUri(std::vector<Location*>* locations,
+	Location* findLocationByUri(std::vector<Location*>& locations,
 								const std::string& uriRequest) const;
 
 	size_t getLengthMatch(const std::string& uriLocation,
