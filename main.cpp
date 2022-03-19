@@ -48,7 +48,7 @@ size_t parseUriRequest(const std::string& uriRequest,
 //	size_t posSlash = uri.rfind('/');
 }
 
-
+//TODO implement input config file
 int main() {
 	std::string input = "server {\n"
 						"        listen 8080;\n"
