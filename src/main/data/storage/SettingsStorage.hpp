@@ -13,7 +13,8 @@ private:
 	MapHostVectorVirtualServers virtualServers;
 
 public:
-//	SettingsStorage();
+	const MapHostVectorVirtualServers& getVirtualServers() const;
+
 	void addVirtualServerByHost(const std::string& host,
 								VirtualServer* server);
 
@@ -22,23 +23,19 @@ public:
 	void addLocation(const std::string& uri,
 					 const VirtualServer* server);
 
-	VirtualServer* findVirtualServerByHost(const std::string& host,
-										   const std::string& serverName) const;
+	VirtualServer& findVirtualServer(const std::string& host,
+									 const std::string& serverName) const;
 
-	const std::vector<VirtualServer*>*
-	getVirtualServersByHost(const std::string& host) const;
-
-	VirtualServer*
-	getVirtualServerByServerName(const std::vector<VirtualServer*>& servers,
-								 const std::string& serverName) const;
-
-
-	Location* findLocationByUri(std::vector<Location*>* locations,
-								const std::string& uriRequest) const;
+//	Location* findLocationByUri(std::vector<Location*>* locations,
+//								const std::string& uriRequest) const;
 private:
-//	bool containServerName(const VirtualServer* virtualServer,
-//						   const std::string& serverName) const;
+	const std::vector<VirtualServer*>* getVirtualServersByHost(
+										const std::string& host) const;
 
-	size_t getLengthMatch(const std::string& uriLocation,
-						  const std::string& uriRequest) const;
+	VirtualServer&
+	getVirtualServerByServerNameOrDefault(const std::vector<VirtualServer*>& servers,
+										  const std::string& serverName) const;
+
+//	size_t getLengthMatch(const std::string& uriLocation,
+//						  const std::string& uriRequest) const;
 };

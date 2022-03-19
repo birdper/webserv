@@ -14,7 +14,6 @@ void SettingsStorage::addVirtualServerByHost(const std::string& host,
 	MapHostVectorVirtualServers::iterator it = virtualServers.find(host);
 	if (it == virtualServers.end()) {
 		virtualServers[host].push_back(server);
-//		std::cout << virtualServers[host][0]->getHost() << std::endl;
 	} else {
 		it->second.push_back(server);
 	}
@@ -25,9 +24,10 @@ void SettingsStorage::addLocation(const std::string& uri,
 
 }
 
-VirtualServer* SettingsStorage::findVirtualServerByHost(const std::string& host,
-														const std::string& serverName) const {
+VirtualServer& SettingsStorage::findVirtualServer(const std::string& host,
+												  const std::string& serverName) const {
 
+/*
 	MapHostVectorVirtualServers::const_iterator it = virtualServers.find(host);
 	if (it == virtualServers.end()) {
 		return nullptr;
@@ -45,10 +45,45 @@ VirtualServer* SettingsStorage::findVirtualServerByHost(const std::string& host,
 			}
 		}
 	}
+ */
+	const std::vector<VirtualServer*>* servers = getVirtualServersByHost(host);
+	return getVirtualServerByServerNameOrDefault(*servers, serverName);
+}
+
+
+const std::vector<VirtualServer*>*
+SettingsStorage::getVirtualServersByHost(const std::string& host) const {
+	MapHostVectorVirtualServers::const_iterator it = virtualServers.find(host);
+	if (it == virtualServers.end()) {
+		return nullptr;
+	}
+	return &it->second;
+}
+
+
+VirtualServer& SettingsStorage::getVirtualServerByServerNameOrDefault(
+		const std::vector<VirtualServer*>& servers,
+		const std::string& serverName) const {
+
+	VirtualServer* virtualServer = servers[0];
+
+	if (!serverName.empty()) {
+		for (size_t i = 0; i < servers.size(); ++i) {
+			if (servers[i]->isContainServerName(serverName)) {
+				virtualServer = servers[i];
+				break;
+			}
+		}
+	}
 	return virtualServer;
 }
 
-Location* SettingsStorage::findLocationByUri(std::vector<Location*>* locations,
+
+const MapHostVectorVirtualServers& SettingsStorage::getVirtualServers() const {
+	return virtualServers;
+}
+
+/*Location* SettingsStorage::findLocationByUri(std::vector<Location*>* locations,
 											 const std::string& uriRequest) const {
 	Location* currentLocation;
 	Location* mostLengthMatch;
@@ -66,9 +101,9 @@ Location* SettingsStorage::findLocationByUri(std::vector<Location*>* locations,
 	if (maxLength)
 		return mostLengthMatch;
 	return nullptr;
-}
+}*/
 
-size_t SettingsStorage::getLengthMatch(const std::string& uriLocation,
+/*size_t SettingsStorage::getLengthMatch(const std::string& uriLocation,
 									   const std::string& uriRequest) const {
 	size_t length = 0;
 	for (int i = 0; i < uriLocation.length(); ++i) {
@@ -76,33 +111,7 @@ size_t SettingsStorage::getLengthMatch(const std::string& uriLocation,
 			++length;
 	}
 	return length;
-}
-
-const std::vector<VirtualServer*>*
-SettingsStorage::getVirtualServersByHost(const std::string& host) const {
-	MapHostVectorVirtualServers::const_iterator it = virtualServers.find(host);
-	if (it == virtualServers.end()) {
-		return nullptr;
-	}
-	return &it->second;
-}
-
-VirtualServer*
-SettingsStorage::getVirtualServerByServerName(const std::vector<VirtualServer*>& servers,
-											  const std::string& serverName) const {
-	VirtualServer* virtualServer = servers[0];
-
-	if (!serverName.empty()) {
-		std::cout << "find by server_name: " << serverName << std::endl;
-		for (size_t i = 0; i < servers.size(); ++i) {
-			if (servers[i]->isContainServerName(serverName)) {
-				virtualServer = servers[i];
-				break;
-			}
-		}
-	}
-	return virtualServer;
-}
+}*/
 
 /*
 bool

@@ -28,7 +28,7 @@ void testParserConfig(const std::string& input) {
 
 	parser.parseConfig(input, storage);
 	SettingsRepositoryImpl repository(storage);
-	VirtualServer virtualServer = *storage->findVirtualServerByHost(
+	VirtualServer virtualServer = *storage->findVirtualServer(
 			"8080",
 			"");
 	Config* config = repository.getConfig("/www/html", "8080", "");
