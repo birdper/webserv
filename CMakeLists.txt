@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.21)
-project(test_std_map)
+project(webserv)
 
 set(CMAKE_CXX_STANDARD 98)
 
@@ -9,6 +9,7 @@ set(NAME "webserv")
 add_subdirectory(${PATH}/domain)
 add_subdirectory(${PATH}/data)
 add_subdirectory(${PATH}/parser)
+add_subdirectory(${PATH}/server)
 
 add_executable(${NAME}
         main.cpp
@@ -23,10 +24,5 @@ target_include_directories(${NAME} PUBLIC ${PATH}/data)
 target_link_libraries(${NAME} PUBLIC parser)
 target_include_directories(${NAME} PUBLIC ${PATH}/parser)
 
-#target_link_libraries(test PUBLIC config)
-#target_link_libraries(test PUBLIC data)
-
-#target_link_libraries(test_std_map PUBLIC src/models)
-#target_include_directories(test_std_map PUBLIC src/models)
-
-
+target_link_libraries(${NAME} PUBLIC server)
+target_include_directories(${NAME} PUBLIC ${PATH}/server)
