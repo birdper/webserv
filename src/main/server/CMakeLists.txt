@@ -5,6 +5,7 @@ set(NAME_MODULE "server")
 
 add_library(${NAME_MODULE}
         HttpServer.cpp HttpServer.hpp
-        QueueServer.cpp QueueServer.hpp)
+        Socket.cpp Socket.hpp
+        )
 
 include_directories(${NAME_MODULE} PRIVATE model)
