@@ -7,6 +7,10 @@
 bool HttpServer::start() {
 	canRun = false;
 
+	std::vector<int> sockets;
+	for (int i = 0; i < sockets.size(); ++i) {
+		SocketKqueue& socketBuilder = *new SocketKqueue();
+	}
 	// Create a handle for the listening socket, TCP
 	listenSocketDescriptor = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
 	if (listenSocketDescriptor == INVALID_SOCKET) {
@@ -39,8 +43,8 @@ bool HttpServer::start() {
 	}
 
 	// Setup kqueue
-	kqfd = kqueue();
-	if (kqfd == -1) {
+	kernelQueueFd = kqueue();
+	if (kernelQueueFd == -1) {
 		std::cout << "Could not create the kernel event queue!" << std::endl;
 		return false;
 	}
@@ -61,7 +65,7 @@ bool HttpServer::start() {
 void HttpServer::updateEvent(int ident, short filter, u_short flags, u_int fflags, int data, void *udata) {
 	struct kevent kev;
 	EV_SET(&kev, ident, filter, flags, fflags, data, udata);
-	kevent(kqfd, &kev, 1, nullptr, 0, nullptr);
+	kevent(kernelQueueFd, &kev, 1, nullptr, 0, nullptr);
 }
 
 /**
@@ -76,7 +80,7 @@ void HttpServer::process() {
 	while (canRun) {
 		// Get a list of changed socket descriptors with a read event triggered in events
 		// Timeout set in the header
-		nev = kevent(kqfd, nullptr, 0, events, QUEUE_SIZE, &kqTimeout);
+		nev = kevent(kernelQueueFd, nullptr, 0, events, QUEUE_SIZE, &kqTimeout);
 
 		if (nev <= 0)
 			continue;
@@ -130,7 +134,7 @@ void HttpServer::process() {
 
 /**
  * Stop
- * Disconnect all clients and cleanup all server resources created in start()
+ * Disconnect all clients and cleanup all server resources created in init()
  */
 void HttpServer::stop() {
 	canRun = false;
@@ -152,9 +156,9 @@ void HttpServer::stop() {
 		listenSocketDescriptor = INVALID_SOCKET;
 	}
 
-	if (kqfd != -1) {
-		close(kqfd);
-		kqfd = -1;
+	if (kernelQueueFd != -1) {
+		close(kernelQueueFd);
+		kernelQueueFd = -1;
 	}
 
 	std::cout << "Server shutdown!" << std::endl;
@@ -167,27 +171,27 @@ void HttpServer::stop() {
  */
 void HttpServer::acceptConnection() {
 	// Setup new client with prelim address info
-	sockaddr_in clientAddr;
-	int clientAddrLen = sizeof(clientAddr);
-	int clfd = INVALID_SOCKET;
+	sockaddr_in clientAddress;
+	int clientAddrLen = sizeof(clientAddress);
+	int clientFd = INVALID_SOCKET;
 
 	// Accept the pending connection and retrive the client descriptor
-	clfd = accept(listenSocketDescriptor, (sockaddr*)&clientAddr, (socklen_t*)&clientAddrLen);
-	if (clfd == INVALID_SOCKET)
+	clientFd = accept(listenSocketDescriptor, (sockaddr*)&clientAddress, (socklen_t*)&clientAddrLen);
+	if (clientFd == INVALID_SOCKET)
 		return;
 
 	// Set socket as non blocking
-	fcntl(clfd, F_SETFL, O_NONBLOCK);
+	fcntl(clientFd, F_SETFL, O_NONBLOCK);
 
 	// Instance Client object
-	Client *client = new Client(clfd, clientAddr);
+	Client *client = new Client(clientFd, clientAddress);
 
 	// Add kqueue event to track the new client socket for READ and WRITE events
-	updateEvent(clfd, EVFILT_READ, EV_ADD | EV_ENABLE, 0, 0, nullptr);
-	updateEvent(clfd, EVFILT_WRITE, EV_ADD | EV_DISABLE, 0, 0, nullptr); // Disabled initially
+	updateEvent(clientFd, EVFILT_READ, EV_ADD | EV_ENABLE, 0, 0, nullptr);
+	updateEvent(clientFd, EVFILT_WRITE, EV_ADD | EV_DISABLE, 0, 0, nullptr); // Disabled initially
 
 	// Add the client object to the client map
-	clients.insert(std::pair<int, Client*>(clfd, client));
+	clients.insert(std::pair<int, Client*>(clientFd, client));
 
 	// Print the client's IP on connect
 	std::cout << "[" << client->getClientIP() << "] connected" << std::endl;
@@ -204,7 +208,7 @@ Client* HttpServer::getClient(int clfd) {
 	std::unordered_map<int, Client *>::iterator it = clients.find(clfd);
 
 	if (it == clients.end())
-		return nullptrptr;
+		return nullptr;
 
 	// Return a pointer to the client object
 	return it->second;

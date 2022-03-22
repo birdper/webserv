@@ -19,6 +19,8 @@
 #include <queue>
 #include <unordered_map>
 
+#include "SocketKqueue.hpp"
+
 #define QUEUE_SIZE 1024
 #define INVALID_SOCKET -1
 
@@ -27,16 +29,21 @@ class HttpServer {
 private:
 //	static const int QUEUE_SIZE = 1024;
 //	static const int INVALID_SOCKET = -1;
-	/** Server Socket */
+
+/*
+ * *//** Server Socket *//*
 	int listenPort;
 	int listenSocketDescriptor; // Descriptor for the listening socket
 	struct sockaddr_in serverAddr; // Structure for the server address
 //	int dropUid; // setuid to this after bind()
 //	int dropGid; // setgid to this after bind()
+ */
+
+ 	std::vector<int> openSockets;
 
 	// Kqueue
 	struct timespec kqTimeout = {2, 0}; // Block for 2 seconds and 0ns at the most
-	int kqfd;
+	int kernelQueueFd;
 	struct kevent events[QUEUE_SIZE]; // Events that have triggered a filter in the kqueue (max QUEUE_SIZE at a time)
 
 	// Client map, maps Socket descriptor to Client object
