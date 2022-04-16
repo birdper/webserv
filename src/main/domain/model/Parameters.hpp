@@ -7,7 +7,7 @@
 #include <iostream>
 #include <vector>
 #include <map>
-#include "EnumMethod.hpp"
+#include "HttpMethod.hpp"
 
 class Parameters {
 public:
@@ -30,5 +30,5 @@ public:
 
 	MapErrorPagePaths errorPagePaths;
 	std::vector<std::string> indexFiles;
-	std::vector<EnumMethod> forbiddenMethods;
+	std::vector<HttpMethod> forbiddenMethods;
 };

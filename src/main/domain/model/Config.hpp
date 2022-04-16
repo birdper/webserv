@@ -16,7 +16,7 @@ private:
 public:
 	Config(Parameters* parameters);
 
-	bool isMethodAllowed(EnumMethod method) const;
+	bool isMethodAllowed(HttpMethod method) const;
 	bool isAutoindexEnabled() const;
 	bool isUploadEnabled() const;
 

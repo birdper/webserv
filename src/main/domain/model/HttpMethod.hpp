@@ -4,7 +4,7 @@
 
 #pragma once
 
-enum EnumMethod {
+enum HttpMethod {
 	UNKNOWN_METHOD,
 	POST,
 	GET,

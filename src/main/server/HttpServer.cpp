@@ -74,19 +74,19 @@ void HttpServer::updateEvent(int ident, short filter, u_short flags, u_int fflag
  * the listening socket
  */
 void HttpServer::process() {
-	int nev = 0; // Number of changed events returned by kevent
+	int numberChangedEvents = 0; // Number of changed events returned by kevent
 	Client* client = nullptr;
 
 	while (canRun) {
 		// Get a list of changed socket descriptors with a read event triggered in events
 		// Timeout set in the header
-		nev = kevent(kernelQueueFd, nullptr, 0, events, QUEUE_SIZE, &kqTimeout);
+		numberChangedEvents = kevent(kernelQueueFd, nullptr, 0, events, QUEUE_SIZE, &kqTimeout);
 
-		if (nev <= 0)
+		if (numberChangedEvents <= 0)
 			continue;
 
 		// Loop through only the sockets that have changed in the events array
-		for (int i = 0; i < nev; i++) {
+		for (int i = 0; i < numberChangedEvents; i++) {
 			if (events[i].ident == (unsigned int)listenSocketDescriptor) { // A client is waiting to connect
 				acceptConnection();
 			} else { // Client descriptor has triggered an event

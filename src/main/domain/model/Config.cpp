@@ -7,10 +7,10 @@
 Config::Config(Parameters* parameters) :
 		parameters(parameters) {}
 
-bool Config::isMethodAllowed(EnumMethod method) const {
-	std::vector<EnumMethod>::iterator it = std::find(parameters->forbiddenMethods.begin(),
-														  parameters->forbiddenMethods.end(),
-														  method);
+bool Config::isMethodAllowed(HttpMethod method) const {
+	std::vector<HttpMethod>::iterator it = std::find(parameters->forbiddenMethods.begin(),
+													 parameters->forbiddenMethods.end(),
+													 method);
 	if (*it == method)
 		return false;
 	return true;
