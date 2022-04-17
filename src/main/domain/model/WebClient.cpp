@@ -1,7 +1,7 @@
 
 #include "WebClient.hpp"
 
-WebClient::WebClient(int socketDescriptor, const sockaddr_in& clientAddress, const sockaddr_in& clientAddress) :
+WebClient::WebClient(int socketDescriptor, const sockaddr_in& clientAddress) :
 		socketDescriptor(socketDescriptor),
 		clientAddress(clientAddress) {}
 
