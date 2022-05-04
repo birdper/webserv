@@ -5,7 +5,7 @@ set(CMAKE_CXX_STANDARD 98)
 add_library(parser
         Token.cpp Token.hpp
         Tokenizer.cpp Tokenizer.hpp
-        ParserConfig.cpp ParserConfig.hpp
+        ConfigParser.cpp ConfigParser.hpp
         SettingsCollector.hpp
         )
 

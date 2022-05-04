@@ -1,21 +1,19 @@
 
 
-#include "ParserConfig.hpp"
+#include "ConfigParser.hpp"
 
-namespace parser {
-
-ParserConfig::ParserConfig() {
+ConfigParser::ConfigParser() {
 }
 
-ParserConfig::~ParserConfig() {
+ConfigParser::~ConfigParser() {
 }
 
-void ParserConfig::printErrMsg(const std::string& msg) {
+void ConfigParser::printErrMsg(const std::string& msg) {
 	std::cerr << "Syntax error: " << msg << std::endl;
 	exit(1);
 }
 
-void ParserConfig::parseConfig(const std::string& inputString,
+void ConfigParser::parseConfig(const std::string& inputString,
 							   SettingsStorage* storage) {
 // TODO 1: Определить как создаются VirtualServer и Location
 	std::istringstream iss(inputString);
@@ -133,7 +131,7 @@ void ParserConfig::parseConfig(const std::string& inputString,
 }
 
 std::vector<std::string>
-ParserConfig::parseListValues(const std::string& input) {
+ConfigParser::parseListValues(const std::string& input) {
 
 	std::istringstream iss(input);
 	std::vector<std::string> vector;
@@ -142,6 +140,4 @@ ParserConfig::parseListValues(const std::string& input) {
 		vector.push_back(word);
 	}
 	return vector;
-}
-
 }

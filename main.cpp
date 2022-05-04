@@ -5,9 +5,11 @@
 #include <vector>
 
 #include "Tokenizer.hpp"
-#include "ParserConfig.hpp"
+#include "ConfigParser.hpp"
 #include "SettingsStorage.hpp"
 #include "SettingsRepositoryImpl.hpp"
+
+#include "Server.hpp"
 
 
 
@@ -48,8 +50,32 @@ size_t parseUriRequest(const std::string& uriRequest,
 //	size_t posSlash = uri.rfind('/');
 }
 
+bool isIncorrectConfigFile(const std::string& configFileName) {
+	return false;
+}
+
 //TODO implement input config file
-int main() {
+int main(int argc, char *argv[]) {
+
+	if (argc != 2) {
+		std::cerr << "Did not provide a configuration file" << std::endl;
+		exit(1);
+	}
+	if (isIncorrectConfigFile(argv[1])) {
+		std::cerr << "Incorrect config file" << std::endl;
+		exit(1);
+	}
+
+	ConfigParser parser;
+
+//	RequestParser* requestParser = new RequestParser();
+//	RequestHandler* requestHandler = new RequestHandler();
+
+	parser.parseConfig()
+
+	Server server;
+	server.initSockets()
+
 	std::string input = "server {\n"
 						"        listen 8080;\n"
 						"\n"

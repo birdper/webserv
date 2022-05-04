@@ -14,13 +14,11 @@
 #include "VirtualServer.hpp"
 #include "SettingsStorage.hpp"
 
-namespace parser {
-
-class ParserConfig {
+class ConfigParser {
 
 public:
-	explicit ParserConfig();
-	~ParserConfig();
+	explicit ConfigParser();
+	~ConfigParser();
 
 	void parseConfig(const std::string& inputString, SettingsStorage* storage);
 
@@ -29,6 +27,3 @@ private:
 	void printErrMsg(const std::string&);
 
 };
-
-
-}
