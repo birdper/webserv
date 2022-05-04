@@ -2,8 +2,7 @@
 
 #include "Socket.hpp"
 
-int Socket::initSocket(int listenPort, in_addr_t ip) {
-
+int Socket::init(int listenPort, in_addr_t ip) {
 	createSocket();
 	setNonblockMode();
 
@@ -12,27 +11,6 @@ int Socket::initSocket(int listenPort, in_addr_t ip) {
 	setAddressReuseMode();
 
 	startListening();
-/*	if (socketDescriptor == InvalidSocket) {
-		std::cout << "Could not create socket!" << std::endl;
-		return InvalidSocket;
-	}
-
-	fcntl(socketDescriptor, F_SETFL, O_NONBLOCK);
-	struct sockaddr_in socketAddress = initAddress(listenPort, ip);
-
-	ret = bind(socketDescriptor, (struct sockaddr*)&socketAddress, sizeof(socketAddress));
-	if (ret != 0) {
-		std::cout << "Failed to bind to the address!" << std::endl;
-		return InvalidSocket;
-	}
-
-	// Listen: Put the socket in a listening state, ready to accept connections
-	// Accept a backlog of the OS Maximum connections in the queue
-	ret = listen(socketDescriptor, SOMAXCONN);
-	if (ret != 0) {
-		std::cout << "Failed to put the socket in a listening state" << std::endl;
-		return InvalidSocket;
-	}*/
 	return socketDescriptor;
 }
 

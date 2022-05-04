@@ -13,10 +13,9 @@ private:
 	int socketDescriptor;
 
 public:
-	int initSocket(int listenPort, in_addr_t ip = INADDR_ANY);
+	int init(int listenPort, in_addr_t ip = INADDR_ANY);
 
 private:
-
 	void createSocket();
 	void checkError(int result, const std::string& nameFunFromError);
 	void setNonblockMode();

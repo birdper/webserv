@@ -7,47 +7,46 @@
 
 #include "Constants.hpp"
 #include "Socket.hpp"
-#include "WebClient.hpp"
+#include "Client.hpp"
 #include "RequestHandler.hpp"
 #include "RequestParser.hpp"
 #include "Response.hpp"
+#include "ClientRepository.hpp"
 
 class Server {
 
 private:
-//	std::vector<int> openSockets;
+	typedef unsigned char byte;
+
 	RequestParser& requestParser;
 	RequestHandler& requestHandler;
 
-	std::vector<struct pollfd> events;
-	std::vector<WebClient*> clients;
+	int countListenSockets;
+	std::vector<struct pollfd> pollFds;
 
-	nfds_t countListenSockets;
-	nfds_t currentItem;
+	ClientRepository clientRepository;
 
 public:
 	Server(RequestParser& requestParser,
 		   RequestHandler& requestHandler);
 
-	void run();
 	void initSockets(std::vector<int>& hosts);
 	void mainLoop();
 
 private:
+	struct pollfd initPollFd(int socketDescriptor, short eventTypes);
+
 	void polling();
 	void acceptConnections();
+
+	void handleEvents();
+
+	bool readClient(Client* client);
+	bool writeClient(Client* client, Response* response);
+
+	void disconnectClient(Client* client, bool isRemoveClient);
 	void closeConnections();
-	bool receiveRequest();
-	bool sendResponse(Response* response);
 
-	struct pollfd getPollFd(int socketDescriptor, short eventTypes);
-	WebClient* getClient() const;
-
-	bool hasEvents() const;
-	bool isReadable() const;
-	bool isWriteable() const;
-	void nextClient();
-	bool hasReadyClient();
-
+	void handleRequest(Client* client, Request* request);
 };
 
