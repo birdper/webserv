@@ -22,13 +22,14 @@ private:
 	std::vector<struct pollfd> events;
 	std::vector<WebClient*> clients;
 
-	nfds_t numberEvents;
+	nfds_t countListenSockets;
 	nfds_t currentItem;
 
 public:
 	Server(RequestParser& requestParser,
 		   RequestHandler& requestHandler);
 
+	void run();
 	void initSockets(std::vector<int>& hosts);
 	void mainLoop();
 
@@ -39,7 +40,7 @@ private:
 	bool receiveRequest();
 	bool sendResponse(Response* response);
 
-	struct pollfd getPollFd(int socketDescriptor, short events);
+	struct pollfd getPollFd(int socketDescriptor, short eventTypes);
 	WebClient* getClient() const;
 
 	bool hasEvents() const;

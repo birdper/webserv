@@ -22,23 +22,50 @@ void Server::initSockets(std::vector<int>& hosts) {
 
 		events.push_back(getPollFd(socketDescriptor, POLLIN));
 	}
-	numberEvents = hosts.size();
+	countListenSockets = hosts.size();
 	currentItem = 0;
 }
 
-struct pollfd Server::getPollFd(int socketDescriptor, short events) {
+struct pollfd Server::getPollFd(int socketDescriptor, short eventTypes) {
 	struct pollfd fd;
 	fd.fd = socketDescriptor;
-	fd.events = events;
+	fd.events = eventTypes;
 	fd.revents = 0;
 	return fd;
 }
 
+#pragma clang diagnostic push
+#pragma ide diagnostic ignored "EndlessLoop"
 void Server::mainLoop() {
 
 	while (true) {
 		polling();
-		acceptConnections();
+//		acceptConnections();
+//		inline acceptConnections()
+		int clientFd;
+		sockaddr_in clientAddress;
+		int addressLength = sizeof(clientAddress);
+		//
+		for (; currentItem < countListenSockets; ++currentItem) {
+			while (hasEvents()) {
+
+				clientFd = accept(events[currentItem].fd,
+								  (sockaddr*)&clientAddress,
+								  (socklen_t*)&addressLength);
+				if (clientFd <= 0)
+					break;
+				fcntl(clientFd, F_SETFL, O_NONBLOCK);
+
+				std::cout << "New incoming connection - fd: " << clientFd << std::endl;
+
+				events.push_back(getPollFd(clientFd, POLLIN | POLLOUT));
+
+//			WebClient* client = new WebClient(clientFd, clientAddress, servers[currentItem]->getHost());
+				WebClient* client = new WebClient(clientFd, clientAddress);
+				clients.push_back(client);
+			}
+		}
+//		end inline acceptConnections()
 		for (; hasReadyClient(); nextClient()) {
 			if (receiveRequest()) {
 				requestParser.handleRequest(getClient());
@@ -49,12 +76,14 @@ void Server::mainLoop() {
 		closeConnections();
 	}
 }
+#pragma clang diagnostic pop
 
 void Server::polling() {
 	int result;
 
 //	std::cout << "Waiting on poll()..." << std::endl;
 	result = poll(&(events.front()), events.size(), InfinityTimeout);
+//	TODO read man, what handling errors
 	if (result < 0)
 		std::cerr << "  poll() failed: " << strerror(errno) << std::endl;
 	else if (result == 0)
@@ -62,18 +91,16 @@ void Server::polling() {
 }
 
 void Server::acceptConnections() {
-//	int clientFd;
-
+	int clientFd;
 	sockaddr_in clientAddress;
-	int clientAddrLen = sizeof(clientAddress);
-	int clientFd = InvalidSocket;
+	int addressLength = sizeof(clientAddress);
 
-	for (; currentItem < numberEvents; ++currentItem) {
+	for (; currentItem < countListenSockets; ++currentItem) {
 		while (hasEvents()) {
 
 			clientFd = accept(events[currentItem].fd,
 							  (sockaddr*)&clientAddress,
-							  (socklen_t*)&clientAddrLen);
+							  (socklen_t*)&addressLength);
 			if (clientFd <= 0)
 				break;
 			fcntl(clientFd, F_SETFL, O_NONBLOCK);
@@ -93,11 +120,13 @@ void Server::closeConnections() {
 	nfds_t numberOfClients = clients.size();
 
 	for (nfds_t i = 0; i < numberOfClients; ++i) {
-		if (clients[i]->getStatus() == WebClient::Close) {
-			close(clients[i]->getSocketDescriptor());
-			delete clients[i];
+		WebClient*& client = clients[i];
+
+		if (client->getStatus() == WebClient::Close) {
+			close(client->getSocketDescriptor());
+			delete client;
 			clients.erase(clients.begin() + i);
-			events.erase(events.begin() + i + numberEvents);
+			events.erase(events.begin() + i + countListenSockets);
 		}
 	}
 }
@@ -151,7 +180,7 @@ bool Server::sendResponse(Response* response) {
 }
 
 WebClient* Server::getClient() const {
-	return clients[currentItem - numberEvents];
+	return clients[currentItem - countListenSockets];
 }
 
 void Server::nextClient() {
