@@ -9,6 +9,7 @@ add_library(${NAME_MODULE}
         Constants.hpp
         Server.cpp Server.hpp
         Socket.cpp Socket.hpp
+        ClientRepository.cpp ClientRepository.hpp
         )
 
 #include_directories(${NAME_MODULE} PRIVATE ../domain/model)
