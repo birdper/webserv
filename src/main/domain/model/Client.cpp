@@ -1,15 +1,14 @@
+#include "Client.hpp"
 
-#include "WebClient.hpp"
-
-WebClient::WebClient(int socketDescriptor, const sockaddr_in& clientAddress) :
+Client::Client(int socketDescriptor, const sockaddr_in& clientAddress) :
 		socketDescriptor(socketDescriptor),
 		clientAddress(clientAddress) {}
 
-WebClient::~WebClient() {
+Client::~Client() {
 	clearSendQueue();
 }
 
-void WebClient::refresh() {
+void Client::refresh() {
 /*	delete request;
 	delete response;
 	request = new Request();
@@ -18,22 +17,22 @@ void WebClient::refresh() {
 	setStatus(Readable);
 }
 
-void WebClient::addToSendQueue(std::string * item) {
+void Client::addToSendQueue(std::string* item) {
 	sendQueue.push(item);
 }
 
-unsigned int WebClient::sendQueueSize() {
+unsigned int Client::sendQueueSize() {
 	return sendQueue.size();
 }
 
-std::string* WebClient::nextInSendQueue() {
+std::string* Client::nextInSendQueue() {
 	if (sendQueue.empty())
 		return nullptr;
 
 	return sendQueue.front();
 }
 
-void WebClient::dequeueFromSendQueue() {
+void Client::dequeueFromSendQueue() {
 	std::string* item = nextInSendQueue();
 	if (item != nullptr) {
 		sendQueue.pop();
@@ -41,22 +40,22 @@ void WebClient::dequeueFromSendQueue() {
 	}
 }
 
-void WebClient::clearSendQueue() {
+void Client::clearSendQueue() {
 	while (!sendQueue.empty()) {
 		delete sendQueue.front();
 		sendQueue.pop();
 	}
 }
 
-WebClient::Status WebClient::getStatus() const {
+Client::Status Client::getStatus() const {
 	return status;
 }
 
-void WebClient::setStatus(Status status) {
+void Client::setStatus(Status status) {
 	this->status = status;
 }
 
-int WebClient::getSocketDescriptor() const {
+int Client::getSocketDescriptor() const {
 	return socketDescriptor;
 }
 
@@ -64,10 +63,10 @@ int WebClient::getSocketDescriptor() const {
 //	WebClient::socketDescriptor = socketDescriptor;
 //}
 
-const std::string& WebClient::getBuffer() const {
+const std::string& Client::getBuffer() const {
 	return buffer;
 }
 
-void WebClient::setBuffer(const std::string& buffer) {
-	WebClient::buffer = buffer;
+void Client::setBuffer(const std::string& buffer) {
+	Client::buffer = buffer;
 }

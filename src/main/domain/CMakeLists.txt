@@ -8,8 +8,9 @@ add_library(domain
         model/HttpMethod.hpp
         model/RequestParser.hpp
         model/RequestHandler.hpp
-        model/WebClient.hpp model/WebClient.cpp
-        model/Response.hpp)
+        model/Client.hpp model/Client.cpp
+        model/Response.hpp
+        model/Request.hpp model/Request.cpp)
 
 include_directories(domain PRIVATE repository)
 include_directories(domain PRIVATE model)

@@ -1,9 +1,9 @@
 #pragma once
 
 #include <iostream>
-#include "WebClient.hpp"
+#include "Client.hpp"
 
 class RequestHandler {
 public:
-	virtual void getResponse(WebClient *client) = 0;
+	virtual void getResponse(Client *client) = 0;
 };

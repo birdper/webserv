@@ -1,11 +1,11 @@
 #pragma once
 
 #include <iostream>
-#include "WebClient.hpp"
+#include "Client.hpp"
 
 class RequestParser {
 
 public:
-	virtual void handleRequest(WebClient* client) = 0;
+	virtual void parse(Client* client) = 0;
 
 };

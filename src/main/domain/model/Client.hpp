@@ -3,8 +3,10 @@
 #include <iostream>
 #include <netinet/in.h>
 #include <queue>
+#include "Response.hpp"
+#include "Request.hpp"
 
-class WebClient {
+class Client {
 public:
 	enum Status {
 		Readable,
@@ -14,16 +16,19 @@ public:
 
 private:
 	int socketDescriptor;
+//	TODO clientAddress necessary?
 	sockaddr_in clientAddress;
 	Status status;
 
+	Request* request;
+	Response* response;
 	std::string buffer;
 
 	std::queue<std::string*> sendQueue;
 
 public:
-	WebClient(int socketDescriptor, const sockaddr_in& clientAddress);
-	virtual ~WebClient();
+	Client(int socketDescriptor, const sockaddr_in& clientAddress);
+	virtual ~Client();
 
 	void refresh(); // TODO ?
 
