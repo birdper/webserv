@@ -66,15 +66,16 @@ int main(int argc, char *argv[]) {
 		exit(1);
 	}
 
-	ConfigParser parser;
+	ConfigParser configParser;
+	configParser.parseConfig();
 
-//	RequestParser* requestParser = new RequestParser();
-//	RequestHandler* requestHandler = new RequestHandler();
 
-	parser.parseConfig()
+	RequestParser* requestParser;
+	RequestHandler* requestHandler;
+	Server server(*requestParser, *requestHandler);
 
-	Server server;
-	server.initSockets()
+	server.initSockets();
+	server.mainLoop();
 
 	std::string input = "server {\n"
 						"        listen 8080;\n"
