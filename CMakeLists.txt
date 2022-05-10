@@ -10,6 +10,7 @@ add_subdirectory(${PATH}/domain)
 add_subdirectory(${PATH}/data)
 add_subdirectory(${PATH}/parser)
 add_subdirectory(${PATH}/server)
+add_subdirectory(${PATH}/interacts)
 
 add_executable(${NAME}
         main.cpp
@@ -23,6 +24,9 @@ target_include_directories(${NAME} PUBLIC ${PATH}/data)
 
 target_link_libraries(${NAME} PUBLIC parser)
 target_include_directories(${NAME} PUBLIC ${PATH}/parser)
+
+target_link_libraries(${NAME} PUBLIC interacts)
+target_include_directories(${NAME} PUBLIC ${PATH}/interacts)
 
 target_link_libraries(${NAME} PUBLIC server)
 target_include_directories(${NAME} PUBLIC ${PATH}/server)

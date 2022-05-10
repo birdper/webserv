@@ -10,6 +10,7 @@ add_library(data
         storage/SettingsStorage.cpp storage/SettingsStorage.hpp
         repository/RepositoryErrorPages.cpp repository/RepositoryErrorPages.hpp
         repository/SettingsRepositoryImpl.cpp repository/SettingsRepositoryImpl.hpp
+        repository/ClientRepository.cpp repository/ClientRepository.hpp
         )
 
 target_include_directories(data PUBLIC model)

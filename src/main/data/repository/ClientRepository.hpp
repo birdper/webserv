@@ -1,11 +1,13 @@
 #pragma once
 
 #include <iostream>
+#include <map>
 #include "Client.hpp"
 
 class ClientRepository {
 private:
-	std::vector<Client*> clients;
+//	std::vector<Client*> clients;
+	std::map<int, Client*> clients;
 
 public:
 	void addClient(Client* client);

@@ -24,6 +24,7 @@ private:
 	int countListenSockets;
 	std::vector<struct pollfd> pollFds;
 
+	static const int BUFFER_SIZE = 1024;
 	ClientRepository clientRepository;
 
 public:
@@ -42,7 +43,7 @@ private:
 	void handleEvents();
 
 	bool readClient(Client* client);
-	bool writeClient(Client* client, Response* response);
+	bool writeClient(Client* client);
 
 	void disconnectClient(Client* client, bool isRemoveClient);
 	void closeConnections();

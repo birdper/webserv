@@ -3,9 +3,7 @@
 #include <iostream>
 #include "Client.hpp"
 
-class RequestParser {
-
+class RequestHandler {
 public:
-	virtual void parse(Client* client) = 0;
-
+	Response handle(Request& request);
 };
