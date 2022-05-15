@@ -2,12 +2,20 @@
 
 #include <iostream>
 #include <sstream>
+#include <map>
 
-#include "Client.hpp"
+#include "Request.hpp"
 
 class RequestParser {
 
 public:
-	Request* parse(Client* client, std::string& data);
+	Request* parse(char* data);
 
+private:
+	bool parseStartLine(std::istringstream& line, Request* request);
+
+	void parseHeaders(std::istringstream& line, Request* request);
+	void parseMethod(Request* request, const std::string& method) const;
+	void parseUri(Request* request, const std::string& uri) const;
+	bool parseHttpVersion(Request* request, const std::string& httpVersion) const;
 };

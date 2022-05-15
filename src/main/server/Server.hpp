@@ -7,11 +7,12 @@
 
 #include "Constants.hpp"
 #include "Socket.hpp"
-#include "Client.hpp"
 #include "RequestHandler.hpp"
 #include "RequestParser.hpp"
-#include "Response.hpp"
 #include "ClientRepository.hpp"
+#include "SettingsRepository.hpp"
+#include "Client.hpp"
+#include "Response.hpp"
 
 class Server {
 
@@ -20,16 +21,17 @@ private:
 
 	RequestParser& requestParser;
 	RequestHandler& requestHandler;
+	SettingsRepository& settingsRepository;
+	ClientRepository clientRepository;
 
 	int countListenSockets;
 	std::vector<struct pollfd> pollFds;
-
 	static const int BUFFER_SIZE = 1024;
-	ClientRepository clientRepository;
 
 public:
 	Server(RequestParser& requestParser,
-		   RequestHandler& requestHandler);
+		   RequestHandler& requestHandler,
+		   SettingsRepository& settingsRepository);
 
 	void initSockets(std::vector<int>& hosts);
 	void mainLoop();
@@ -38,7 +40,7 @@ private:
 	struct pollfd initPollFd(int socketDescriptor, short eventTypes);
 
 	void polling();
-	void acceptConnections();
+	void acceptConnections(pollfd& pollFd);
 
 	void handleEvents();
 
@@ -47,7 +49,5 @@ private:
 
 	void disconnectClient(Client* client, bool isRemoveClient);
 	void closeConnections();
-
-	void handleRequest(Client* client, Request* request);
 };
 

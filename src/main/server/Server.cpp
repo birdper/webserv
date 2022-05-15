@@ -3,9 +3,12 @@
 #include "Server.hpp"
 #include "Request.hpp"
 
-Server::Server(RequestParser& requestParser, RequestHandler& requestHandler) :
+Server::Server(RequestParser& requestParser,
+			   RequestHandler& requestHandler,
+			   SettingsRepository& settingsRepository) :
 		requestParser(requestParser),
-		requestHandler(requestHandler) {}
+		requestHandler(requestHandler),
+		settingsRepository(settingsRepository) {}
 
 void Server::initSockets(std::vector<int>& hosts) {
 	Socket socket;
@@ -50,7 +53,7 @@ void Server::handleEvents() {
 	for (int i = 0; i < countListenSockets; ++i) {
 		pollfd& pollfd = pollFds[i];
 		if (pollfd.revents != NoEvents && pollfd.events == POLLIN) {
-			acceptConnections();
+			acceptConnections(pollfd);
 		}
 	}
 //	Check clients
@@ -74,21 +77,24 @@ void Server::handleEvents() {
 	}
 }
 
-void Server::acceptConnections() {
+void Server::acceptConnections(pollfd& pollFd) {
 	sockaddr_in clientAddress;
 	int addressLength = sizeof(clientAddress);
-	for (int i = 0; i < pollFds.size(); ++i) {
-		int clientFd = accept(pollFds[i].fd,
-							  nullptr, // TODO Ринат говорит что 2 и 3 аргументы не нужны
-							  nullptr);
-		if (clientFd <= 0)
+//	for (int i = 0; i < pollFds.size(); ++i) {
+//		int clientFd = accept(pollFds[i].fd,
+		int clientFd = accept(pollFd.fd,
+							  (sockaddr*)&clientAddress,
+							  (socklen_t*)&addressLength);
+		if (clientFd <= 0) {
+
 			break;
+		}
 		fcntl(clientFd, F_SETFL, O_NONBLOCK);
 		pollFds.push_back(initPollFd(clientFd, POLLIN | POLLOUT | POLLHUP));
 
 		Client* client = new Client(clientFd, clientAddress);
 		clientRepository.addClient(client);
-	}
+//	}
 }
 
 void Server::disconnectClient(Client* client, bool isRemoveClient) {
@@ -105,54 +111,25 @@ void Server::disconnectClient(Client* client, bool isRemoveClient) {
 
 bool Server::readClient(Client* client) {
 
-	byte buffer[BUFFER_SIZE];
-	ssize_t bytesReadCount = recv(client->getSocketDescriptor(), buffer, sizeof(buffer), MsgNoFlag);
+//	byte buffer[BUFFER_SIZE];
+	char buffer[BUFFER_SIZE];
+	ssize_t bytesReadCount = recv(client->getSocketDescriptor(),
+								  buffer,
+								  sizeof(buffer),
+								  MsgNoFlag);
 
 	if (bytesReadCount < 0) {
 		return false;
 	}
 	if (bytesReadCount > 0) {
-//	Request* request = requestParser.parse(client, buffer, countByteRead);
-		Request* request = new Request((byte*)buffer, bytesReadCount);
-		handleRequest(client, request);
-		delete request;
+		Request* request = requestParser.parse(buffer);
+
+		settingsRepository.getConfig(request->getUri(),
+									 request->findHeaderByName("Host"));
+		requestHandler.handle(*request);
+//		delete request;
 	}
 	return true;
-}
-
-void Server::handleRequest(Client* client, Request* request) {
-
-	// Parse the request
-	// If there's an error, report it and send a server error in response
-//	if (!request->parse()) {
-//		sendStatusResponse(client, Status(BAD_REQUEST), request->getParseError());
-//		return;
-//	}
-
-	/*std::cout << "Headers:" << std::endl;
-	for(int i = 0; i < req->getNumHeaders(); i++) {
-		std::cout << "\t" << req->getHeaderStr(i) << std::endl;
-	}
-	std::cout << std::endl;*/
-
-	// Send the request to the correct handler function
-	switch (request->getMethod()) {
-		case GET:
-//			handleGet(client, request);
-			break;
-		case PUT:
-//			handleGet(client, request);
-			break;
-		case POST:
-//			handleGet(client, request);
-			break;
-		case DELETE:
-//			handleGet(client, request);
-			break;
-		default:
-//			sendStatusResponse(client, Status(NOT_IMPLEMENTED));
-			break;
-	}
 }
 
 bool Server::writeClient(Client* client) {
@@ -164,7 +141,7 @@ bool Server::writeClient(Client* client) {
 
 //	if (!client->getResponse()->toSend.empty()) {
 
-	if (!response->toSend.empty()) {
+/*	if (!response->toSend.empty()) {
 		string buffer = client->getResponse()->toSend;
 
 		ssize_t countSendBytes = send(client->getSocketDescriptor(), buffer.c_str(), buffer.size(),
@@ -180,7 +157,7 @@ bool Server::writeClient(Client* client) {
 			if (client->getResponse()->toSend.empty())
 				client->update();
 		}
-	}
+	}*/
 	return true;
 }
 

@@ -1,10 +1,18 @@
-
 #include "RequestHandler.hpp"
 
+RequestHandler::RequestHandler(Config& config) :
+		config(config) {}
+
 Response RequestHandler::handle(Request& request) {
+
+	Response response;
+	if (request.isBadRequest())
+		return response;
+
 	switch (request.getMethod()) {
 		case GET:
-//			handleGet(client, request);
+			config.getUri();
+//			handleGet(request);
 			break;
 		case PUT:
 //			handleGet(client, request);
@@ -19,5 +27,5 @@ Response RequestHandler::handle(Request& request) {
 //			sendStatusResponse(client, Status(NOT_IMPLEMENTED));
 			break;
 	}
-	return Response();
+	return response;
 }
