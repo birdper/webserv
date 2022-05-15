@@ -24,7 +24,9 @@ Client* ClientRepository::findBySocketDescriptor(int socketDescriptor) {
 }
 
 void ClientRepository::removeBySocketDescriptor(int socketDescriptor) {
-	std::remove(clients.begin(), clients.end(), socketDescriptor);
+	clients.erase(socketDescriptor);
+//	std::remove(clients.begin(), clients.end(), socketDescriptor);
+
 //	for (int pos = 0; pos < clients.size(); ++pos) {
 //		if (socketDescriptor == clients[pos]->getSocketDescriptor()) {
 //			clients.erase(clients.begin() + pos);

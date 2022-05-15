@@ -3,16 +3,17 @@
 
 #include <map>
 #include <vector>
+#include "Client.hpp"
 
-#include "Tokenizer.hpp"
+/*#include "Tokenizer.hpp"
 #include "ConfigParser.hpp"
 #include "SettingsStorage.hpp"
-#include "SettingsRepositoryImpl.hpp"
+#include "SettingsRepositoryImpl.hpp"*/
+#include "Client.hpp"
+//#include "Server.hpp"
 
-#include "Server.hpp"
 
-
-
+/*
 void testTokenizer(const std::string& input) {
 	Tokenizer tokenizer;
 
@@ -25,12 +26,12 @@ void testTokenizer(const std::string& input) {
 }
 
 void testParserConfig(const std::string& input) {
-	parser::ParserConfig parser;
+	ConfigParser parser;
 	SettingsStorage* storage = new SettingsStorage();
 
 	parser.parseConfig(input, storage);
 	SettingsRepositoryImpl repository(storage);
-	VirtualServer virtualServer = *storage->findVirtualServer(
+	VirtualServer virtualServer = storage->findVirtualServer(
 			"8080",
 			"");
 	Config* config = repository.getConfig("/www/html", "8080", "");
@@ -53,11 +54,12 @@ size_t parseUriRequest(const std::string& uriRequest,
 bool isIncorrectConfigFile(const std::string& configFileName) {
 	return false;
 }
+*/
 
 //TODO implement input config file
 int main(int argc, char *argv[]) {
 
-	if (argc != 2) {
+	/*if (argc != 2) {
 		std::cerr << "Did not provide a configuration file" << std::endl;
 		exit(1);
 	}
@@ -67,15 +69,15 @@ int main(int argc, char *argv[]) {
 	}
 
 	ConfigParser configParser;
-	configParser.parseConfig();
+//	configParser.parseConfig();
 
 
 	RequestParser* requestParser;
 	RequestHandler* requestHandler;
-	Server server(*requestParser, *requestHandler);
+	Server server(*requestParser, *requestHandler);*/
 
-	server.initSockets();
-	server.mainLoop();
+//	server.initSockets();
+//	server.mainLoop();
 
 	std::string input = "server {\n"
 						"        listen 8080;\n"
@@ -114,7 +116,7 @@ int main(int argc, char *argv[]) {
 						"            root  serv2_loc_2html;\n"
 						"        }\n"
 						"}";
-	testParserConfig(input);
+//	testParserConfig(input);
 //	testTokenizer();
 
 
