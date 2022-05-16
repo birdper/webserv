@@ -6,9 +6,9 @@
 
 class RequestHandler {
 private:
-	Config &config;
+//	Config &config;
 
 public:
-	RequestHandler(Config& config);
-	Response handle(Request& request);
+//	RequestHandler(Config& config);
+	Response handle(Request& request, Config& config);
 };

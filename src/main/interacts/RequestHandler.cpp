@@ -1,9 +1,11 @@
 #include "RequestHandler.hpp"
 
+/*
 RequestHandler::RequestHandler(Config& config) :
 		config(config) {}
+*/
 
-Response RequestHandler::handle(Request& request) {
+Response RequestHandler::handle(Request& request, Config& config) {
 
 	Response response;
 	if (request.isBadRequest())

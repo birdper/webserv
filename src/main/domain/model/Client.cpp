@@ -1,7 +1,10 @@
 #include "Client.hpp"
 
-Client::Client(int socketDescriptor, const sockaddr_in& clientAddress) :
+Client::Client(int socketDescriptor,
+			   int* listenSocketDescriptor,
+			   const sockaddr_in& clientAddress) :
 		socketDescriptor(socketDescriptor),
+		listenSocketDescriptor(listenSocketDescriptor),
 		clientAddress(clientAddress) {}
 
 Client::~Client() {
@@ -69,4 +72,12 @@ const std::string& Client::getBuffer() const {
 
 void Client::setBuffer(const std::string& buffer) {
 	Client::buffer = buffer;
+}
+
+int Client::getHostPort() const {
+	sockaddr_in address;
+	getsockname(*listenSocketDescriptor,
+				(sockaddr*)&address,
+				(socklen_t*)sizeof(address));
+	return address.sin_port;
 }

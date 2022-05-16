@@ -16,6 +16,7 @@ public:
 
 private:
 	int socketDescriptor;
+	int *listenSocketDescriptor;
 //	TODO clientAddress necessary?
 	sockaddr_in clientAddress;
 	Status status;
@@ -27,7 +28,8 @@ private:
 	std::queue<std::string*> sendQueue;
 
 public:
-	Client(int socketDescriptor, const sockaddr_in& clientAddress);
+	Client(int socketDescriptor, int* listenSocketDescriptor, const sockaddr_in& clientAddress);
+
 	virtual ~Client();
 
 	void refresh(); // TODO ?
@@ -43,4 +45,5 @@ public:
 	void setStatus(Status status);
 	const std::string& getBuffer() const;
 	void setBuffer(const std::string& buffer);
+	int getHostPort() const;
 };

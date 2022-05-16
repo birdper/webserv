@@ -81,18 +81,18 @@ void Server::acceptConnections(pollfd& pollFd) {
 	sockaddr_in clientAddress;
 	int addressLength = sizeof(clientAddress);
 //	for (int i = 0; i < pollFds.size(); ++i) {
-//		int clientFd = accept(pollFds[i].fd,
+//		int clientFd = accept(pollFds[i].fd, nullptr, nullptr);
 		int clientFd = accept(pollFd.fd,
 							  (sockaddr*)&clientAddress,
 							  (socklen_t*)&addressLength);
 		if (clientFd <= 0) {
-
-			break;
+			return;
+//			break;
 		}
 		fcntl(clientFd, F_SETFL, O_NONBLOCK);
 		pollFds.push_back(initPollFd(clientFd, POLLIN | POLLOUT | POLLHUP));
 
-		Client* client = new Client(clientFd, clientAddress);
+		Client* client = new Client(clientFd, &pollFd.fd, clientAddress);
 		clientRepository.addClient(client);
 //	}
 }
@@ -124,9 +124,11 @@ bool Server::readClient(Client* client) {
 	if (bytesReadCount > 0) {
 		Request* request = requestParser.parse(buffer);
 
-		settingsRepository.getConfig(request->getUri(),
+		Config* config = settingsRepository.getConfig(request->getUri(),
+									 std::to_string(client->getHostPort()),
 									 request->findHeaderByName("Host"));
-		requestHandler.handle(*request);
+
+		requestHandler.handle(*request, *config);
 //		delete request;
 	}
 	return true;
@@ -138,10 +140,10 @@ bool Server::writeClient(Client* client) {
 //		return false;
 
 //	requestHandler.formResponse(client);
-
 //	if (!client->getResponse()->toSend.empty()) {
 
-/*	if (!response->toSend.empty()) {
+/*
+	if (!response->toSend.empty()) {
 		string buffer = client->getResponse()->toSend;
 
 		ssize_t countSendBytes = send(client->getSocketDescriptor(), buffer.c_str(), buffer.size(),
@@ -157,7 +159,8 @@ bool Server::writeClient(Client* client) {
 			if (client->getResponse()->toSend.empty())
 				client->update();
 		}
-	}*/
+	}
+ */
 	return true;
 }
 
