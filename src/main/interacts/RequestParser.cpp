@@ -1,6 +1,6 @@
 #include "RequestParser.hpp"
 
-Request* RequestParser::parse(char* data) {
+Request* RequestParser::parse(const std::string& data) {
 	Request* request = new Request();
 	std::istringstream iss(data);
 
@@ -9,8 +9,8 @@ Request* RequestParser::parse(char* data) {
 	std::istringstream issLine(line);
 
 	parseStartLine(issLine, request);
-
 	parseHeaders(iss, request);
+	parseBody();
 	return request;
 }
 
@@ -54,13 +54,13 @@ void RequestParser::parseUri(Request* request, const std::string& uri) const {
 }
 
 bool RequestParser::parseHttpVersion(Request* request, const std::string& httpVersion) const {
-	if (httpVersion == "HTTP/1.0" || httpVersion == "HTTP/1.1")
+	if (httpVersion == "HTTP/1.0" || httpVersion == "HTTP/1.1") {
 		request->setHttpVersion(httpVersion);
-	else {
-		request->setBadStatus();
-		return false;
+		return true;
 	}
-	return true;
+	request->setBadStatus();
+	return false;
+
 }
 
 void RequestParser::parseHeaders(std::istringstream& iss, Request* request) {
@@ -80,4 +80,8 @@ void RequestParser::parseHeaders(std::istringstream& iss, Request* request) {
 		request->setBadStatus();
 		return;
 	}
+}
+
+void RequestParser::parseBody() {
+//	TODO (not yet implement)
 }

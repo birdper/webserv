@@ -7,4 +7,14 @@ add_library(interacts
         RequestParser.cpp
         )
 
-target_include_directories(interacts PUBLIC ../domain/model)
+target_include_directories(interacts PUBLIC
+        ../exception
+        ../model
+        ../util
+        )
+
+include_directories(interacts PUBLIC
+        ../exception
+        ../model
+        ../util
+        )
