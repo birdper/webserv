@@ -10,7 +10,7 @@
 #include "RequestHandler.hpp"
 #include "RequestParser.hpp"
 #include "ClientRepository.hpp"
-#include "SettingsRepository.hpp"
+#include "ConfigRepository.hpp"
 #include "Client.hpp"
 #include "Response.hpp"
 
@@ -21,7 +21,7 @@ private:
 
 	RequestParser& requestParser;
 	RequestHandler& requestHandler;
-	SettingsRepository& settingsRepository;
+	ConfigRepository& settingsRepository;
 	ClientRepository clientRepository;
 
 	int countListenSockets;
@@ -31,7 +31,7 @@ private:
 public:
 	Server(RequestParser& requestParser,
 		   RequestHandler& requestHandler,
-		   SettingsRepository& settingsRepository);
+		   ConfigRepository& settingsRepository);
 
 	void initSockets(std::vector<int>& hosts);
 	void mainLoop();
@@ -40,7 +40,7 @@ private:
 	struct pollfd initPollFd(int socketDescriptor, short eventTypes);
 
 	void polling();
-	void acceptConnections(pollfd& pollFd);
+	void acceptClient(pollfd& pollFd);
 
 	void handleEvents();
 

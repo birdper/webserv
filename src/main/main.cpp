@@ -3,14 +3,18 @@
 
 #include <map>
 #include <vector>
+#include <arpa/inet.h>
 #include "Client.hpp"
 
 /*#include "Tokenizer.hpp"
 #include "ConfigParser.hpp"
-#include "SettingsStorage.hpp"
-#include "SettingsRepositoryImpl.hpp"*/
+#include "ConfigStorage.hpp"
+#include "ConfigRepositoryImpl.hpp"*/
 #include "Client.hpp"
-//#include "Server.hpp"
+#include "ConfigParser.hpp"
+#include "ConfigRepositoryImpl.hpp"
+#include "ErrorPagePathNotFoundException.hpp"
+#include "Server.hpp"
 
 
 /*
@@ -27,10 +31,10 @@ void testTokenizer(const std::string& input) {
 
 void testParserConfig(const std::string& input) {
 	ConfigParser parser;
-	SettingsStorage* storage = new SettingsStorage();
+	ConfigStorage* storage = new ConfigStorage();
 
 	parser.parseConfig(input, storage);
-	SettingsRepositoryImpl repository(storage);
+	ConfigRepositoryImpl repository(storage);
 	VirtualServer virtualServer = storage->findVirtualServer(
 			"8080",
 			"");
@@ -59,7 +63,8 @@ bool isIncorrectConfigFile(const std::string& configFileName) {
 //TODO implement input config file
 int main(int argc, char *argv[]) {
 
-	/*if (argc != 2) {
+	/*
+	if (argc != 2) {
 		std::cerr << "Did not provide a configuration file" << std::endl;
 		exit(1);
 	}
@@ -68,13 +73,10 @@ int main(int argc, char *argv[]) {
 		exit(1);
 	}
 
-	ConfigParser configParser;
-//	configParser.parseConfig();
-
-
 	RequestParser* requestParser;
 	RequestHandler* requestHandler;
-	Server server(*requestParser, *requestHandler);*/
+	Server server(*requestParser, *requestHandler);
+	*/
 
 //	server.initSockets();
 //	server.mainLoop();

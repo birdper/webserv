@@ -1,5 +1,6 @@
 
 
+#include <arpa/inet.h>
 #include "Socket.hpp"
 
 int Socket::init(int listenPort, in_addr_t ip) {
@@ -8,6 +9,7 @@ int Socket::init(int listenPort, in_addr_t ip) {
 
 	struct sockaddr_in address = initAddress(listenPort, ip);
 	bindToAddress(address);
+
 	setAddressReuseMode();
 
 	startListening();
@@ -44,6 +46,7 @@ void Socket::setNonblockMode() {
 struct sockaddr_in Socket::initAddress(int listenPort, in_addr_t ip) {
 	struct sockaddr_in socketAddress;
 
+//	TODO delete comment if unnecessary
 	// modify to support multiple address families (bottom): http://eradman.com/posts/kqueue-tcp.html
 //	memset(&socketAddress, 0, sizeof(struct sockaddr_in));
 
@@ -55,7 +58,10 @@ struct sockaddr_in Socket::initAddress(int listenPort, in_addr_t ip) {
 
 void Socket::bindToAddress(struct sockaddr_in address) {
 	int result = bind(socketDescriptor, (struct sockaddr*)&address, sizeof(sockaddr));
-	checkError(result, "bindToAddress()");
+
+	checkError(result, "bindToAddress() " +
+			std::string (inet_ntoa(address.sin_addr)) + ":" +
+			std::to_string(ntohs(address.sin_port)));
 }
 
 void Socket::startListening() {

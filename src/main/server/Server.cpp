@@ -5,7 +5,7 @@
 
 Server::Server(RequestParser& requestParser,
 			   RequestHandler& requestHandler,
-			   SettingsRepository& settingsRepository) :
+			   ConfigRepository& settingsRepository) :
 		requestParser(requestParser),
 		requestHandler(requestHandler),
 		settingsRepository(settingsRepository) {}
@@ -14,6 +14,7 @@ void Server::initSockets(std::vector<int>& hosts) {
 	Socket socket;
 	for (size_t i = 0; i < hosts.size(); ++i) {
 		int socketDescriptor = socket.init(hosts[i]);
+/** Добавляем созданный слушающий сокет в */
 		pollFds.push_back(initPollFd(socketDescriptor, POLLIN));
 	}
 	countListenSockets = pollFds.size();
@@ -50,10 +51,11 @@ void Server::polling() {
 
 void Server::handleEvents() {
 //	Check listening sockets
+// TODO Если не рабоатет то, возможно, нужно объединить в один цикл
 	for (int i = 0; i < countListenSockets; ++i) {
 		pollfd& pollfd = pollFds[i];
 		if (pollfd.revents != NoEvents && pollfd.events == POLLIN) {
-			acceptConnections(pollfd);
+			acceptClient(pollfd);
 		}
 	}
 //	Check clients
@@ -77,7 +79,7 @@ void Server::handleEvents() {
 	}
 }
 
-void Server::acceptConnections(pollfd& pollFd) {
+void Server::acceptClient(pollfd& pollFd) {
 	sockaddr_in clientAddress;
 	int addressLength = sizeof(clientAddress);
 //	for (int i = 0; i < pollFds.size(); ++i) {
@@ -112,23 +114,27 @@ void Server::disconnectClient(Client* client, bool isRemoveClient) {
 bool Server::readClient(Client* client) {
 
 //	byte buffer[BUFFER_SIZE];
-	char buffer[BUFFER_SIZE];
+//	TODO Хватит ли объёма буфера?
+	std::vector<char> buffer(BUFFER_SIZE);
 	ssize_t bytesReadCount = recv(client->getSocketDescriptor(),
-								  buffer,
-								  sizeof(buffer),
+								  buffer.data(),
+								  buffer.size(),
 								  MsgNoFlag);
 
 	if (bytesReadCount < 0) {
 		return false;
 	}
 	if (bytesReadCount > 0) {
-		Request* request = requestParser.parse(buffer);
+//		checkBuffer();
+//		TODO передача в parse() vector?
+		Request* request = requestParser.parse(buffer.data());
 
 		Config* config = settingsRepository.getConfig(request->getUri(),
 									 std::to_string(client->getHostPort()),
 									 request->findHeaderByName("Host"));
 
-		requestHandler.handle(*request, *config);
+		Response response = requestHandler.handle(*request, *config);
+
 //		delete request;
 	}
 	return true;
