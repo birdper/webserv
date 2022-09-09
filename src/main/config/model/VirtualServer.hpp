@@ -16,7 +16,7 @@ class Location;
 class VirtualServer {
 private:
 	std::string ip;
-	std::string port;
+    int port;
 	std::string host;
 	std::vector<std::string> serverNames;
 
@@ -24,11 +24,13 @@ private:
 	std::vector<Location*> locations;
 
 public:
-//	TODO времмено добавлен пустой кноструктор
 	VirtualServer();
-	VirtualServer(const std::string& host, const std::string& port);
 	VirtualServer(Parameters *defaultParameters);
 
+    const std::string &getIp() const;
+    void setIp(const std::string &ip);
+    int getPort() const;
+    void setPort(int port);
 	const std::string& getHost() const;
 	void setHost(const std::string& host);
 	Parameters* getParameters();

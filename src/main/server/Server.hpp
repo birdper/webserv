@@ -4,6 +4,7 @@
 #include <algorithm>
 #include <vector>
 #include <unistd.h>
+#include <arpa/inet.h>
 
 #include "Constants.hpp"
 #include "Socket.hpp"

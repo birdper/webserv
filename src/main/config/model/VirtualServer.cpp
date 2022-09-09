@@ -6,13 +6,9 @@
 
 VirtualServer::VirtualServer() {}
 
-VirtualServer::VirtualServer(const std::string& host, const std::string& port) :
-		ip(host),
-		port(port) {}
-
 VirtualServer::VirtualServer(Parameters* defaultParameters) {
 	ip = defaultParameters->ip;
-	port = defaultParameters->port;
+	port = std::stoi(defaultParameters->port);
 
 	params.root = defaultParameters->root;
 	params.pathCGI = defaultParameters->pathCGI;
@@ -56,4 +52,20 @@ bool VirtualServer::isContainServerName(const std::string& serverName) const {
 	if (it == serverNames.end())
 		return false;
 	return true;
+}
+
+const std::string &VirtualServer::getIp() const {
+    return ip;
+}
+
+void VirtualServer::setIp(const std::string &ip) {
+    VirtualServer::ip = ip;
+}
+
+int VirtualServer::getPort() const {
+    return port;
+}
+
+void VirtualServer::setPort(int port) {
+    VirtualServer::port = port;
 }

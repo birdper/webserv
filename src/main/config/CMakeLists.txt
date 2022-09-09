@@ -13,4 +13,11 @@ add_library(${MODULE_NAME}
         repository/ConfigRepositoryImpl.cpp repository/ConfigRepositoryImpl.hpp
         )
 
-target_include_directories(${MODULE_NAME} PUBLIC model types storage repository ../model ../repository)
+target_include_directories(${MODULE_NAME} PUBLIC
+        model
+        types
+        storage
+        repository
+        ../model
+        ../repository
+        )
