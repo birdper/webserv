@@ -3,6 +3,7 @@
 
 Tokenizer::Tokenizer() :
 		context(NONE_CONTEXT) {
+//	TODO delete
 /*
 	mapperParameters.push_back("server");
 	mapperParameters.push_back("listen");
@@ -43,12 +44,12 @@ std::vector<Token> Tokenizer::tokenize(std::istringstream& configText) {
 	std::string line;
 	std::string content;
 
-	while (std::getline(configText, line, ';')) {
+	while (std::getline(configText, line, delimiter)) {
 		std::istringstream issLine(line);
 		std::string word;
 		while (issLine >> word) {
 			TokenType type;
-			type = getTokenType(word);
+			type = findTokenType(word);
 			switch (type) {
 				case SERVER:
 					defineServer(issLine);
@@ -64,35 +65,55 @@ std::vector<Token> Tokenizer::tokenize(std::istringstream& configText) {
 							  << std::endl;
 					exit(1);
 				default:
-					content = getContentDirective(issLine);
+					content = getDirectiveContent(issLine);
 					break;
 			}
-			Token currentToken;
-			currentToken.typeName = word;
-			currentToken.type = type;
+/*			Token currentToken;
+//			currentToken.typeName = word;
 			currentToken.content = content;
+			currentToken.type = type;
 			currentToken.context = static_cast<Context>(context);
+			*/
+			Token currentToken(
+//					word,
+					content,
+					type,
+					static_cast<Context>(context)
+					);
 			tokens.push_back(currentToken);
 			content.clear();
-			if (type == SERVER || type == LOCATION)
+			if (type == SERVER || type == LOCATION) {
 				++context;
+			}
 			word.clear();
 		}
 	}
-	if (context)
-		printErrMsg("Expected close curve brace");
+	if (context) {
+		printErrMsgAndShutDown("Expected close curve brace");
+	}
 	return tokens;
 }
 
+TokenType Tokenizer::findTokenType(const std::string& key) {
+	std::map<std::string, TokenType>::iterator it = mapperParameters.find(key);
+	if (it == mapperParameters.end()) {
+		return UNKNOWN_TYPE;
+	}
+	return it->second;
+}
+
 std::string
-Tokenizer::getContentDirective(std::istringstream& issLine) {
+Tokenizer::getDirectiveContent(std::istringstream& issLine) {
 
 	std::string word;
 	std::string content;
 	if (!context)
-		printErrMsg("directives must be in the context of the server");
-	if (issLine >> word)
+	{
+		printErrMsgAndShutDown("directives must be in the context of the server");
+	}
+	if (issLine >> word) {
 		content.append(word);
+	}
 	while (issLine >> word) {
 		issLine >> word;
 		content.append(" ");
@@ -102,29 +123,32 @@ Tokenizer::getContentDirective(std::istringstream& issLine) {
 }
 
 void Tokenizer::defineServer(std::istringstream& issLine) {
-	if (context != NONE_CONTEXT)
-		printErrMsg("The server block cannot be nested");
+	if (context != NONE_CONTEXT) {
+		printErrMsgAndShutDown("The server block cannot be nested");
+	}
 	std::string token;
 	issLine >> token;
 
 	if (token != "{") {
-		printErrMsg("expected the opening curve brace");
+		printErrMsgAndShutDown("expected the opening curve brace");
 	}
 	token.clear();
 }
 
 std::string Tokenizer::defineLocation(std::istringstream& issLine) {
-	if (context != SERVER_CONTEXT)
-		printErrMsg("location block must be in the context of the server");
+	if (context != SERVER_CONTEXT) {
+		printErrMsgAndShutDown("location block must be in the context of the server");
+	}
 	std::string uri;
 	issLine >> uri;
-	if (uri == "{")
-		printErrMsg("expected uri location");
+	if (uri == "{") {
+		printErrMsgAndShutDown("expected uri location");
+	}
 	std::string token;
 	issLine >> token;
 
 	if (token != "{") {
-		printErrMsg("expected the opening curve brace");
+		printErrMsgAndShutDown("expected the opening curve brace");
 	}
 	return uri;
 }
@@ -137,14 +161,7 @@ void Tokenizer::defineCloseBrace() {
 	--context;
 }
 
-void Tokenizer::printErrMsg(const std::string& msg) {
+void Tokenizer::printErrMsgAndShutDown(const std::string& msg) {
 	std::cerr << "Syntax error: " << msg << std::endl;
 	exit(1);
-}
-
-TokenType Tokenizer::getTokenType(const std::string& key) {
-	std::map<std::string, TokenType>::iterator it = mapperParameters.find(key);
-	if (it == mapperParameters.end())
-		return UNKNOWN_TYPE;
-	return it->second;
 }

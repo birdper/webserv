@@ -28,16 +28,19 @@ enum Context {
 };
 
 struct Token {
-	Token(const std::string& id);
 	std::string typeName;
 	std::string content;
 	TokenType type;
 	Context context;
 
 	Token();
-	Token(const std::string& id, const std::string& content);
-	Token(const std::string& id, const std::string& content, TokenType type);
+	Token(const std::string& content, TokenType type,
+		  Context context);
 	Token(const std::string& id, const std::string& content, TokenType type,
 		  Context context);
+private:
+	Token(const std::string& id);
+	Token(const std::string& id, const std::string& content);
+	Token(const std::string& id, const std::string& content, TokenType type);
 	Token(TokenType type, const std::string& content);
 };

@@ -31,6 +31,7 @@
 class Tokenizer {
 
 private:
+	static const char delimiter = ';';
 	int context;
 	std::map<std::string, TokenType> mapperParameters;
 
@@ -40,10 +41,10 @@ public:
 
 
 private:
-	TokenType getTokenType(const std::string& key);
-	std::string getContentDirective(std::istringstream& issLine);
+	TokenType findTokenType(const std::string& key);
+	std::string getDirectiveContent(std::istringstream& issLine);
 	void defineCloseBrace();
 	void defineServer(std::istringstream& issLine);
 	std::string defineLocation(std::istringstream& issLine);
-	void printErrMsg(const std::string& msg);
+	void printErrMsgAndShutDown(const std::string& msg);
 };

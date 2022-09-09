@@ -33,3 +33,9 @@ Token::Token(const std::string& id,
 Token::Token(const std::string& id) {
 	this->typeName = id;
 }
+
+Token::Token(const std::string& content, TokenType type, Context context) :
+		content(content),
+		type(type),
+		context(context) {
+}
