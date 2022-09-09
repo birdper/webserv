@@ -5,13 +5,14 @@ set(PROJECT_NAME server)
 
 add_library(${PROJECT_NAME}
         Constants.hpp
-        Server.cpp Server.hpp
-        Socket.cpp Socket.hpp
+        Server.hpp Server.cpp
+        Socket.hpp Socket.cpp
+        ClientRepository.hpp ClientRepository.cpp
         )
 
 target_include_directories(${PROJECT_NAME} PRIVATE
-        ../domain/model
-        ../domain/repository
-        ../data/repository
+        ../model
+        ../repository
+        ../config/repository
         ../interacts
         )

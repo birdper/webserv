@@ -7,6 +7,7 @@
 #include <map>
 #include <vector>
 #include "Parameters.hpp"
+#include "../exception/ErrorPagePathNotFoundException.hpp"
 
 class Config {
 
@@ -29,6 +30,7 @@ public:
 	const std::string& getPathCGI() const;
 	const std::string& getExtensionCGI() const;
 	const std::string& getClientMaxBody() const;
-	const std::string& getPathErrorPage(const std::string& errorCode) const;
-	const std::vector<std::string>& getIndexFiles() const;
+	const std::string& getErrorPageRelativePath(const std::string& errorCode) const;
+	std::vector<std::string>& getIndexFiles() const;
+	std::string getPathErrorPageWithRoot(const std::string& errorCode);
 };

@@ -32,6 +32,6 @@ public:
 	const std::map<std::string, std::string>& getHeaders() const;
 	void setHeaders(const std::map<std::string, std::string>& headers);
 
-	const std::string& findHeaderByName(const std::string& header) const;
+	const std::string& findHeaderByName(const std::string& headerName) const;
 
 };

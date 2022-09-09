@@ -5,16 +5,15 @@
 #pragma once
 
 #include "SettingTypes.hpp"
-#include "SettingsStorage.hpp"
-#include "SettingsRepository.hpp"
+#include "ConfigStorage.hpp"
+#include "ConfigRepository.hpp"
 
-class SettingsRepositoryImpl : public SettingsRepository {
-
+class ConfigRepositoryImpl : public ConfigRepository {
 private:
-	SettingsStorage* storage;
+	ConfigStorage* storage;
 
 public:
-	explicit SettingsRepositoryImpl(SettingsStorage* storage);
+	explicit ConfigRepositoryImpl(ConfigStorage* storage);
 
 	std::vector<std::string> getHostsVirtualServers() const;
 

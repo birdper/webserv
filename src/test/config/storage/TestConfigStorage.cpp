@@ -2,12 +2,12 @@
 #include <iostream>
 #include <vector>
 
-#include "SettingsStorage.hpp"
+#include "ConfigStorage.hpp"
 #include "VirtualServer.hpp"
 #include "acutest.h"
 
 void addVirtualServerByHost() {
-	SettingsStorage storage;
+	ConfigStorage storage;
 	VirtualServer server;
 	server.setHost("hostVirtual");
 
@@ -17,7 +17,7 @@ void addVirtualServerByHost() {
 }
 
 void addVirtualServerByHostFewServers() {
-	SettingsStorage storage;
+	ConfigStorage storage;
 
 	VirtualServer server;
 	server.setHost("hostVirtual");
@@ -34,7 +34,7 @@ void addVirtualServerByHostFewServers() {
 }
 
 void findVirtualServerWhenGivenCorrectPort() {
-	SettingsStorage storage;
+	ConfigStorage storage;
 
 	VirtualServer server;
 	server.setHost("hostVirtual");

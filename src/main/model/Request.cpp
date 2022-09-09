@@ -55,8 +55,8 @@ Request::Request() {
 
 }
 
-const std::string& Request::findHeaderByName(const std::string& header) const {
-	std::map<std::string, std::string>::const_iterator it = headers.find(header);
+const std::string& Request::findHeaderByName(const std::string& headerName) const {
+	std::map<std::string, std::string>::const_iterator it = headers.find(headerName);
 	if (it == headers.end())
 		return *new std::string("");
 	return it->second;

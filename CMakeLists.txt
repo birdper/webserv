@@ -16,7 +16,7 @@ add_subdirectory(src/test)
 add_executable(${PROJECT_NAME}
         ${PATH}/main.cpp
         ${PATH}/domain
-        ${PATH}/data
+        ${PATH}/config
         ${PATH}/parser
         ${PATH}/interacts
         ${PATH}/server
@@ -24,7 +24,7 @@ add_executable(${PROJECT_NAME}
 
 
 add_subdirectory(${PATH}/domain)
-add_subdirectory(${PATH}/data)
+add_subdirectory(${PATH}/config)
 add_subdirectory(${PATH}/parser)
 add_subdirectory(${PATH}/interacts)
 add_subdirectory(${PATH}/server)
@@ -32,8 +32,8 @@ add_subdirectory(${PATH}/server)
 target_link_libraries(${PROJECT_NAME} PUBLIC domain)
 target_include_directories(${PROJECT_NAME} PUBLIC ${PATH}/domain)
 
-target_link_libraries(${PROJECT_NAME} PUBLIC data)
-target_include_directories(${PROJECT_NAME} PUBLIC ${PATH}/data)
+target_link_libraries(${PROJECT_NAME} PUBLIC config)
+target_include_directories(${PROJECT_NAME} PUBLIC ${PATH}/config)
 
 target_link_libraries(${PROJECT_NAME} PUBLIC parser)
 target_include_directories(${PROJECT_NAME} PUBLIC ${PATH}/parser)
@@ -73,7 +73,7 @@ target_include_directories(${PROJECT_NAME} PUBLIC ${PATH}/server)
 
 #target_link_libraries(${PROJECT_NAME} PUBLIC
 #        domain
-#        data
+#        config
 #        parser
 #        interacts
 #        server
@@ -81,14 +81,14 @@ target_include_directories(${PROJECT_NAME} PUBLIC ${PATH}/server)
 
 #target_include_directories(${PROJECT_NAME} PUBLIC
 #        ${PATH}/domain
-#        ${PATH}/data
+#        ${PATH}/config
 #        ${PATH}/parser
 #        ${PATH}/interacts
 #        ${PATH}/server
 #        )
 
 
-#target_include_directories(${PROJECT_NAME} PUBLIC src/main/domain src/main/data)
+#target_include_directories(${PROJECT_NAME} PUBLIC src/main/domain src/main/config)
 
 
 

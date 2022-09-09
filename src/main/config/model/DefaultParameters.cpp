@@ -12,7 +12,7 @@ DefaultParameters::DefaultParameters() {
 //	TODO установить каталог
 	params.pathCGI = "";
 	params.extensionCGI = ".php";
-	params.clientMaxBody = "10m";
+	params.clientMaxBodySize = "10m";
 	params.indexFiles.push_back("index");
 	params.indexFiles.push_back("index.html");
 }

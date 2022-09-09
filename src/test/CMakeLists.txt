@@ -4,8 +4,10 @@ set(CMAKE_CXX_STANDARD 98)
 set(PROJECT_NAME unit_test)
 
 set(SOURCES
-        data/storage/TestSettingsStorage.cpp
+        config/storage/TestConfigStorage.cpp
         interacts/TestRequestParser.cpp
+        parser/TestConfigParser.cpp
+        acutest.h
         )
 
 add_executable(${PROJECT_NAME}

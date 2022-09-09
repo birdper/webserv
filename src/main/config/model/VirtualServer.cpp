@@ -4,7 +4,6 @@
 
 #include "VirtualServer.hpp"
 
-
 VirtualServer::VirtualServer() {}
 
 VirtualServer::VirtualServer(const std::string& host, const std::string& port) :
@@ -18,7 +17,7 @@ VirtualServer::VirtualServer(Parameters* defaultParameters) {
 	params.root = defaultParameters->root;
 	params.pathCGI = defaultParameters->pathCGI;
 	params.extensionCGI = defaultParameters->extensionCGI;
-	params.clientMaxBody = defaultParameters->clientMaxBody;
+	params.clientMaxBodySize = defaultParameters->clientMaxBodySize;
 	params.indexFiles = defaultParameters->indexFiles;
 }
 
@@ -38,7 +37,6 @@ void VirtualServer::addLocation(Location* location) {
 	locations.push_back(location);
 }
 
-
 void VirtualServer::addServerNames(const std::vector<std::string>& names) {
 	serverNames = names;
 }
@@ -51,13 +49,10 @@ void VirtualServer::setHost(const std::string& host) {
 	VirtualServer::host = host;
 }
 
-bool
-VirtualServer::isContainServerName(const std::string& serverName) const {
+bool VirtualServer::isContainServerName(const std::string& serverName) const {
 
-	const std::vector<std::string>::const_iterator it = std::find(
-			serverNames.begin(),
-			serverNames.end(),
-			serverName);
+	const std::vector<std::string>::const_iterator it = std::find(serverNames.begin(),
+																  serverNames.end(), serverName);
 	if (it == serverNames.end())
 		return false;
 	return true;

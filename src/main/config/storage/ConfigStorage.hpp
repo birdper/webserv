@@ -7,7 +7,7 @@
 #include "VirtualServer.hpp"
 #include "SettingTypes.hpp"
 
-class SettingsStorage {
+class ConfigStorage {
 
 private:
 	MapHostVectorVirtualServers virtualServers;

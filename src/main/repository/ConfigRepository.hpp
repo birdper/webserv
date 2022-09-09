@@ -7,7 +7,7 @@
 #include <iostream>
 #include "Config.hpp"
 
-class SettingsRepository {
+class ConfigRepository {
 
 public:
 	virtual Config* getConfig(const std::string& uriRequest,

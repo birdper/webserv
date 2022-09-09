@@ -5,8 +5,10 @@ set(CMAKE_CXX_STANDARD 98)
 set(PROJECT_NAME main)
 
 add_library(${PROJECT_NAME} SHARED
-        domain
-        data
+        util
+        exception
+        model
+        config
         parser
         interacts
         server
@@ -16,27 +18,33 @@ add_executable(webserv
         main.cpp
         )
 
-add_subdirectory(domain)
-add_subdirectory(data)
+add_subdirectory(util)
+add_subdirectory(exception)
+add_subdirectory(model)
+add_subdirectory(config)
 add_subdirectory(parser)
 add_subdirectory(interacts)
 add_subdirectory(server)
 
 target_link_libraries(${PROJECT_NAME} PUBLIC
-        domain
-        data
+        util
+        exception
+        model
+        config
         parser
         interacts
         server
         )
 
 target_include_directories(${PROJECT_NAME} PUBLIC
-        domain/model
-        domain/repository
-        data/model
-        data/repository
-        data/storage
-        data/types
+        util
+        exception
+        model
+        repository
+        config/model
+        config/repository
+        config/storage
+        config/types
         parser
         interacts
         server

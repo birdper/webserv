@@ -2,14 +2,14 @@
 // Created by nbirdper on 06.02.2022.
 //
 
-#include "SettingsStorage.hpp"
+#include "ConfigStorage.hpp"
 
-void SettingsStorage::setVirtualServers(MapHostVectorVirtualServers* virtualServers) {
-	SettingsStorage::virtualServers = *virtualServers;
+void ConfigStorage::setVirtualServers(MapHostVectorVirtualServers* virtualServers) {
+	ConfigStorage::virtualServers = *virtualServers;
 }
 
-void SettingsStorage::addVirtualServerByHost(const std::string& host,
-											 VirtualServer* server) {
+void ConfigStorage::addVirtualServerByHost(const std::string& host,
+										   VirtualServer* server) {
 	server->setHost(host);
 	MapHostVectorVirtualServers::iterator it = virtualServers.find(host);
 	if (it == virtualServers.end()) {
@@ -19,20 +19,20 @@ void SettingsStorage::addVirtualServerByHost(const std::string& host,
 	}
 }
 
-void SettingsStorage::addLocation(const std::string& uri,
-								  const VirtualServer* server) {
+void ConfigStorage::addLocation(const std::string& uri,
+								const VirtualServer* server) {
 
 }
 
-VirtualServer& SettingsStorage::findVirtualServer(const std::string& host,
-												  const std::string& serverName) const {
+VirtualServer& ConfigStorage::findVirtualServer(const std::string& host,
+												const std::string& serverName) const {
 
 	const std::vector<VirtualServer*>* servers = getVirtualServersByHost(host);
 	return getVirtualServerByNameOrDefault(*servers, serverName);
 }
 
 const std::vector<VirtualServer*>*
-SettingsStorage::getVirtualServersByHost(const std::string& host) const {
+ConfigStorage::getVirtualServersByHost(const std::string& host) const {
 	MapHostVectorVirtualServers::const_iterator it = virtualServers.find(host);
 	if (it == virtualServers.end()) {
 		return nullptr;
@@ -40,7 +40,7 @@ SettingsStorage::getVirtualServersByHost(const std::string& host) const {
 	return &it->second;
 }
 
-VirtualServer& SettingsStorage::getVirtualServerByNameOrDefault(
+VirtualServer& ConfigStorage::getVirtualServerByNameOrDefault(
 		const std::vector<VirtualServer*>& servers,
 		const std::string& serverName) const {
 
@@ -57,6 +57,6 @@ VirtualServer& SettingsStorage::getVirtualServerByNameOrDefault(
 	return *foundVirtualServer;
 }
 
-const MapHostVectorVirtualServers& SettingsStorage::getVirtualServers() const {
+const MapHostVectorVirtualServers& ConfigStorage::getVirtualServers() const {
 	return virtualServers;
 }

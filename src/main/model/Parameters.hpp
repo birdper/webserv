@@ -26,7 +26,7 @@ public:
 	std::string redirect;
 	std::string pathCGI;
 	std::string extensionCGI;
-	std::string clientMaxBody;
+	std::string clientMaxBodySize;
 
 	MapErrorPagePaths errorPagePaths;
 	std::vector<std::string> indexFiles;

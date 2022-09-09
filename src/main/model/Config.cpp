@@ -57,18 +57,29 @@ const std::string& Config::getExtensionCGI() const {
 }
 
 const std::string& Config::getClientMaxBody() const {
-	return parameters->clientMaxBody;
+	return parameters->clientMaxBodySize;
 }
 
-const std::string&
-Config::getPathErrorPage(const std::string& errorCode) const {
+const std::string& Config::getErrorPageRelativePath(const std::string& errorCode) const {
 	Parameters::MapErrorPagePaths::iterator it =
 			parameters->errorPagePaths.find(errorCode);
-	if (it == parameters->errorPagePaths.end())
-		return *new std::string("");
+	if (it == parameters->errorPagePaths.end()) {
+		throw ErrorPagePathNotFoundException(errorCode);
+//		return nullptr;
+	}
 	return it->second;
 }
 
-const std::vector<std::string>& Config::getIndexFiles() const {
+std::string Config::getPathErrorPageWithRoot(const std::string& errorCode) {
+		std::string path = getErrorPageRelativePath(errorCode);
+		if (path.at(0) == '/') {
+			return getRoot() + path;
+		}
+		else {
+			return getRoot() + getUri() + path;
+		}
+}
+
+std::vector<std::string>& Config::getIndexFiles() const {
 	return parameters->indexFiles;
 }
