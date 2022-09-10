@@ -13,6 +13,8 @@ public:
 	virtual Config* getConfig(const std::string& uriRequest,
 					  const std::string& host,
 					  const std::string& serverName) const = 0;
+
+    virtual std::vector< std::pair<std::string, int> > getHosts() const = 0;
 };
 
 

@@ -60,3 +60,10 @@ VirtualServer& ConfigStorage::getVirtualServerByNameOrDefault(
 const MapHostVectorVirtualServers& ConfigStorage::getVirtualServers() const {
 	return virtualServers;
 }
+
+void ConfigStorage::getVirtualServs() {
+	std::vector<VirtualServer> values;
+	for (MapHostVectorVirtualServers::iterator it = virtualServers.begin(); it != virtualServers.end(); ++it) {
+//		values.push_back(it->second);
+	}
+}

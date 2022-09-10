@@ -15,18 +15,20 @@ private:
 public:
 	explicit ConfigRepositoryImpl(ConfigStorage* storage);
 
-	std::vector<std::string> getHostsVirtualServers() const;
+    std::vector<std::pair<std::string, int> > getHosts() const;
 
-	Config* getConfig(const std::string& uriRequest,
+    std::vector<std::string> getHostsVirtualServers() const;
+
+	Config* getConfig(const std::string& requestUri,
 					  const std::string& host,
 					  const std::string& serverName) const;
 
 private:
 	Location* findLocationByUri(std::vector<Location*>& locations,
-								const std::string& uriRequest) const;
+								const std::string& requestUri) const;
 
-	size_t getLengthMatch(const std::string& uriLocation,
-						  const std::string& uriRequest) const;
+	size_t getLengthMatch(const std::string& locationUri,
+						  const std::string& requestUri) const;
 };
 
 

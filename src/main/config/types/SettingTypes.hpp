@@ -8,4 +8,8 @@
 #include <vector>
 #include "VirtualServer.hpp"
 
+/**
+ * @key: host
+ * @value: vector of VirtualServer
+ */
 typedef std::map<std::string, std::vector<VirtualServer*> > MapHostVectorVirtualServers;

@@ -14,6 +14,7 @@ private:
 
 public:
 	const MapHostVectorVirtualServers& getVirtualServers() const;
+	void getVirtualServs();
 
 	void addVirtualServerByHost(const std::string& host,
 								VirtualServer* server);
