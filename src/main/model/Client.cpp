@@ -1,23 +1,19 @@
 #include "Client.hpp"
 
+
+/*
 Client::Client(int socketDescriptor,
 			   int* listenSocketDescriptor,
 			   const sockaddr_in& clientAddress) :
 		socketDescriptor(socketDescriptor),
 		listenSocketDescriptor(listenSocketDescriptor),
 		clientAddress(clientAddress) {}
+*/
+
+Client::Client(int socketDescriptor) : socketDescriptor(socketDescriptor) {}
 
 Client::~Client() {
-	clearSendQueue();
-}
-
-void Client::refresh() {
-/*	delete request;
-	delete response;
-	request = new Request();
-	response = new Response();
- */
-	setStatus(Readable);
+    clearSendQueue();
 }
 
 void Client::addToSendQueue(std::string* item) {
@@ -50,21 +46,9 @@ void Client::clearSendQueue() {
 	}
 }
 
-Client::Status Client::getStatus() const {
-	return status;
-}
-
-void Client::setStatus(Status status) {
-	this->status = status;
-}
-
 int Client::getSocketDescriptor() const {
 	return socketDescriptor;
 }
-
-//void WebClient::setSocketDescriptor(int socketDescriptor) {
-//	WebClient::socketDescriptor = socketDescriptor;
-//}
 
 const std::string& Client::getBuffer() const {
 	return buffer;
@@ -74,10 +58,10 @@ void Client::setBuffer(const std::string& buffer) {
 	Client::buffer = buffer;
 }
 
-int Client::getHostPort() const {
+/*int Client::getHostPort() const {
 	sockaddr_in address;
 	getsockname(*listenSocketDescriptor,
 				(sockaddr*)&address,
 				(socklen_t*)sizeof(address));
 	return address.sin_port;
-}
+}*/

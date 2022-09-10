@@ -6,18 +6,19 @@
 Server::Server(RequestParser& requestParser,
 			   RequestHandler& requestHandler,
 			   ConfigRepository& settingsRepository) :
-		requestParser(requestParser),
-		requestHandler(requestHandler),
-		settingsRepository(settingsRepository) {}
+        requestParser(requestParser),
+        requestHandler(requestHandler),
+        configRepository(settingsRepository) {}
 
-void Server::initSockets(std::vector<int>& hosts) {
+void Server::initSockets() {
 	Socket socket;
+
+    std::vector< std::pair<std::string, int> > hosts = configRepository.getHosts();
 	for (size_t i = 0; i < hosts.size(); ++i) {
-		int socketDescriptor = socket.init(hosts[i]);
-/** Добавляем созданный слушающий сокет в */
+		int socketDescriptor = socket.init(hosts[i].first, hosts[i].second);
 		pollFds.push_back(initPollFd(socketDescriptor, POLLIN));
 	}
-	countListenSockets = pollFds.size();
+	countListenSockets = hosts.size();
 }
 
 struct pollfd Server::initPollFd(int socketDescriptor, short eventTypes) {
@@ -31,7 +32,9 @@ struct pollfd Server::initPollFd(int socketDescriptor, short eventTypes) {
 #pragma clang diagnostic push
 #pragma ide diagnostic ignored "EndlessLoop"
 
-void Server::mainLoop() {
+void Server::run() {
+    initSockets();
+
 	while (true) {
 		polling();
 		handleEvents();
@@ -53,59 +56,54 @@ void Server::handleEvents() {
 //	Check listening sockets
 // TODO Если не рабоатет то, возможно, нужно объединить в один цикл
 	for (int i = 0; i < countListenSockets; ++i) {
-		pollfd& pollfd = pollFds[i];
-		if (pollfd.revents != NoEvents && pollfd.events == POLLIN) {
-			acceptClient(pollfd);
+		pollfd& listenSocket = pollFds[i];
+		if (listenSocket.revents & POLLIN) {
+			acceptClient(listenSocket);
 		}
 	}
 //	Check clients
 	for (size_t i = countListenSockets; i < pollFds.size(); ++i) {
-		pollfd& pollfd = pollFds[i];
+		pollfd& clientSocket = pollFds[i];
 
-		if (pollfd.revents == NoEvents)
+		if (clientSocket.revents == NoEvents)
 			continue;
 
 		Client* client = clientRepository.findBySocketDescriptor(pollFds[i].fd);
-		if (pollfd.revents & POLLHUP) {
-			disconnectClient(client, true);
-			pollFds.erase(pollFds.begin() + i);
-		}
-		else if (pollfd.revents & POLLIN) {
+		if (clientSocket.revents & POLLIN) {
 			readClient(client);
+            clientSocket.revents = 0;
 		}
-		else if (pollfd.revents & POLLOUT) {
+		if (clientSocket.revents & POLLOUT) {
 			writeClient(client);
-		}
+            clientSocket.revents = 0;
+        }
+        if (clientSocket.revents & POLLHUP) {
+            disconnectClient(client, true);
+            pollFds.erase(pollFds.begin() + i);
+        }
 	}
 }
 
-void Server::acceptClient(pollfd& pollFd) {
-	sockaddr_in clientAddress;
-	int addressLength = sizeof(clientAddress);
-//	for (int i = 0; i < pollFds.size(); ++i) {
-//		int clientFd = accept(pollFds[i].fd, nullptr, nullptr);
-		int clientFd = accept(pollFd.fd,
-							  (sockaddr*)&clientAddress,
-							  (socklen_t*)&addressLength);
-		if (clientFd <= 0) {
+void Server::acceptClient(pollfd& listenSocket) {
+		int clientSocketDescriptor = accept(listenSocket.fd, nullptr, nullptr);
+		if (clientSocketDescriptor <= 0) {
 			return;
-//			break;
 		}
-		fcntl(clientFd, F_SETFL, O_NONBLOCK);
-		pollFds.push_back(initPollFd(clientFd, POLLIN | POLLOUT | POLLHUP));
+		fcntl(clientSocketDescriptor, F_SETFL, O_NONBLOCK);
+		pollFds.push_back(initPollFd(clientSocketDescriptor, POLLIN | POLLOUT | POLLHUP));
 
-		Client* client = new Client(clientFd, &pollFd.fd, clientAddress);
+		Client* client = new Client(clientSocketDescriptor);
 		clientRepository.addClient(client);
-//	}
 }
 
 void Server::disconnectClient(Client* client, bool isRemoveClient) {
 	if (client == nullptr)
 		return;
+    std::cout << "Разъединяем клиента" << std::endl;
 //	std::cout << "[" << client->getClientIP() << "] has opted to close the connection" << std::endl;
+// TODO должны закрыть pollfd клиента. И удалить из vector pollfds это делается снаружи при обработке POLLHUP
 	close(client->getSocketDescriptor());
-//	delete client->getResponse();
-//	delete client->getRequest();
+    client->clear();
 	if (isRemoveClient)
 		clientRepository.removeBySocketDescriptor(client->getSocketDescriptor());
 	delete client;
@@ -122,18 +120,24 @@ bool Server::readClient(Client* client) {
 								  MsgNoFlag);
 
 	if (bytesReadCount < 0) {
+//        ERROR
 		return false;
 	}
+    if (bytesReadCount == 0) {
+//        Timeout
+        return false;
+    }
 	if (bytesReadCount > 0) {
+        std::cout << "read from client: " << buffer.data() << std::endl;
 //		checkBuffer();
 //		TODO передача в parse() vector?
-		Request* request = requestParser.parse(buffer.data());
+//		Request* request = requestParser.parse(buffer.data());
 
-		Config* config = settingsRepository.getConfig(request->getUri(),
-									 std::to_string(client->getHostPort()),
-									 request->findHeaderByName("Host"));
+//		Config* config = configRepository.getConfig(request->getUri(),
+//                                                    std::to_string(client->getHostPort()),
+//                                                    request->findHeaderByName("Host"));
 
-		Response response = requestHandler.handle(*request, *config);
+//		Response response = requestHandler.handle(*request, *config);
 
 //		delete request;
 	}
@@ -142,6 +146,7 @@ bool Server::readClient(Client* client) {
 
 bool Server::writeClient(Client* client) {
 //	TODO check null?
+    std::cout << "Тут мы пишем" << std::endl;
 //	if (!client)
 //		return false;
 

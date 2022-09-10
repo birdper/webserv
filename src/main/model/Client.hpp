@@ -7,19 +7,8 @@
 #include "Request.hpp"
 
 class Client {
-public:
-	enum Status {
-		Readable,
-		Writing,
-		Close
-	};
-
 private:
 	int socketDescriptor;
-	int *listenSocketDescriptor;
-//	TODO clientAddress necessary?
-	sockaddr_in clientAddress;
-	Status status;
 
 	Request* request;
 	Response* response;
@@ -28,11 +17,11 @@ private:
 	std::queue<std::string*> sendQueue;
 
 public:
-	Client(int socketDescriptor, int* listenSocketDescriptor, const sockaddr_in& clientAddress);
+	/*Client(int socketDescriptor, int* listenSocketDescriptor, const sockaddr_in& clientAddress)*/;
 
-	virtual ~Client();
+    Client(int socketDescriptor);
 
-	void refresh(); // TODO ?
+    virtual ~Client();
 
 	void addToSendQueue(std::string* item);
 	unsigned int sendQueueSize();
@@ -40,10 +29,9 @@ public:
 	void dequeueFromSendQueue();
 	void clearSendQueue();
 	int getSocketDescriptor() const;
-//	void setSocketDescriptor(int socketDescriptor);
-	Status getStatus() const;
-	void setStatus(Status status);
-	const std::string& getBuffer() const;
+
+    const std::string& getBuffer() const;
 	void setBuffer(const std::string& buffer);
-	int getHostPort() const;
+    void clear();
+	/*int getHostPort() const;*/
 };

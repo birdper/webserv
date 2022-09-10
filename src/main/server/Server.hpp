@@ -18,11 +18,9 @@
 class Server {
 
 private:
-	typedef unsigned char byte;
-
 	RequestParser& requestParser;
 	RequestHandler& requestHandler;
-	ConfigRepository& settingsRepository;
+	ConfigRepository& configRepository;
 	ClientRepository clientRepository;
 
 	int countListenSockets;
@@ -34,14 +32,14 @@ public:
 		   RequestHandler& requestHandler,
 		   ConfigRepository& settingsRepository);
 
-	void initSockets(std::vector<int>& hosts);
-	void mainLoop();
+	void initSockets();
+	void run();
 
 private:
 	struct pollfd initPollFd(int socketDescriptor, short eventTypes);
 
 	void polling();
-	void acceptClient(pollfd& pollFd);
+	void acceptClient(pollfd& listenSocket);
 
 	void handleEvents();
 

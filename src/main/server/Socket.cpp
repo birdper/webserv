@@ -1,13 +1,12 @@
 
 
-#include <arpa/inet.h>
 #include "Socket.hpp"
 
-int Socket::init(int listenPort, in_addr_t ip) {
-	createSocket();
+int Socket::init(const std::string& ip, int listenPort) {
+    openSocket();
 	setNonblockMode();
 
-	struct sockaddr_in address = initAddress(listenPort, ip);
+    struct sockaddr_in address = initAddress(listenPort, inet_addr(ip.c_str()));
 	bindToAddress(address);
 
 	setAddressReuseMode();
@@ -16,9 +15,9 @@ int Socket::init(int listenPort, in_addr_t ip) {
 	return socketDescriptor;
 }
 
-void Socket::createSocket() {
+void Socket::openSocket() {
 	socketDescriptor = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
-	checkError(socketDescriptor, "createSocket()");
+	checkError(socketDescriptor, "openSocket()");
 }
 
 void Socket::checkError(int result, const std::string& nameFunFromError) {
