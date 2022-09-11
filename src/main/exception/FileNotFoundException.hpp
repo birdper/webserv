@@ -5,9 +5,9 @@
 
 class FileNotFoundException : public std::exception {
 private:
-	std::string& fileName;
+	const std::string& fileName;
 public:
-	explicit FileNotFoundException(std::string& fileName);
+	explicit FileNotFoundException(const std::string &fileName);
 	const char* what() const throw();
 };
 

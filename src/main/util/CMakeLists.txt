@@ -1,9 +1,13 @@
 
 set(CMAKE_CXX_STANDARD 98)
 
-set(PROJECT_NAME util)
+set(MODULE_NAME util)
 
-add_library(${PROJECT_NAME}
+add_library(${MODULE_NAME}
         FileReader.hpp FileReader.cpp
         Utils.hpp Utils.cpp
+        )
+
+include_directories(${MODULE_NAME} PUBLIC
+        ../exception
         )
