@@ -69,4 +69,10 @@ size_t ConfigRepositoryImpl::getLengthMatch(const std::string& locationUri,
 std::vector< std::pair<std::string, int> > ConfigRepositoryImpl::getHosts() const {
     std::vector< std::pair<std::string, int> > hosts;
 
+    std::vector<VirtualServer*> servs = storage->getVirtualServs();
+    std::cout << "serv size " << servs.size() << std::endl;
+    for (int i = 0; i < servs.size(); ++i) {
+        hosts.push_back(std::make_pair(servs[i]->getIp(), servs[i]->getPort()));
+    }
+    return hosts;
 }

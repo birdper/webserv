@@ -15,8 +15,9 @@ void Server::initSockets() {
 
     std::vector< std::pair<std::string, int> > hosts = configRepository.getHosts();
 	for (size_t i = 0; i < hosts.size(); ++i) {
-		int socketDescriptor = socket.init(hosts[i].first, hosts[i].second);
+        int socketDescriptor = socket.init(hosts[i].first, hosts[i].second);
 		pollFds.push_back(initPollFd(socketDescriptor, POLLIN));
+        std::cout << "Listening socket start on " << hosts[i].first << ":" << hosts[i].second << std::endl;
 	}
 	countListenSockets = hosts.size();
 }
@@ -147,6 +148,18 @@ bool Server::readClient(Client* client) {
 bool Server::writeClient(Client* client) {
 //	TODO check null?
     std::cout << "Тут мы пишем" << std::endl;
+    std::string buffer = "HTTP/1.1 200 OK\n"
+                         "Content-Length: 88\n"
+                         "Connection: close\r\n"
+                         "\r\n"
+                         "<html>\n"
+                         "<body>\n"
+                         "<h1>Hello, World!</h1>\n"
+                         "</body>\n"
+                         "</html>";
+
+    ssize_t countSendBytes = send(client->getSocketDescriptor(), buffer.c_str(), buffer.size(),
+                                  MsgNoFlag);
 //	if (!client)
 //		return false;
 

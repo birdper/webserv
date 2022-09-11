@@ -52,8 +52,9 @@ void ConfigParser::parseConfig(const std::string &inputString,
                 break;
             case LISTEN:
                 parseListen(token.content, *currentServer);
-//                TODO изменить добавление сервера в storage
-                storage->addVirtualServerByHost(token.content, currentServer);
+                storage->addVirtualServerByHost(currentServer->getIp() + ":" + std::to_string(currentServer->getPort()),
+                                                currentServer);
+//                storage->addVirtualServerByHost(currentServer->getHost(), currentServer);
                 break;
             case AUTOINDEX:
                 if (token.content == "on") {
@@ -111,6 +112,8 @@ void ConfigParser::parseListen(const std::string &input, VirtualServer &virtualS
         virtualServer.setIp(ip);
         virtualServer.setPort(std::stoi(port));
     }
+//    TODO здесь сетится строкиа без 0.0.0.0
+    virtualServer.setHost(rtrim(input, " "));
 }
 
 bool ConfigParser::checkPort(const std::string &str) {

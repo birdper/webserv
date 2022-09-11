@@ -15,7 +15,7 @@ private:
 public:
 	explicit ConfigRepositoryImpl(ConfigStorage* storage);
 
-    std::vector<std::pair<std::string, int> > getHosts() const;
+    std::vector< std::pair<std::string, int> > getHosts() const;
 
     std::vector<std::string> getHostsVirtualServers() const;
 

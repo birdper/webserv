@@ -10,7 +10,7 @@ void ConfigStorage::setVirtualServers(MapHostVectorVirtualServers* virtualServer
 
 void ConfigStorage::addVirtualServerByHost(const std::string& host,
 										   VirtualServer* server) {
-	server->setHost(host);
+//	server->setHost(host);
 	MapHostVectorVirtualServers::iterator it = virtualServers.find(host);
 	if (it == virtualServers.end()) {
 		virtualServers[host].push_back(server);
@@ -61,9 +61,15 @@ const MapHostVectorVirtualServers& ConfigStorage::getVirtualServers() const {
 	return virtualServers;
 }
 
-void ConfigStorage::getVirtualServs() {
-	std::vector<VirtualServer> values;
+std::vector<VirtualServer *> ConfigStorage::getVirtualServs() {
+	std::vector<VirtualServer*> values;
+    std::cout << "getVirtServ()" << std::endl;
+
+    int i = 0;
 	for (MapHostVectorVirtualServers::iterator it = virtualServers.begin(); it != virtualServers.end(); ++it) {
-//		values.push_back(it->second);
+        std::cout << "virt iter " << i << std::endl;
+        ++i;
+		values.push_back(it->second[0]);
 	}
+    return values;
 }
