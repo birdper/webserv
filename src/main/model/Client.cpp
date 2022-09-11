@@ -58,6 +58,11 @@ void Client::setBuffer(const std::string& buffer) {
 	Client::buffer = buffer;
 }
 
+void Client::clear() {
+    delete (request);
+    delete (response);
+}
+
 /*int Client::getHostPort() const {
 	sockaddr_in address;
 	getsockname(*listenSocketDescriptor,

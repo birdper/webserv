@@ -72,14 +72,26 @@ int main(int argc, char *argv[]) {
 		std::cerr << "Incorrect config file" << std::endl;
 		exit(1);
 	}
-
-	RequestParser* requestParser;
-	RequestHandler* requestHandler;
-	Server server(*requestParser, *requestHandler);
 	*/
 
+
+    ConfigParser configParser;
+    ConfigStorage configStorage;
+    configParser.parseConfig(FileReader::readFile("config.conf"), &configStorage);
+
+    RequestParser* requestParser;
+    RequestHandler* requestHandler;
+    ConfigRepositoryImpl configRepository(&configStorage);
+    Server server(*requestParser, *requestHandler, configRepository);
+    server.run();
+
+//    Socket socket1;
+//    socket1.init("127.0.0.1", 7000);
+//    socket1.init("10.21.21.155", 7000);
+//    socket1.init("0.0.0.0", 7000);
+
 //	server.initSockets();
-//	server.mainLoop();
+//	server.run();
 
 	std::string input = "server {\n"
 						"        listen 8080;\n"
