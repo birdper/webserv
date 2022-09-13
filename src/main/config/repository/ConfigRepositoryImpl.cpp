@@ -69,10 +69,31 @@ size_t ConfigRepositoryImpl::getLengthMatch(const std::string& locationUri,
 std::vector< std::pair<std::string, int> > ConfigRepositoryImpl::getHosts() const {
     std::vector< std::pair<std::string, int> > hosts;
 
-    std::vector<VirtualServer*> servs = storage->getVirtualServs();
+/*    std::vector<VirtualServer*> servs = storage->getVirtualServs();
     std::cout << "serv size " << servs.size() << std::endl;
     for (int i = 0; i < servs.size(); ++i) {
         hosts.push_back(std::make_pair(servs[i]->getIp(), servs[i]->getPort()));
-    }
+    }*/
+
     return hosts;
+}
+
+std::vector< std::pair<std::string, int> > ConfigRepositoryImpl::getHostForBind() {
+    std::vector< std::pair<std::string, int> > sockets;
+    MapHostVectorVirtualServers allServers = storage->getVirtualServers();
+    for (MapHostVectorVirtualServers::iterator it = allServers.begin(); it != allServers.end(); ++it) {
+        std::vector<VirtualServer*> virtServers = it->second;
+        std::vector< std::pair<std::string, int> > tmp;
+        for (int i = 0; i < virtServers.size(); ++i) {
+            tmp.push_back(std::make_pair(virtServers[i]->getIp(),
+                                         virtServers[i]->getPort()));
+            if (virtServers[i]->getIp() == "0.0.0.0") {
+                sockets.push_back(std::make_pair(virtServers[i]->getIp(),
+                                                 virtServers[i]->getPort()));
+                break;
+            }
+        }
+        sockets.insert(sockets.end(), tmp.begin(), tmp.end());
+    }
+    return sockets;
 }

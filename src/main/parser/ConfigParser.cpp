@@ -99,21 +99,40 @@ void ConfigParser::parseConfig(const std::string &inputString,
 void ConfigParser::parseListen(const std::string &input, VirtualServer &virtualServer) {
     std::vector<std::string> vec = split(input, ":");
 
+    std::string ip;
+    std::string port;
+
+/*    switch (vec.size()) {
+        case 1:
+            ip = "0.0.0.0";
+            port = vec[0];
+            checkPort(port);
+            break;
+        case 2:
+            ip = vec[0];
+            port = vec[1];
+            checkIpAndPort(ip, port);
+            break;
+        default:
+            fatalError("Failed to parse listen directive");
+            break;
+    }*/
+
     if (vec.size() != 2 && vec.size() != 1) {
         fatalError("Failed to parse listen directive");
     } else if (vec.size() == 1) {
         checkPort(vec[0]);
-        virtualServer.setIp("0.0.0.0");
-        virtualServer.setPort(std::stoi(vec[0]));
+        ip = "0.0.0.0";
+        port = vec[0];
     } else {
-        std::string ip = vec[0];
-        std::string port = vec[1];
+        ip = vec[0];
+        port = vec[1];
         checkIpAndPort(ip, port);
-        virtualServer.setIp(ip);
-        virtualServer.setPort(std::stoi(port));
     }
-//    TODO здесь сетится строкиа без 0.0.0.0
-    virtualServer.setHost(rtrim(input, " "));
+
+    virtualServer.setIp(ip);
+    virtualServer.setPort(std::stoi(port));
+    virtualServer.setHost(ip + ":" + port);
 }
 
 bool ConfigParser::checkPort(const std::string &str) {
