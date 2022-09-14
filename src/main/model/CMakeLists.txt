@@ -18,6 +18,7 @@ add_library(${MODULE_NAME}
 
 target_include_directories(model PUBLIC
         ../exception
+        ../util
         )
 
 #include_directories(${MODULE_NAME} PUBLIC

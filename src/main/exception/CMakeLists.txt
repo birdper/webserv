@@ -5,5 +5,8 @@ set(MODULE_NAME exception)
 
 add_library(${MODULE_NAME}
         ErrorPagePathNotFoundException.hpp ErrorPagePathNotFoundException.cpp
-        FileNotFoundException.cpp FileNotFoundException.hpp)
+        FileNotFoundException.hpp FileNotFoundException.cpp
+        )
+
+#target_include_directories(${MODULE_NAME} PUBLIC ./)
 

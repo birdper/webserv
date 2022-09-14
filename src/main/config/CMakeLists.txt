@@ -14,6 +14,7 @@ add_library(${MODULE_NAME}
         )
 
 target_include_directories(${MODULE_NAME} PUBLIC
+        ../util
         model
         types
         storage

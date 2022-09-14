@@ -8,6 +8,10 @@ add_library(${MODULE_NAME}
         Utils.hpp Utils.cpp
         usings.hpp)
 
-include_directories(${MODULE_NAME} PUBLIC
+target_include_directories(${MODULE_NAME} PUBLIC
         ../exception
         )
+
+#include_directories(${MODULE_NAME} PUBLIC
+#        ../exception
+#        )

@@ -5,8 +5,8 @@ set(CMAKE_CXX_STANDARD 98)
 set(PROJECT_NAME main)
 
 add_library(${PROJECT_NAME} SHARED
-        util
         exception
+        util
         model
         config
         parser
@@ -18,8 +18,8 @@ add_executable(webserv
         main.cpp
         )
 
-add_subdirectory(util)
 add_subdirectory(exception)
+add_subdirectory(util)
 add_subdirectory(model)
 add_subdirectory(config)
 add_subdirectory(parser)
@@ -27,8 +27,8 @@ add_subdirectory(interacts)
 add_subdirectory(server)
 
 target_link_libraries(${PROJECT_NAME} PUBLIC
-        util
         exception
+        util
         model
         config
         parser
@@ -37,8 +37,8 @@ target_link_libraries(${PROJECT_NAME} PUBLIC
         )
 
 target_include_directories(${PROJECT_NAME} PUBLIC
-        util
         exception
+        util
         model
         repository
         config/model
