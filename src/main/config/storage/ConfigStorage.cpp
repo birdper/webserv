@@ -19,20 +19,20 @@ const MapHostVectorVirtualServers& ConfigStorage::getVirtualServers() const {
 }
 
 VirtualServer& ConfigStorage::findVirtualServer(const std::string& host,
-												const std::string& serverName) const {
+												const std::string& serverName) {
 
-	const std::vector<VirtualServer*>* servers = getVirtualServersByHost(host);
-	return getVirtualServerByNameOrDefault(*servers, serverName);
+	const std::vector<VirtualServer*> servers = getVirtualServersByPort(host);
+	return getVirtualServerByNameOrDefault(servers, serverName);
 }
 
-const std::vector<VirtualServer*>*
-ConfigStorage::getVirtualServersByHost(const std::string& host) const {
-	MapHostVectorVirtualServers::const_iterator it = virtualServers.find(host);
+std::vector<VirtualServer*>
+ConfigStorage::getVirtualServersByPort(const std::string& port) {
+	MapHostVectorVirtualServers::iterator it = virtualServers.find(port);
 
 	if (it == virtualServers.end()) {
-		return nullptr;
+		return std::vector<VirtualServer*>();
 	}
-	return &it->second;
+	return it->second;
 }
 
 VirtualServer& ConfigStorage::getVirtualServerByNameOrDefault(const std::vector<VirtualServer*>& servers,

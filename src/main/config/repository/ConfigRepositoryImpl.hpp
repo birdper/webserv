@@ -4,6 +4,7 @@
 
 #pragma once
 
+#include "usings.hpp"
 #include "SettingTypes.hpp"
 #include "ConfigStorage.hpp"
 #include "ConfigRepository.hpp"
@@ -15,17 +16,26 @@ private:
 public:
 	explicit ConfigRepositoryImpl(ConfigStorage* storage);
 
-	Config* getConfig(const std::string& requestUri,
-					  const std::string& host,
-					  const std::string& serverName) const;
-	std::vector<std::pair<std::string, int> > getHostsForBind() const;
+	std::vector<std::pair<string, int> > getHostsForBind() const;
+
+    VirtualServer& getServerConfig(const string& ip,
+                                   const string& port,
+                                   const string& serverName) const;
+
+	Config* findLocationConfigByUri(const VirtualServer& virtualServer,
+                              const string& requestUri) const;
+
+
+    /*Config* getConfig(const string& requestUri,
+					  const string& host,
+					  const string& serverName) const;*/
+
+//    Config* findLocationConfigByUri(const VirtualServer& virtualServer, const string& requestUri) const;
+
 
 private:
-
-	Location* findLocationByUri(std::vector<Location*>& locations,
-								const std::string& requestUri) const;
-	size_t getLengthMatch(const std::string& locationUri,
-						  const std::string& requestUri) const;
+	size_t getLengthMatch(const string& locationUri,
+						  const string& requestUri) const;
 	std::vector<VirtualServer*> getVirtualServersForBind() const;
 };
 

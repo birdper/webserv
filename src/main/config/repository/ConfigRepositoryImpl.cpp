@@ -5,30 +5,78 @@
 #include "ConfigRepositoryImpl.hpp"
 
 ConfigRepositoryImpl::ConfigRepositoryImpl(ConfigStorage* storage) :
-        storage(storage) {}
+        storage(storage) {
+}
 
-//	TODO fill description method
+std::vector<std::pair<std::string, int> > ConfigRepositoryImpl::getHostsForBind() const {
+    std::vector<std::pair<std::string, int> > hosts;
+    MapHostVectorVirtualServers allServers = storage->getVirtualServers();
+    for (MapHostVectorVirtualServers::iterator it = allServers.begin(); it != allServers.end(); ++it) {
+        VirtualServer* virtualServer = it->second[0];
+        hosts.push_back(std::make_pair(virtualServer->getIp(), virtualServer->getPort()));
+    }
+    return hosts;
+}
+
+std::vector<VirtualServer*> ConfigRepositoryImpl::getVirtualServersForBind() const {
+    std::vector<VirtualServer*> hosts;
+    MapHostVectorVirtualServers allServers = storage->getVirtualServers();
+    for (MapHostVectorVirtualServers::iterator it = allServers.begin(); it != allServers.end(); ++it) {
+        hosts.push_back(it->second[0]);
+    }
+    return hosts;
+}
+
+VirtualServer&
+ConfigRepositoryImpl::getServerConfig(const std::string& ip,
+                                      const std::string& port,
+                                      const std::string& serverName) const {
+
+    std::vector<VirtualServer*> serversByPort = storage->getVirtualServersByPort(port);
+
+    std::vector<VirtualServer*> serversSameIp;
+    for (int i = 0; i < serversByPort.size(); ++i) {
+        if (serversByPort[i]->getIp() == ip) {
+            serversSameIp.push_back(serversByPort[i]);
+        }
+    }
+    if (!serversSameIp.empty() && !serverName.empty()) {
+        for (int i = 0; i < serversSameIp.size(); ++i) {
+            if (serversSameIp[i]->isContainServerName(serverName))
+                return *serversSameIp[i];
+        }
+    }
+    return *serversSameIp[0];
+}
+
 /**
  * @param requestUri
  * @param host
  * @param serverName may be empty
  * @return Config instance or nullptr
  */
+
+/*
 Config* ConfigRepositoryImpl::getConfig(const std::string& requestUri, const std::string& host,
                                         const std::string& serverName) const {
 
     VirtualServer server = storage->findVirtualServer(host, serverName);
     std::vector<Location*> locations = server.getLocations();
-    Location* location = findLocationByUri(locations, requestUri);
+//    Location* location = findLocationByUri(locations, requestUri);
 
-    return location == nullptr ? nullptr
-                               : new Config(location->getParameters());
+//    return location == nullptr ? nullptr
+//                               : new Config(location->getParameters());
+    return nullptr;
 }
+*/
 
-Location* ConfigRepositoryImpl::findLocationByUri(std::vector<Location*>& locations,
-                                                  const std::string& requestUri) const {
-    Location* currentLocation;
+Config* ConfigRepositoryImpl::findLocationConfigByUri(const VirtualServer& virtualServer,
+                                                const string& requestUri) const {
+
+    const std::vector<Location*>& locations = virtualServer.getLocations();
+
     Location* mostLengthMatch;
+    Location* currentLocation;
     size_t maxLength = 0;
     for (int i = 0; i < locations.size(); ++i) {
         currentLocation = locations[i];
@@ -41,7 +89,7 @@ Location* ConfigRepositoryImpl::findLocationByUri(std::vector<Location*>& locati
         }
     }
     if (maxLength)
-        return mostLengthMatch;
+        return new Config(mostLengthMatch->getParameters());
     return nullptr;
 }
 
@@ -55,21 +103,8 @@ size_t ConfigRepositoryImpl::getLengthMatch(const std::string& locationUri,
     return length;
 }
 
-std::vector<std::pair<std::string, int> > ConfigRepositoryImpl::getHostsForBind() const {
-    std::vector<std::pair<std::string, int> > hosts;
-    MapHostVectorVirtualServers allServers = storage->getVirtualServers();
-	for (MapHostVectorVirtualServers::iterator it = allServers.begin(); it != allServers.end(); ++it) {
-		VirtualServer* virtualServer = it->second[0];
-		hosts.push_back(std::make_pair(virtualServer->getIp(), virtualServer->getPort()));
-	}
-    return hosts;
-}
-
-std::vector<VirtualServer*> ConfigRepositoryImpl::getVirtualServersForBind() const {
-    std::vector<VirtualServer*> hosts;
-    MapHostVectorVirtualServers allServers = storage->getVirtualServers();
-    for (MapHostVectorVirtualServers::iterator it = allServers.begin(); it != allServers.end(); ++it) {
-		hosts.push_back(it->second[0]);
-    }
-    return hosts;
-}
+/*Config*
+ConfigRepositoryImpl::findLocationConfigByUri(const VirtualServer& virtualServer, const std::string& requestUri) const {
+    findLocationByUri(virtualServer.getLocations(), requestUri);
+    return NULL;
+}*/

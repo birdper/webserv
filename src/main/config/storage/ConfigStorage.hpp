@@ -17,11 +17,10 @@ public:
 								VirtualServer* server);
 	const MapHostVectorVirtualServers& getVirtualServers() const;
 	VirtualServer& findVirtualServer(const std::string& host,
-									 const std::string& serverName) const;
+									 const std::string& serverName);
 
+    std::vector<VirtualServer*> getVirtualServersByPort(const std::string& port);
 private:
-	const std::vector<VirtualServer*>* getVirtualServersByHost(
-			const std::string& host) const;
 
 	VirtualServer&
 	getVirtualServerByNameOrDefault(const std::vector<VirtualServer*>& servers,
