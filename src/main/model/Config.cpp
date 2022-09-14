@@ -7,6 +7,11 @@
 Config::Config(Parameters* parameters) :
 		parameters(parameters) {}
 
+Config::Config(Parameters* parameters, bool isLocation) :
+        parameters(parameters),
+        _isLocationConfig(isLocation) {
+}
+
 bool Config::isMethodAllowed(HttpMethod method) const {
 	std::vector<HttpMethod>::iterator it = std::find(parameters->forbiddenMethods.begin(),
 													 parameters->forbiddenMethods.end(),
@@ -82,4 +87,8 @@ std::string Config::getPathErrorPageWithRoot(const std::string& errorCode) {
 
 std::vector<std::string>& Config::getIndexFiles() const {
 	return parameters->indexFiles;
+}
+
+bool Config::isLocationConfig() const {
+    return _isLocationConfig;
 }

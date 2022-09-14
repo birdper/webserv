@@ -3,12 +3,16 @@
 #include <iostream>
 #include <netinet/in.h>
 #include <queue>
+#include "usings.hpp"
 #include "Response.hpp"
 #include "Request.hpp"
 
+class Socket;
+
 class Client {
 private:
-	int socketDescriptor;
+    int socketDescriptor;
+    int listenSocketDescriptor;
 
 	Request* request;
 	Response* response;
@@ -19,19 +23,21 @@ private:
 public:
 	/*Client(int socketDescriptor, int* listenSocketDescriptor, const sockaddr_in& clientAddress)*/;
 
-    Client(int socketDescriptor);
-
+    explicit Client(int socketDescriptor);
+    Client(int socketDescriptor, int listenSocketDescriptor);
     virtual ~Client();
 
-	void addToSendQueue(std::string* item);
+	int getSocketDescriptor() const;
+    int getListenSocketDescriptor() const;
+
+    void addToSendQueue(std::string* item);
 	unsigned int sendQueueSize();
-	std::string* nextInSendQueue();
+    std::string* nextInSendQueue();
 	void dequeueFromSendQueue();
 	void clearSendQueue();
-	int getSocketDescriptor() const;
 
     const std::string& getBuffer() const;
 	void setBuffer(const std::string& buffer);
+
     void clear();
-	/*int getHostPort() const;*/
 };

@@ -40,3 +40,7 @@ const std::string& Response::getBody() const {
 void Response::setBody(const std::string& body) {
 	Response::body = body;
 }
+
+Response::~Response() {
+
+}

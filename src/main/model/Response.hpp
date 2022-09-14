@@ -16,8 +16,9 @@ private:
 
 public:
 	std:: string& serialize();
+    virtual ~Response();
 
-	const std::string& getReason() const;
+    const std::string& getReason() const;
 	void setReason(const std::string& reason);
 	const std::string& getStatusCode() const;
 	void setStatusCode(const std::string& statusCode);

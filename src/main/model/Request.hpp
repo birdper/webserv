@@ -8,6 +8,7 @@ class Request {
 private:
 	bool isBadStatus;
 	HttpMethod method;
+    std::string httpMethodString;
 	std::string uri;
 	std::string httpVersion;
 	std::map<std::string, std::string> headers;
@@ -16,14 +17,17 @@ public:
 	Request();
 	Request(const Request&);
 	Request& operator=(const Request&);
+    virtual ~Request();
 
-	bool isBadRequest() const;
+    bool isBadRequest() const;
 	void setBadStatus();
 
-	HttpMethod getMethod() const;
+	HttpMethod getHttpMethod() const;
+	const std::string& getHttpMethodString() const;
 	void setMethod(HttpMethod method);
+    void setHttpMethodString(const std::string& httpMethodString);
 
-	void setUri(const std::string& requestUri);
+    void setUri(const std::string& requestUri);
 	const std::string& getUri() const;
 
 	const std::string& getHttpVersion() const;

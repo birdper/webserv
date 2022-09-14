@@ -10,18 +10,20 @@
 #include "../exception/ErrorPagePathNotFoundException.hpp"
 
 class Config {
-
 private:
 	Parameters* parameters;
+    bool _isLocationConfig;
 
 public:
-	Config(Parameters* parameters);
+	explicit Config(Parameters* parameters);
+    explicit Config(Parameters* parameters, bool isLocation);
 
-	bool isMethodAllowed(HttpMethod method) const;
+    bool isMethodAllowed(HttpMethod method) const;
 	bool isAutoindexEnabled() const;
 	bool isUploadEnabled() const;
+    bool isLocationConfig() const;
 
-	const std::string& getIp() const;
+    const std::string& getIp() const;
 	const std::string& getPort() const;
 	const std::string& getServerName() const;
 	const std::string& getUri() const;

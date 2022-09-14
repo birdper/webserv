@@ -1,5 +1,23 @@
 #include "Request.hpp"
 
+Request::Request() {
+}
+
+Request::Request(const Request& other) :
+        isBadStatus(other.isBadStatus),
+        method(other.method),
+        uri(other.uri),
+        httpVersion(other.httpVersion) {
+}
+
+Request& Request::operator=(const Request&) {
+    return *this;
+}
+
+Request::~Request() {
+
+}
+
 bool Request::isBadRequest() const {
 	return isBadStatus;
 }
@@ -8,7 +26,7 @@ void Request::setBadStatus() {
 	Request::isBadStatus = true;
 }
 
-HttpMethod Request::getMethod() const {
+HttpMethod Request::getHttpMethod() const {
 	return method;
 }
 
@@ -40,26 +58,19 @@ void Request::setHeaders(const std::map<std::string, std::string>& headers) {
 	Request::headers = headers;
 }
 
-Request::Request(const Request& other) :
-		isBadStatus(other.isBadStatus),
-		method(other.method),
-		uri(other.uri),
-		httpVersion(other.httpVersion) {
-}
-
-Request& Request::operator=(const Request&) {
-	return *this;
-}
-
-Request::Request() {
-
-}
-
 const std::string& Request::findHeaderByName(const std::string& headerName) const {
 	std::map<std::string, std::string>::const_iterator it = headers.find(headerName);
 	if (it == headers.end())
 		return *new std::string("");
 	return it->second;
+}
+
+const std::string& Request::getHttpMethodString() const {
+    return httpMethodString;
+}
+
+void Request::setHttpMethodString(const std::string& httpMethodString) {
+    this->httpMethodString = httpMethodString;
 }
 
 
