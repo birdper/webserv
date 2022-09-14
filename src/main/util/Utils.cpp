@@ -42,3 +42,7 @@ time_t Utils::getFileModificationDate(const std::string& pathToFile) {
 	struct stat file;
 	return (stat(pathToFile.c_str(), &file) != -1) ? file.st_mtime : -1;
 }
+
+void Utils::printStatus(const string& message) {
+    cout << Utils::getCurrentTimestamp(true) << ": " << message << endl;
+}

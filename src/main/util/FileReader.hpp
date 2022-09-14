@@ -1,8 +1,9 @@
-#ifndef FILEREADER_HPP
-#define FILEREADER_HPP
+#pragma once
 
 #include <iostream>
 #include <fstream>
+#include "../exception/FileNotFoundException.hpp"
+
 
 class FileReader {
 public:
@@ -13,5 +14,3 @@ public:
 
     std::string readFile2(const std::string &fileName);
 };
-
-#endif

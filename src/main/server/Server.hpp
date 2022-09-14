@@ -6,17 +6,17 @@
 #include <unistd.h>
 #include <arpa/inet.h>
 
+#include "usings.hpp"
 #include "Constants.hpp"
 #include "Socket.hpp"
 #include "RequestHandler.hpp"
 #include "RequestParser.hpp"
-#include "ClientRepository.hpp"
-#include "ConfigRepository.hpp"
 #include "Client.hpp"
 #include "Request.hpp"
 #include "Response.hpp"
 #include "VirtualServer.hpp"
-#include "usings.hpp"
+#include "ClientRepository.hpp"
+#include "ConfigRepository.hpp"
 
 
 class Server {
@@ -30,6 +30,7 @@ private:
 	int countListenSockets;
 	std::vector<struct pollfd> pollFds;
 	static const int BUFFER_SIZE = 1024;
+    std::map<int, Socket*> listenSockets;
 
 public:
 	Server(RequestParser& requestParser,
@@ -51,6 +52,6 @@ private:
 	short writeClient(Client* client);
 
 	void disconnectClient(Client* client, bool isRemoveClient);
-	void printStatus(const string& message) const;
+    Config& findConfig(const Client* client, const Request* request);
 };
 
