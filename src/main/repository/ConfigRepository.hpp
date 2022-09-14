@@ -14,7 +14,7 @@ public:
 					  const std::string& host,
 					  const std::string& serverName) const = 0;
 
-    virtual std::vector< std::pair<std::string, int> > getHosts() const = 0;
+    virtual std::vector<std::pair<std::string, int> > getHostsForBind() const = 0;
 };
 
 

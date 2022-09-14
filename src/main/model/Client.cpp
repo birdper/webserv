@@ -13,7 +13,12 @@ Client::Client(int socketDescriptor,
 Client::Client(int socketDescriptor) : socketDescriptor(socketDescriptor) {}
 
 Client::~Client() {
-    clearSendQueue();
+	std::cout << "--- call destructor Client" << std::endl;
+//	TODO из-за этих методов сега
+//	clear();
+//    clearSendQueue();
+	std::cout << "--- Client destructed" << std::endl;
+
 }
 
 void Client::addToSendQueue(std::string* item) {

@@ -6,7 +6,7 @@ set(MODULE_NAME util)
 add_library(${MODULE_NAME}
         FileReader.hpp FileReader.cpp
         Utils.hpp Utils.cpp
-        )
+        usings.hpp)
 
 include_directories(${MODULE_NAME} PUBLIC
         ../exception

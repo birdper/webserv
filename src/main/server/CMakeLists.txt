@@ -10,7 +10,8 @@ add_library(${PROJECT_NAME}
         ClientRepository.hpp ClientRepository.cpp
         )
 
-target_include_directories(${PROJECT_NAME} PRIVATE
+target_include_directories(${PROJECT_NAME} PUBLIC
+        ../util
         ../model
         ../repository
         ../config/repository

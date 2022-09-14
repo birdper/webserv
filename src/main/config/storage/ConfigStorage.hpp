@@ -13,23 +13,15 @@ private:
 	MapHostVectorVirtualServers virtualServers;
 
 public:
-	const MapHostVectorVirtualServers& getVirtualServers() const;
-	std::vector<VirtualServer *> getVirtualServs();
-
-	void addVirtualServerByHost(const std::string& host,
+	void addVirtualServerByHost(const std::string& port,
 								VirtualServer* server);
-
-	void setVirtualServers(MapHostVectorVirtualServers* virtualServers);
-
-	void addLocation(const std::string& uri,
-					 const VirtualServer* server);
-
+	const MapHostVectorVirtualServers& getVirtualServers() const;
 	VirtualServer& findVirtualServer(const std::string& host,
 									 const std::string& serverName) const;
 
 private:
 	const std::vector<VirtualServer*>* getVirtualServersByHost(
-										const std::string& host) const;
+			const std::string& host) const;
 
 	VirtualServer&
 	getVirtualServerByNameOrDefault(const std::vector<VirtualServer*>& servers,

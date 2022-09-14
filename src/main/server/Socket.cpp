@@ -59,7 +59,7 @@ void Socket::bindToAddress(struct sockaddr_in address) {
 	int result = bind(socketDescriptor, (struct sockaddr*)&address, sizeof(sockaddr));
 
 	checkError(result, "bindToAddress() " +
-			std::string (inet_ntoa(address.sin_addr)) + ":" +
+			std::string(inet_ntoa(address.sin_addr)) + ":" +
 			std::to_string(ntohs(address.sin_port)));
 }
 

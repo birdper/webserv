@@ -13,7 +13,11 @@
 #include "ClientRepository.hpp"
 #include "ConfigRepository.hpp"
 #include "Client.hpp"
+#include "Request.hpp"
 #include "Response.hpp"
+#include "VirtualServer.hpp"
+#include "usings.hpp"
+
 
 class Server {
 
@@ -43,10 +47,10 @@ private:
 
 	void handleEvents();
 
-	bool readClient(Client* client);
-	bool writeClient(Client* client);
+	short readClient(Client* client);
+	short writeClient(Client* client);
 
 	void disconnectClient(Client* client, bool isRemoveClient);
-	void closeConnections();
+	void printStatus(const string& message) const;
 };
 

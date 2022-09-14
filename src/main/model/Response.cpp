@@ -12,7 +12,7 @@ std::string& Response::serialize() {
 	   << statusCode << "\r\n";
 
 	// date header
-	ss << "Date: " << Utils::getTimestamp("%a, %d %b %Y %H:%M:%S GMT", false) << "\r\n";
+	ss << "Date: " << Utils::getCurrentTimestamp(false, "%a, %d %b %Y %H:%M:%S GMT") << "\r\n";
 
 	return *new std::string (ss.str());
 }

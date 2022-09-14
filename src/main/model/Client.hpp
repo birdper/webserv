@@ -12,8 +12,8 @@ private:
 
 	Request* request;
 	Response* response;
-	std::string buffer;
 
+	std::string buffer;
 	std::queue<std::string*> sendQueue;
 
 public:

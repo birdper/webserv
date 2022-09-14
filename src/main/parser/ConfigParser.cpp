@@ -52,9 +52,8 @@ void ConfigParser::parseConfig(const std::string &inputString,
                 break;
             case LISTEN:
                 parseListen(token.content, *currentServer);
-                storage->addVirtualServerByHost(currentServer->getIp() + ":" + std::to_string(currentServer->getPort()),
+                storage->addVirtualServerByHost(std::to_string(currentServer->getPort()),
                                                 currentServer);
-//                storage->addVirtualServerByHost(currentServer->getHost(), currentServer);
                 break;
             case AUTOINDEX:
                 if (token.content == "on") {
@@ -99,28 +98,13 @@ void ConfigParser::parseConfig(const std::string &inputString,
 void ConfigParser::parseListen(const std::string &input, VirtualServer &virtualServer) {
     std::vector<std::string> vec = split(input, ":");
 
-    std::string ip;
-    std::string port;
-
-/*    switch (vec.size()) {
-        case 1:
-            ip = "0.0.0.0";
-            port = vec[0];
-            checkPort(port);
-            break;
-        case 2:
-            ip = vec[0];
-            port = vec[1];
-            checkIpAndPort(ip, port);
-            break;
-        default:
-            fatalError("Failed to parse listen directive");
-            break;
-    }*/
-
     if (vec.size() != 2 && vec.size() != 1) {
         fatalError("Failed to parse listen directive");
-    } else if (vec.size() == 1) {
+    }
+
+	std::string ip;
+	std::string port;
+	if (vec.size() == 1) {
         checkPort(vec[0]);
         ip = "0.0.0.0";
         port = vec[0];
@@ -136,13 +120,15 @@ void ConfigParser::parseListen(const std::string &input, VirtualServer &virtualS
 }
 
 bool ConfigParser::checkPort(const std::string &str) {
-    if (!isDigits(rtrim(str, " "))) {
-        fatalError("Failed to parse 'listen'. Port must be number from 1 to 65355");
+	std::string errorMessagePortMustBeNumber = "Failed to parse 'listen'. Port must be number from 1 to 65355";
+
+	if (!isDigits(rtrim(str, " "))) {
+        fatalError(errorMessagePortMustBeNumber);
     }
     try {
         int port = std::stoi(str);
         if (port <= 0 || port > 65535) {
-            fatalError("Failed to parse 'listen'. Port must be number from 1 to 65355");
+            fatalError(errorMessagePortMustBeNumber);
         }
     } catch (std::out_of_range &ex) {
         fatalError("Failed to parse 'listen'. Port must not be greater than 65535");

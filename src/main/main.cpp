@@ -73,11 +73,9 @@ int main(int argc, char *argv[]) {
 		exit(1);
 	}
 	*/
-
-
     ConfigParser configParser;
     ConfigStorage configStorage;
-    configParser.parseConfig(FileReader::readFile("config.conf"), &configStorage);
+    configParser.parseConfig(FileReader::readFile("webserv.conf"), &configStorage);
 
     RequestParser* requestParser;
     RequestHandler* requestHandler;

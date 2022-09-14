@@ -9,7 +9,7 @@ NAME_LIB = webserv.a
 ### COMPILE ###
 CC = clang++
 #FLAGS = -Wall -Wextra -Werror --std=c++98
-FLAGS = --std=c++98
+FLAGS = -g --std=c++98
 NOT_PATH = -not -path
 
 ### DIRECTORY/PATH ###

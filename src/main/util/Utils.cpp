@@ -4,7 +4,7 @@
 
 #include "Utils.hpp"
 
-std::string Utils::getTimestamp(const std::string& format, bool localtime) {
+std::string Utils::getCurrentTimestamp(bool localtime, const std::string& format) {
 	time_t rawtime = std::time(nullptr);
 
 	struct tm* tm_info = nullptr;

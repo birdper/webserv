@@ -12,7 +12,7 @@
 
 class Utils {
 public:
-	static std::string getTimestamp(const std::string& format, bool localtime);
+	static std::string getCurrentTimestamp(bool localtime = false, const std::string& format = "%Y-%m-%d %T");
 	static bool isDirectory(const std::string& pathToFile);
 	static bool isAccessRights(const std::string& pathToFile);
 	static bool isFileExists(const std::string& pathToFile);
