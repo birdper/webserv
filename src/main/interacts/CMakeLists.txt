@@ -1,20 +1,17 @@
 
 set(CMAKE_CXX_STANDARD 98)
 
-add_library(interacts
+set(MODULE_NAME interacts)
+
+add_library(${MODULE_NAME}
+        RequestParser.hpp RequestParser.cpp
+        BaseHandler.cpp BaseHandler.hpp
+        GetHandler.cpp GetHandler.hpp
+        PostHandler.cpp PostHandler.hpp
         RequestHandler.hpp RequestHandler.cpp
-        RequestParser.hpp
-        RequestParser.cpp
         )
 
-target_include_directories(interacts PUBLIC
-        ../exception
-        ../model
-        ../util
-        )
 
-include_directories(interacts PUBLIC
-        ../exception
-        ../model
-        ../util
-        )
+target_include_directories(${MODULE_NAME} PUBLIC ../exception ../util ../model)
+
+#include_directories(${MODULE_NAME} PUBLIC ../exception ../model ../util)
