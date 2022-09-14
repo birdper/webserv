@@ -13,7 +13,7 @@ protected:
 	std::string version;
 	std::string parseErrorString;
 private:
-	std::map<std::string, std::string>* headers;
+	std::map<std::string, std::string> headers;
 
 public:
 	virtual ~HttpMessage();

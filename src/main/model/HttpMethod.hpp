@@ -5,9 +5,9 @@
 #pragma once
 
 enum HttpMethod {
-	UNKNOWN_METHOD,
-	POST,
 	GET,
 	PUT,
-	DELETE
+	POST,
+	DELETE,
+	UNKNOWN_METHOD
 };

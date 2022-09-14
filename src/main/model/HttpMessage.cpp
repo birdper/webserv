@@ -26,14 +26,14 @@ void HttpMessage::addHeader(const std::string& line) {
 }
 
 void HttpMessage::addHeader(const std::string& key, const std::string& value) {
-	headers->insert(std::pair<std::string, std::string>(key, value));
+	headers.insert(std::pair<std::string, std::string>(key, value));
 }
 
 HttpMessage::~HttpMessage() {
-	headers->clear();
-	delete headers;
+	headers.clear();
+//	delete headers;
 }
 
 void HttpMessage::clearHeaders() {
-	headers->clear();
+	headers.clear();
 }
