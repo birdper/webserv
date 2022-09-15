@@ -3,26 +3,23 @@
 #include "Server.hpp"
 
 Server::Server(RequestParser& requestParser,
-               RequestHandler& requestHandler,
                ConfigRepository& settingsRepository) :
         requestParser(requestParser),
-        requestHandler(requestHandler),
         configRepository(settingsRepository) {
 }
 
 void Server::initSockets() {
-
     std::vector<std::pair<string, int> > hosts = configRepository.getHostsForBind();
 
     for (size_t i = 0; i < hosts.size(); ++i) {
-
         string& ip = hosts[i].first;
         int port = hosts[i].second;
-        Socket* socket = new Socket(ip, port);
+        Socket& socket = *Socket::getInstance(ip, port);
 
-        int socketDescriptor = socket->getSocketDescriptor();
+        int socketDescriptor = socket.getSocketDescriptor();
+        Socket::setNonblockMode(socketDescriptor);
 
-        listenSockets[socketDescriptor] = socket;
+        putListenSocket(socket);
         pollFds.push_back(initPollFd(socketDescriptor, POLLIN));
 
         Utils::printStatus("Listening socket start on " + ip + ":" + std::to_string(port));
@@ -81,11 +78,11 @@ void Server::handleEvents() {
         Client* client = clientRepository.findBySocketDescriptor(pollFds[i].fd);
         if (clientSocket.revents & POLLIN) {
             clientSocket.events = readClient(client);
-//            clientSocket.revents = 0;
+//            readClient(client);
         }
         if (clientSocket.revents & POLLOUT) {
             clientSocket.events = writeClient(client);
-//            clientSocket.revents = 0;
+//            writeClient(client);
         }
         if (clientSocket.revents & POLLHUP) {
             disconnectClient(client, true);
@@ -98,25 +95,23 @@ void Server::handleEvents() {
 void Server::acceptClient(pollfd& listenSocket) {
     struct sockaddr_in address;
 
-//	int clientSocketDescriptor = accept(listenSocket.fd, (struct sockaddr*) &address, reinterpret_cast<socklen_t*>(sizeof(sockaddr)));
     socklen_t size = sizeof(sockaddr);
     int clientSocketDescriptor = accept(listenSocket.fd, (struct sockaddr*) &address, &size);
     if (clientSocketDescriptor <= 0) {
         Utils::printStatus("cannot accept connection");
         return;
     }
-
-    const string ip = std::string(inet_ntoa(address.sin_addr));
-    const string sd = std::to_string(clientSocketDescriptor);
-    Utils::printStatus("accept connection client " + ip + ", sd = " + sd);
-
-    fcntl(clientSocketDescriptor, F_SETFL, O_NONBLOCK);
-    pollFds.push_back(initPollFd(clientSocketDescriptor, POLLIN | POLLOUT | POLLHUP));
+//    Socket::setNonblockMode(clientSocketDescriptor);
 
     Client* client = new Client(clientSocketDescriptor, listenSocket.fd);
     clientRepository.addClient(client);
     Utils::printStatus("created client");
 
+    pollFds.push_back(initPollFd(clientSocketDescriptor, POLLIN | POLLOUT | POLLHUP));
+
+    const string ip = std::string(inet_ntoa(address.sin_addr));
+    const string sd = std::to_string(clientSocketDescriptor);
+    Utils::printStatus("accept connection client " + ip + ", sd = " + sd);
 }
 
 void Server::disconnectClient(Client* client, bool isRemoveClient) {
@@ -146,9 +141,8 @@ void Server::disconnectClient(Client* client, bool isRemoveClient) {
 
 short Server::readClient(Client* client) {
 
-    char buffer[BUFFER_SIZE];
 //	TODO Хватит ли объёма буфера?
-//	std::vector<char> buffer(BUFFER_SIZE);
+    char buffer[BUFFER_SIZE];
     ssize_t bytesReadCount = recv(client->getSocketDescriptor(),
                                   buffer,
                                   BUFFER_SIZE - 1,
@@ -174,30 +168,25 @@ short Server::readClient(Client* client) {
     Request* request = requestParser.parse(buffer);
     Utils::printStatus("parsed request");
 
-    Config& config = findConfig(client, request);
+    Config& config = findConfig(*client, *request);
     Utils::printStatus("found config");
 
 
-    Response response = requestHandler.handle(*request, config);
+//    Response response = requestHandler.handle(*request, config);
     Utils::printStatus("handled request");
 
-//		delete _request;
     return POLLOUT;
 
 }
 
-Config& Server::findConfig(const Client* client, const Request* request) {
+Config& Server::findConfig(const Client& client, const Request& request) {
 
-    /*Config* _config = configRepository.getConfig(_request->getUri(),
-                                                    std::to_string(client->getHostPort()),
-                                                    _request->findHeaderByName("Host"));*/
-
-    Socket& listenSocket = *listenSockets.find(client->getListenSocketDescriptor())->second;
+    Socket& listenSocket = *listenSockets.find(client.getListenSocketDescriptor())->second;
     VirtualServer virtualServer = configRepository.getServerConfig(listenSocket.getIp(),
-                                                                   listenSocket.getPort(),
-                                                                   request->findHeaderByName("ServerName"));
+                                                                   listenSocket.getPortString(),
+                                                                   request.findHeaderByName("ServerName"));
 
-    Config* config = configRepository.findLocationConfigByUri(virtualServer, request->getUri());
+    Config* config = configRepository.findLocationConfigByUri(virtualServer, request.getUri());
     if (config == nullptr) {
         bool isLocation = false;
         config = new Config(virtualServer.getParameters(), isLocation);
@@ -223,13 +212,14 @@ short Server::writeClient(Client* client) {
     ssize_t countSendBytes = send(client->getSocketDescriptor(), buffer.c_str(), buffer.size(),
                                   MsgNoFlag);
     return POLLIN;
+    /*
 //	if (!client)
 //		return false;
 
 //	requestHandler.formResponse(client);
 //	if (!client->getResponse()->toSend.empty()) {
 
-/*
+
 	if (!response->toSend.empty()) {
 		string buffer = client->getResponse()->toSend;
 
@@ -251,6 +241,10 @@ short Server::writeClient(Client* client) {
     return true;
 }
 
+void Server::putListenSocket(Socket& socket) {
+    listenSockets[socket.getSocketDescriptor()] = &socket;
+}
+
 /* TODO uncomment?
  * void Server::closeConnections() {
 	nfds_t numberOfClients = clients.size();
@@ -258,7 +252,7 @@ short Server::writeClient(Client* client) {
 	for (nfds_t i = 0; i < numberOfClients; ++i) {
 		WebClient*& client = clients[i];
 
-		if (client->getStatus() == WebClient::Close) {
+		if (client->getStatus() == Client::Close) {
 			close(client->getSocketDescriptor());
 			delete client;
 			clients.erase(clients.begin() + i);

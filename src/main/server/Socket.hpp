@@ -12,22 +12,27 @@
 
 class Socket {
 private:
-	int socketDescriptor;
-    string ip;
-    int port;
+	int _socketDescriptor;
+    string _ip;
+    int _port;
 
 public:
-    Socket(const string& ip, int port);
+    Socket(const Socket& other);
+    Socket& operator=(Socket other);
 
     int getSocketDescriptor() const;
     const string& getIp() const;
-    string getPort() const;
+    string getPortString() const;
+
+	static void setNonblockMode(int socketDescriptor);
+	static Socket* getInstance(const string& ip, int port);
+
 
 private:
+    Socket(const string& ip, int port);
     void init();
 	void openSocket();
-	void checkError(int result, const std::string& nameFunFromError);
-	void setNonblockMode();
+	static void checkError(int result, const std::string& nameFunFromError);
 	void setAddressReuseMode();
 	struct sockaddr_in initAddress();
 	void bindToAddress(sockaddr_in address);

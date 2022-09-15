@@ -78,9 +78,8 @@ int main(int argc, char *argv[]) {
     configParser.parseConfig(FileReader::readFile("webserv.conf"), &configStorage);
 
     RequestParser* requestParser;
-    RequestHandler* requestHandler;
     ConfigRepositoryImpl configRepository(&configStorage);
-    Server server(*requestParser, *requestHandler, configRepository);
+    Server server(*requestParser, configRepository);
     server.run();
 
 //    Socket socket1;

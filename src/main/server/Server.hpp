@@ -23,7 +23,6 @@ class Server {
 
 private:
 	RequestParser& requestParser;
-	RequestHandler& requestHandler;
 	ConfigRepository& configRepository;
 	ClientRepository clientRepository;
 
@@ -34,13 +33,14 @@ private:
 
 public:
 	Server(RequestParser& requestParser,
-		   RequestHandler& requestHandler,
 		   ConfigRepository& settingsRepository);
 
 	void initSockets();
 	void run();
 
 private:
+    void putListenSocket(Socket& socket);
+
 	struct pollfd initPollFd(int socketDescriptor, short eventTypes);
 
 	void polling();
@@ -52,6 +52,6 @@ private:
 	short writeClient(Client* client);
 
 	void disconnectClient(Client* client, bool isRemoveClient);
-    Config& findConfig(const Client* client, const Request* request);
+    Config& findConfig(const Client& client, const Request& request);
 };
 
