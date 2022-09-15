@@ -1,88 +1,91 @@
 #include "RequestParser.hpp"
 
-Request* RequestParser::parse(const std::string& data) {
+Request* RequestParser::parse(const string& requestString) {
     Request* request = new Request();
-    std::istringstream iss(data);
 
-    std::string line;
-    getline(iss, line);
-    std::istringstream issLine(line);
+    if (requestString.find(HTTP_BORDER_LINE) == string::npos) {
+        return nullptr;
+    }
 
-    parseStartLine(issLine, request);
-    parseHeaders(iss, request);
-    parseBody();
+    std::istringstream iss(requestString);
+    string startLine;
+    getline(iss, startLine);
+
+    try {
+        parseStartLine(startLine, *request);
+        parseHeaders(iss, *request);
+        parseBody(*request);
+    } catch (ParseRequestException& ex) {
+        request->setBadStatus();
+    }
     return request;
 }
 
-bool RequestParser::parseStartLine(std::istringstream& line, Request* request) {
-    std::string token;
+void RequestParser::parseStartLine(const string& line, Request& request) {
+    std::vector<string> startLineTokens = Utils::split(line, " ");
 
-    line >> token;
-    parseMethod(request, token);
+    if (startLineTokens.size() != 3) {
+        throw ParseRequestException("Incorrect format Start Line '" + line + "'");
+    }
 
-    line >> token;
-    parseUri(request, token);
-
-    line >> token;
-    return parseHttpVersion(request, token);
+    parseMethod(request, startLineTokens[0]);
+    parseUri(request, startLineTokens[1]);
+    parseHttpVersion(request, startLineTokens[2]);
 }
 
-void RequestParser::parseMethod(Request* request, const std::string& method) const {
-    request->setHttpMethodString(method);
-    if (method == "GET") {
-        request->setMethod(GET);
-    } else if (method == "PUT") {
-        request->setMethod(PUT);
-    } else if (method == "POST") {
-        request->setMethod(POST);
-    } else if (method == "DELETE") {
-        request->setMethod(DELETE);
+void RequestParser::parseMethod(Request& request, const string& httpMethod) const {
+    request.setHttpMethodString(httpMethod);
+    if (httpMethod == "GET") {
+        request.setMethod(GET);
+    } else if (httpMethod == "PUT") {
+        request.setMethod(PUT);
+    } else if (httpMethod == "POST") {
+        request.setMethod(POST);
+    } else if (httpMethod == "DELETE") {
+        request.setMethod(DELETE);
     } else {
-        request->setMethod(UNKNOWN_METHOD);
-        request->setBadStatus();
-        request->setHttpMethodString("UNKNOWN_METHOD");
-//		return false;
+        throw ParseRequestException("Wrong HTTP Method '" + httpMethod + "'");
     }
 }
 
-void RequestParser::parseUri(Request* request, const std::string& uri) const {
-    if ((uri[0] == '/') || (uri == "*")) {
-        request->setUri(uri);
+void RequestParser::parseUri(Request& request, const string& uri) const {
+    if ((uri[0] == '/')) {
+        request.setUri(uri);
     } else {
-        request->setBadStatus();
-//		return false;
+        throw ParseRequestException("Incorrect uri '" + uri + "'");
     }
 }
 
-bool RequestParser::parseHttpVersion(Request* request, const std::string& httpVersion) const {
+void RequestParser::parseHttpVersion(Request& request, const string& httpVersion) const {
     if (httpVersion == "HTTP/1.0" || httpVersion == "HTTP/1.1") {
-        request->setHttpVersion(httpVersion);
-        return true;
+        request.setHttpVersion(httpVersion);
+    } else {
+        throw ParseRequestException("Incorrect Version Protocol '" + httpVersion + "'");
     }
-    request->setBadStatus();
-    return false;
-
 }
 
-void RequestParser::parseHeaders(std::istringstream& iss, Request* request) {
-    std::string line;
-    std::map<std::string, std::string> headers;
+void RequestParser::parseHeaders(std::istringstream& iss, Request& request) {
+    string line;
+    std::map<string, string> headers;
 
     while (getline(iss, line)) {
         int separator = line.find(':');
-        std::string header = line.substr(0, separator);
-        std::string value = line.substr(separator + 2);
+        string header = line.substr(0, separator);
+        string value = line.substr(separator + 2);
         headers[header] = value;
     }
-    request->setHeaders(headers);
+    request.setHeaders(headers);
 
-    std::map<std::string, std::string>::iterator it = headers.find("Host");
+    std::map<string, string>::iterator it = headers.find("Host");
     if (it == headers.end()) {
-        request->setBadStatus();
-        return;
+        throw ParseRequestException("Not found header 'Host'");
     }
 }
 
-void RequestParser::parseBody() {
+void RequestParser::parseBody(Request& request) {
 //	TODO (not yet implement)
+    if ((request.getHttpMethod() != POST) && (request.getHttpMethod() != PUT)) {
+        return;
+    }
+
 }
