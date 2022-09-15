@@ -18,12 +18,14 @@ private:
     Config* _config;
 
 public:
-    GetHandler(Request& request, Config& config);
+    GetHandler();
+    static BaseHandler* getInstance(Request& request, Config& config);
     virtual ~GetHandler();
+
     Response handle(Request& request, Config& config);
-    static BaseHandler* getInstance();
 
 private:
+    explicit GetHandler(Request& request, Config& config);
     string getAutoindexBody(std::vector<string> fileNames, const string& path, const string& uri);
     std::vector<string> getFileNamesFromDirectory(const string& path);
     std::string getPathFromUri() const;

@@ -1,32 +1,25 @@
 #include "RequestHandler.hpp"
 
-RequestHandler::RequestHandler() {
-    _methods["GET"] = GetHandler::getInstance();
-    _methods["POST"] = PostHandler::getInstance();
+RequestHandler RequestHandler::getInstance(Request& request, Config& config) {
+    return RequestHandler(request, config);
+}
 
+RequestHandler::RequestHandler(Request& request, Config& config) :
+        request(request),
+        config(config) {
+    _methods["GET"] = GetHandler::getInstance(request, config);
+    _methods["POST"] = PostHandler::getInstance(request, config);
 }
 
 RequestHandler::~RequestHandler() {
 }
 
-Response RequestHandler::handle(Request& request, Config& config) {
+Response RequestHandler::handle() {
 
     Utils::printStatus("start handle request");
 
-    Utils::printStatus("setupMethods");
     Response response;
-//  validate(request, config);
-    if (request.isBadRequest()) {
-        Utils::printStatus("is bad request");
-        return response;
-    }
-    if (!config.isLocationConfig()) {
-        Utils::printStatus("is serv config");
-        return response;
-    }
-
-
-    if (request.getHttpMethod() == UNKNOWN_METHOD) {
+    if (!validate(response)) {
         return response;
     }
     response = _methods[request.getHttpMethodString()]->handle(request, config);
@@ -35,11 +28,16 @@ Response RequestHandler::handle(Request& request, Config& config) {
     return response;
 }
 
-bool RequestHandler::validate(Request& request, Config& config) {
+bool RequestHandler::validate(Response& response) {
 
-    if (!config.isLocationConfig()) {
+    if (request.isBadRequest()) {
+        Utils::printStatus("400");
         return false;
     }
-//	_request.getHttpMethod()
+    if (!config.isLocationConfig()) {
+        Utils::printStatus("404");
+        return false;
+    }
     return true;
 }
+

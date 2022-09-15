@@ -13,8 +13,6 @@
 
 
 class BaseHandler {
-
-
 public:
     BaseHandler();
     virtual ~BaseHandler();

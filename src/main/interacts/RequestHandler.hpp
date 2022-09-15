@@ -7,14 +7,17 @@
 class RequestHandler {
 private:
     std::map<string, BaseHandler*> _methods;
+    Request& request;
+    Config& config;
 
 public:
-    RequestHandler();
     virtual ~RequestHandler();
-	Response handle(Request& request, Config& config);
+    static RequestHandler getInstance(Request& request, Config& config);
+	Response handle();
 
 private:
-    bool validate(Request& request, Config& config);
+    RequestHandler(Request& request, Config& config);
+    bool validate(Response& response);
 
 
 /*    std::string getPathFromUri(const std::string& uri, Config& config) const;

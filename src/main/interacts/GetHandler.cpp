@@ -1,14 +1,16 @@
 
 #include "GetHandler.hpp"
 
-//GetHandler::GetHandler(Request& request, Config& config) :
-//        BaseHandler(request, config)
-//        _request(request),
-//        _config(config) {
-//}
+GetHandler::GetHandler() {
+}
+
+BaseHandler* GetHandler::getInstance(Request& request, Config& config) {
+    return new GetHandler(request, config);
+}
 
 GetHandler::GetHandler(Request& request, Config& config) :
-        BaseHandler() {
+        _request(&request),
+        _config(&config) {
 }
 
 GetHandler::~GetHandler() {
@@ -23,14 +25,14 @@ Response GetHandler::handle(Request& request, Config& config) {
     if (Utils::isDirectory(path)) {
 
 //        check index files
-        _config.getIndexFiles();
+        _config->getIndexFiles();
 //        if (isNotFoundIndexFile)
 
 //        check autoindex
-        if (_config.isAutoindexEnabled()) {
+        if (_config->isAutoindexEnabled()) {
             string body = getAutoindexBody(getFileNamesFromDirectory(path),
                                            path,
-                                           _request.getUri());
+                                           _request->getUri());
             response.addHeader("Content-Length", std::to_string(body.size()));
             response.setStatusCode("200 OK");
         } else {
@@ -116,7 +118,7 @@ std::vector<std::string> GetHandler::getFileNamesFromDirectory(const std::string
 
 std::string GetHandler::getPathFromUri() const {
 
-    std::string path = _config.getRoot() + "/" + _request.getUri();
+    std::string path = _config->getRoot() + "/" + _request->getUri();
 
     if (Utils::isFileExists(path)) {
         if (Utils::isDirectory(path)) {
@@ -124,12 +126,12 @@ std::string GetHandler::getPathFromUri() const {
                 path.append("/");
             }
 
-            std::vector<std::string> indexes = _config.getIndexFiles();
+            std::vector<std::string> indexes = _config->getIndexFiles();
             for (int i = 0; i < indexes.size(); ++i) {
                 std::string indexFileName = indexes[i];
                 std::string pathToIndexFile;
                 if (indexFileName.front() == '/') {
-                    pathToIndexFile = _config.getRoot() + indexFileName;
+                    pathToIndexFile = _config->getRoot() + indexFileName;
                 } else {
                     pathToIndexFile = path + indexFileName;
                 }
@@ -142,8 +144,4 @@ std::string GetHandler::getPathFromUri() const {
         return path;
     }
     return std::string();
-}
-
-BaseHandler* GetHandler::getInstance() {
-    return new GetHandler();
 }

@@ -14,12 +14,13 @@ private:
     Config& _config;
 
 public:
-    PostHandler(Request& request, Config& config);
+    static BaseHandler* getInstance(Request& request, Config& config);
     virtual ~PostHandler();
 
-    static BaseHandler* getInstance();
     Response handle(Request& request, Config& config);
 
+private:
+    PostHandler(Request& request, Config& config);
 
 };
 

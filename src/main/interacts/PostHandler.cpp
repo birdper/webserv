@@ -4,8 +4,13 @@
 
 #include "PostHandler.hpp"
 
+BaseHandler* PostHandler::getInstance(Request& request, Config& config) {
+    return new PostHandler(request, config);
+}
+
 PostHandler::PostHandler(Request& request, Config& config) :
-        BaseHandler() {
+        _request(request),
+        _config(config) {
 }
 
 PostHandler::~PostHandler() {
@@ -13,10 +18,5 @@ PostHandler::~PostHandler() {
 }
 
 Response PostHandler::handle(Request& request, Config& config) {
-
     return Response();
-}
-
-BaseHandler* PostHandler::getInstance() {
-    return new PostHandler();
 }
