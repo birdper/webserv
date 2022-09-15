@@ -7,8 +7,6 @@
 #include "Response.hpp"
 #include "Request.hpp"
 
-class Socket;
-
 class Client {
 private:
     int socketDescriptor;

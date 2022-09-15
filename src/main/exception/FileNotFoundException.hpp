@@ -9,5 +9,4 @@ private:
 public:
     explicit FileNotFoundException(const std::string& fileName);
     const char* what() const throw();
-
 };

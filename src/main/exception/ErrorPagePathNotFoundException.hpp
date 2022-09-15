@@ -1,5 +1,5 @@
-#ifndef ERRORPAGEPATHNOTFOUNDEXCEPTION_HPP
-#define ERRORPAGEPATHNOTFOUNDEXCEPTION_HPP
+#pragma once
+
 #include <exception>
 #include <iostream>
 
@@ -10,6 +10,5 @@ private:
 public:
 	explicit ErrorPagePathNotFoundException(const std::string& path);
 	const char* what() const throw();
-};
 
-#endif
+};

@@ -96,7 +96,7 @@ void ConfigParser::parseConfig(const std::string &inputString,
 }
 
 void ConfigParser::parseListen(const std::string &input, VirtualServer &virtualServer) {
-    std::vector<std::string> vec = split(input, ":");
+    std::vector<std::string> vec = Utils::split(input, ":");
 
     if (vec.size() != 2 && vec.size() != 1) {
         fatalError("Failed to parse listen directive");
@@ -136,7 +136,7 @@ bool ConfigParser::checkPort(const std::string &str) {
 }
 
 bool ConfigParser::checkIpAndPort(const std::string &ipStr, const std::string &portStr) {
-    std::vector<std::string> ip = split(ipStr, ".");
+    std::vector<std::string> ip = Utils::split(ipStr, ".");
     if (ip.size() != 4) {
         fatalError("The listen directive must have the format ip:port or only port");
     }
@@ -183,25 +183,6 @@ ConfigParser::splitStringToVector(const std::string &input) {
         vector.push_back(word);
     }
     return vector;
-}
-
-std::vector<std::string> ConfigParser::split(const std::string &str, const std::string &delimiter) {
-    std::vector<std::string> tokens;
-    size_t previousPosition = 0;
-    size_t currentPosition = 0;
-    do {
-        currentPosition = str.find(delimiter, previousPosition);
-        if (currentPosition == std::string::npos) {
-            currentPosition = str.length();
-        }
-        std::string token = str.substr(previousPosition, currentPosition - previousPosition);
-        if (!token.empty()) {
-            tokens.push_back(token);
-        }
-        previousPosition = currentPosition + delimiter.length();
-    } while (currentPosition < str.length() && previousPosition < str.length());
-
-    return tokens;
 }
 
 std::string ConfigParser::rtrim(std::string str, const std::string &chars) {

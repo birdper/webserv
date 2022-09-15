@@ -56,7 +56,7 @@ void Server::polling() {
     if (result < 0) {
         cerr << "poll() failed: " << strerror(errno) << endl;
     } else if (result == 0) {
-        cerr << "poll() timed out. End program." << endl;
+        cerr << "poll() timed out." << endl;
     }
 }
 
@@ -101,6 +101,7 @@ void Server::acceptClient(pollfd& listenSocket) {
         Utils::printStatus("cannot accept connection");
         return;
     }
+//    TODO закоментил для теста работы без обновления events
 //    Socket::setNonblockMode(clientSocketDescriptor);
 
     Client* client = new Client(clientSocketDescriptor, listenSocket.fd);

@@ -7,12 +7,11 @@
 #include <fstream>
 
 #include "Tokenizer.hpp"
-
 #include "Parameters.hpp"
-
 #include "Location.hpp"
 #include "VirtualServer.hpp"
 #include "ConfigStorage.hpp"
+#include "Utils.hpp"
 
 class ConfigParser {
 
@@ -30,7 +29,7 @@ private:
     bool checkIpAndPort(const std::string &ipStr, const std::string &portStr);
 
 	std::vector<std::string> splitStringToVector(const std::string& input);
-    std::vector<std::string> split(const std::string &str, const std::string &delimiter);
+
     std::string rtrim(std::string str, const std::string &chars);
     bool isDigits(const std::string &str);
 
