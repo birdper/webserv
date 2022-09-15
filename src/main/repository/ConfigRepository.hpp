@@ -15,10 +15,6 @@ public:
                                            const string& port,
                                            const string& serverName) const = 0;
 
-/*    virtual Config* getConfig(const string& uriRequest,
-                              const string& host,
-                              const string& serverName) const = 0;*/
-
     virtual Config* findLocationConfigByUri(const VirtualServer& virtualServer,
                                             const string& requestUri) const = 0;
 

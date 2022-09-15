@@ -25,14 +25,6 @@ public:
 	Config* findLocationConfigByUri(const VirtualServer& virtualServer,
                               const string& requestUri) const;
 
-
-    /*Config* getConfig(const string& requestUri,
-					  const string& host,
-					  const string& serverName) const;*/
-
-//    Config* findLocationConfigByUri(const VirtualServer& virtualServer, const string& requestUri) const;
-
-
 private:
 	size_t getLengthMatch(const string& locationUri,
 						  const string& requestUri) const;

@@ -49,27 +49,6 @@ ConfigRepositoryImpl::getServerConfig(const std::string& ip,
     return *serversSameIp[0];
 }
 
-/**
- * @param requestUri
- * @param host
- * @param serverName may be empty
- * @return Config instance or nullptr
- */
-
-/*
-Config* ConfigRepositoryImpl::getConfig(const std::string& requestUri, const std::string& host,
-                                        const std::string& serverName) const {
-
-    VirtualServer server = storage->findVirtualServer(host, serverName);
-    std::vector<Location*> locations = server.getLocations();
-//    Location* location = findLocationByUri(locations, requestUri);
-
-//    return location == nullptr ? nullptr
-//                               : new Config(location->getParameters());
-    return nullptr;
-}
-*/
-
 Config* ConfigRepositoryImpl::findLocationConfigByUri(const VirtualServer& virtualServer,
                                                 const string& requestUri) const {
 
@@ -102,9 +81,3 @@ size_t ConfigRepositoryImpl::getLengthMatch(const std::string& locationUri,
     }
     return length;
 }
-
-/*Config*
-ConfigRepositoryImpl::findLocationConfigByUri(const VirtualServer& virtualServer, const std::string& requestUri) const {
-    findLocationByUri(virtualServer.getLocations(), requestUri);
-    return NULL;
-}*/
