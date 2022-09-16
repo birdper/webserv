@@ -25,4 +25,7 @@ protected:
     void readfileToBody(Response& response, const std::string& path);
     std::string getRedirectPageBody(std::pair<int, std::string> redirect);
 
+    string getResourcePath(const string& locationUri,
+                           string& root,
+                           const string& requestUri) const;
 };

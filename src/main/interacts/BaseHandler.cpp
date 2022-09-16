@@ -39,3 +39,20 @@ std::string BaseHandler::getRedirectPageBody(std::pair<int, std::string> redirec
     } else
         return redirect.second;
 }
+
+string BaseHandler::getResourcePath(const string& locationUri,
+                                    string& root,
+                                    const string& requestUri) const {
+    size_t startPos = locationUri.length();
+    if (locationUri.length() == 1) {
+        startPos = 0;
+    }
+    if (root.back() == '/') {
+        root = root.substr(0, root.length() - 1);
+    }
+    if (root.front() == '/') {
+        root = root.substr(0, 1);
+    }
+    string requestUriWithoutLocationUri = requestUri.substr(startPos, requestUri.length());
+    return root + requestUriWithoutLocationUri;
+}
