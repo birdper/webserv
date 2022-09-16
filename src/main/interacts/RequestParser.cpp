@@ -3,21 +3,28 @@
 Request* RequestParser::parse(const string& requestString) {
     Request* request = new Request();
 
-    if (requestString.find(HTTP_BORDER_LINE) == string::npos) {
+    size_t borderLinePosition = requestString.find(HTTP_BORDER_LINE);
+    if (borderLinePosition == string::npos) {
+        std::cout << "not found borderline!" << std::endl;
         return nullptr;
     }
 
-    std::istringstream iss(requestString);
-    string startLine;
-    getline(iss, startLine);
+//    if (pos != string::npos && request->emptyHeader()) {
+    string headersString = requestString.substr(0, borderLinePosition);
+    string bodyString(requestString.substr(borderLinePosition + 4));
+
+    std::vector<string> headerLines = Utils::split(headersString, END_OF_LINE);
+//}
 
     try {
-        parseStartLine(startLine, *request);
-        parseHeaders(iss, *request);
+        parseStartLine(headerLines[0], *request);
+        parseHeaders(headerLines, *request);
         parseBody(*request);
     } catch (ParseRequestException& ex) {
+        Utils::printStatus(ex.what());
         request->setBadStatus();
     }
+
     return request;
 }
 
@@ -34,22 +41,22 @@ void RequestParser::parseStartLine(const string& line, Request& request) {
 }
 
 void RequestParser::parseMethod(Request& request, const string& httpMethod) const {
-    request.setHttpMethodString(httpMethod);
+    request.setMethodString(httpMethod);
     if (httpMethod == "GET") {
-        request.setMethod(GET);
+        request.setMethodEnum(GET);
     } else if (httpMethod == "PUT") {
-        request.setMethod(PUT);
+        request.setMethodEnum(PUT);
     } else if (httpMethod == "POST") {
-        request.setMethod(POST);
+        request.setMethodEnum(POST);
     } else if (httpMethod == "DELETE") {
-        request.setMethod(DELETE);
+        request.setMethodEnum(DELETE);
     } else {
         throw ParseRequestException("Wrong HTTP Method '" + httpMethod + "'");
     }
 }
 
 void RequestParser::parseUri(Request& request, const string& uri) const {
-    if ((uri[0] == '/')) {
+    if (uri[0] == '/') {
         request.setUri(uri);
     } else {
         throw ParseRequestException("Incorrect uri '" + uri + "'");
@@ -57,29 +64,31 @@ void RequestParser::parseUri(Request& request, const string& uri) const {
 }
 
 void RequestParser::parseHttpVersion(Request& request, const string& httpVersion) const {
-    if (httpVersion == "HTTP/1.0" || httpVersion == "HTTP/1.1") {
+    if (httpVersion == "HTTP/1.1") {
         request.setHttpVersion(httpVersion);
     } else {
         throw ParseRequestException("Incorrect Version Protocol '" + httpVersion + "'");
     }
 }
 
-void RequestParser::parseHeaders(std::istringstream& iss, Request& request) {
-    string line;
-    std::map<string, string> headers;
+void RequestParser::parseHeaders(std::vector<string>& headerLines, Request& request) {
+    std::map<string, string>* headers = new std::map<string, string>();
 
-    while (getline(iss, line)) {
-        int separator = line.find(':');
-        string header = line.substr(0, separator);
-        string value = line.substr(separator + 2);
-        headers[header] = value;
+    for (int i = 1; i < headerLines.size(); ++i) {
+        size_t separatorPosition = headerLines[i].find(':');
+        string header = headerLines[i].substr(0, separatorPosition);
+        string value = headerLines[i].substr(separatorPosition + 2);
+        (*headers)[header] = value;
     }
-    request.setHeaders(headers);
+    request.setHeaders(*headers);
 
-    std::map<string, string>::iterator it = headers.find("Host");
-    if (it == headers.end()) {
+    if (request.findHeaderValue("Host").empty()) {
         throw ParseRequestException("Not found header 'Host'");
     }
+//    std::map<string, string>::iterator it = headers->find("Host");
+//    if (it == headers->end()) {
+//        throw ParseRequestException("Not found header 'Host'");
+//    }
 }
 
 void RequestParser::parseBody(Request& request) {
@@ -87,5 +96,6 @@ void RequestParser::parseBody(Request& request) {
     if ((request.getHttpMethod() != POST) && (request.getHttpMethod() != PUT)) {
         return;
     }
+    string contentLength = request.findHeaderValue("Content-Length");
 
 }
