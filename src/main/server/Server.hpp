@@ -51,7 +51,8 @@ private:
 	short readClient(Client* client);
 	short writeClient(Client* client);
 
-	void disconnectClient(Client* client, bool isRemoveClient);
+	void disconnectClient(Client* client, bool isShouldRemoveClient);
     Config& findConfig(const Client& client, const Request& request);
+    void acceptConnections();
 };
 

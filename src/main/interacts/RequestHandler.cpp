@@ -22,7 +22,7 @@ Response RequestHandler::handle() {
     if (!validate(response)) {
         return response;
     }
-    response = _methods[request.getHttpMethodString()]->handle(request, config);
+    response = _methods[request.getMethodString()]->handle(request, config);
     Utils::printStatus("handled method");
 
     return response;
@@ -31,11 +31,11 @@ Response RequestHandler::handle() {
 bool RequestHandler::validate(Response& response) {
 
     if (request.isBadRequest()) {
-        Utils::printStatus("400");
+        Utils::printStatus("400 Bad Request");
         return false;
     }
     if (!config.isLocationConfig()) {
-        Utils::printStatus("404");
+        Utils::printStatus("404 Not Found");
         return false;
     }
     return true;

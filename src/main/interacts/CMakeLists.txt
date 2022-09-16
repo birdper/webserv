@@ -12,6 +12,6 @@ add_library(${MODULE_NAME}
         )
 
 
-target_include_directories(${MODULE_NAME} PUBLIC ../exception ../util ../model)
+target_include_directories(${MODULE_NAME} PUBLIC ../util ../exception  ../model)
 
-#include_directories(${MODULE_NAME} PUBLIC ../exception ../model ../util)
+include_directories(${MODULE_NAME} PUBLIC ../util ../exception ../model)

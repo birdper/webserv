@@ -10,7 +10,7 @@ add_library(${MODULE_NAME}
         ConfigParser.cpp ConfigParser.hpp
         )
 
-target_include_directories(${MODULE_NAME} PUBLIC ../model)
+target_include_directories(${MODULE_NAME} PUBLIC ../util ../model)
 target_include_directories(${MODULE_NAME} PUBLIC ../config/model)
 target_include_directories(${MODULE_NAME} PUBLIC ../config/storage)
 target_include_directories(${MODULE_NAME} PUBLIC ../config/types)

@@ -60,6 +60,14 @@ bool isIncorrectConfigFile(const std::string& configFileName) {
 }
 */
 
+void test_sockets() {
+//    Socket socket1;
+//    socket1.init("127.0.0.1", 7000);
+//    socket1.init("10.21.21.155", 7000);
+//    socket1.init("0.0.0.0", 7000);
+}
+
+
 //TODO implement input config file
 int main(int argc, char *argv[]) {
 
@@ -73,24 +81,29 @@ int main(int argc, char *argv[]) {
 		exit(1);
 	}
 	*/
-    ConfigParser configParser;
-    ConfigStorage configStorage;
-    configParser.parseConfig(FileReader::readFile("webserv.conf"), &configStorage);
 
-    RequestParser* requestParser;
-    ConfigRepositoryImpl configRepository(&configStorage);
-    Server server(*requestParser, configRepository);
-    server.run();
+/*    std::vector<string> vector = Utils::split("GET / HTTP/1.1\r\n", " ");
+    for (const auto& item: vector) {
+        std::cout << item << "|<<" << std::endl;
+    }*/
 
-//    Socket socket1;
-//    socket1.init("127.0.0.1", 7000);
-//    socket1.init("10.21.21.155", 7000);
-//    socket1.init("0.0.0.0", 7000);
+
+
+    ConfigParser* configParser = new ConfigParser();
+    ConfigStorage* configStorage = new ConfigStorage();
+    configParser->parseConfig(FileReader::readFile("webserv.conf"), configStorage);
+
+    RequestParser* requestParser = new RequestParser();
+    ConfigRepositoryImpl* configRepository = new ConfigRepositoryImpl(configStorage);
+    Server* server = new Server(*requestParser, *configRepository);
+    server->run();
+
+
 
 //	server.initSockets();
 //	server.run();
 
-	std::string input = "server {\n"
+	/*std::string input = "server {\n"
 						"        listen 8080;\n"
 						"\n"
 						"\n"
@@ -126,7 +139,7 @@ int main(int argc, char *argv[]) {
 						"            error_page  404  /404.html;\n"
 						"            root  serv2_loc_2html;\n"
 						"        }\n"
-						"}";
+						"}";*/
 //	testParserConfig(input);
 //	testTokenizer();
 

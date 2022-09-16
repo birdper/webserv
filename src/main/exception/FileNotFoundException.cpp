@@ -1,9 +1,10 @@
 
 #include "FileNotFoundException.hpp"
 
-FileNotFoundException::FileNotFoundException(const std::string &fileName) :
-        fileName(fileName) {}
+FileNotFoundException::FileNotFoundException(const std::string& cause) :
+        _cause(cause) {
+}
 
 const char* FileNotFoundException::what() const throw() {
-    return (new std::string("File " + fileName + " not found"))->c_str();
+    return _cause.c_str();
 }

@@ -60,6 +60,7 @@ Config* ConfigRepositoryImpl::findLocationConfigByUri(const VirtualServer& virtu
     for (int i = 0; i < locations.size(); ++i) {
         currentLocation = locations[i];
         std::string locationUri = currentLocation->getParameters()->uri;
+
 //		TODO implement location search by uri
         size_t lengthMatch = getLengthMatch(locationUri, requestUri);
         if (lengthMatch > maxLength) {
@@ -68,7 +69,7 @@ Config* ConfigRepositoryImpl::findLocationConfigByUri(const VirtualServer& virtu
         }
     }
     if (maxLength)
-        return new Config(mostLengthMatch->getParameters());
+        return new Config(mostLengthMatch->getParameters(), true);
     return nullptr;
 }
 

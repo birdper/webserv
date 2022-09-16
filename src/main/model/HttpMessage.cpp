@@ -4,36 +4,65 @@
 
 #include "HttpMessage.hpp"
 
-void HttpMessage::addHeader(const std::string& line) {
+HttpMessage::~HttpMessage() {
+    _headers.clear();
+}
 
+void HttpMessage::setHeaders(const std::map<string, string>& headers) {
+    this->_headers = headers;
+}
+
+void HttpMessage::addHeader(const string& line) {
 	size_t delimiterPos = line.find(':');
-	if (delimiterPos == std::string::npos) {
-		std::cout << "Could not addHeader: " << line.c_str() << std::endl;
+	if (delimiterPos == string::npos) {
+		cout << "Could not addHeader: " << line.c_str() << endl;
 		return;
 	}
-	std::string key = line.substr(0, delimiterPos);
-	std::string value = line.substr(delimiterPos + 1, line.size() - delimiterPos - 1);
+	string key = line.substr(0, delimiterPos);
+	string value = line.substr(delimiterPos + 1, line.size() - delimiterPos - 1);
 
-	// Skip all leading spaces in the value
-	int i = 0;
-	while (i < value.size() && value.at(i) == 0x20) {
-		i++;
-	}
-	value = value.substr(i, value.size());
+    value = Utils::ltrim(value, " ");
 
-	// Add header to the map
 	addHeader(key, value);
 }
 
-void HttpMessage::addHeader(const std::string& key, const std::string& value) {
-	headers.insert(std::pair<std::string, std::string>(key, value));
+void HttpMessage::addHeader(const string& key, const string& value) {
+	_headers.insert(std::pair<string, string>(key, value));
 }
 
-HttpMessage::~HttpMessage() {
-	headers.clear();
-//	delete headers;
+string HttpMessage::findHeaderValue(const string& key) const {
+    std::map<string, string>::const_iterator it = _headers.find(key);
+
+    if (it == _headers.end()) {
+        it = _headers.find(Utils::ft_toLower(key));
+        if (it == _headers.end())
+            return "";
+    }
+    return it->second;
 }
 
 void HttpMessage::clearHeaders() {
-	headers.clear();
+	_headers.clear();
 }
+
+const string& HttpMessage::getHttpVersion() const {
+    return _httpVersion;
+}
+
+const string& HttpMessage::getParseErrorString() const {
+    return parseErrorString;
+}
+
+void HttpMessage::setHttpVersion(const string& httpVersion) {
+    HttpMessage::_httpVersion = httpVersion;
+}
+
+void HttpMessage::setParseErrorString(const string& parseErrorString) {
+    HttpMessage::parseErrorString = parseErrorString;
+}
+
+const std::map<string, string>& HttpMessage::getHeaders() const {
+    return _headers;
+}
+
+

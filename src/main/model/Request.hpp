@@ -3,15 +3,15 @@
 #include <iostream>
 #include <map>
 #include "HttpMethod.hpp"
+#include "HttpMessage.hpp"
 
-class Request {
+class Request : public HttpMessage {
 private:
-	bool isBadStatus;
-	HttpMethod method;
-    std::string httpMethodString;
+	HttpMethod _methodEnum;
+    std::string _methodString;
 	std::string uri;
-	std::string httpVersion;
-	std::map<std::string, std::string> headers;
+
+	bool isBadStatus;
 
 public:
 	Request();
@@ -23,19 +23,10 @@ public:
 	void setBadStatus();
 
 	HttpMethod getHttpMethod() const;
-	const std::string& getHttpMethodString() const;
-	void setMethod(HttpMethod method);
-    void setHttpMethodString(const std::string& httpMethodString);
+	const std::string& getMethodString() const;
+	void setMethodEnum(HttpMethod method);
+    void setMethodString(const std::string& httpMethodString);
 
     void setUri(const std::string& requestUri);
 	const std::string& getUri() const;
-
-	const std::string& getHttpVersion() const;
-	void setHttpVersion(const std::string& version);
-
-	const std::map<std::string, std::string>& getHeaders() const;
-	void setHeaders(const std::map<std::string, std::string>& headers);
-
-	const std::string& findHeaderByName(const std::string& headerName) const;
-
 };

@@ -8,7 +8,7 @@ std::string& Response::serialize() {
 	std::stringstream ss;
 
 	// start-line
-	ss << version << ' '
+	ss << getHttpVersion() << ' '
 	   << statusCode << "\r\n";
 
 	// date header

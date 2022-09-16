@@ -20,6 +20,7 @@ void BaseHandler::readfileToBody(Response& response, const std::string& path) {
         response.setBody(FileReader::readFile(path));
         response.setStatusCode("200");
     } catch (FileNotFoundException& ex) {
+        Utils::printStatus(ex.what());
 //		response.setBody(getErrorPageBody("ДОБРО ПОЖАЛОВАТЬ НА СТРАНИЦУ 404!"));
         response.setStatusCode("404");
     }

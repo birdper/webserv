@@ -4,7 +4,6 @@
 Socket::Socket(const string& ip, int port) :
         _ip(ip),
         _port(port) {
-    init();
 }
 
 Socket& Socket::operator=(Socket other) {
@@ -25,7 +24,6 @@ Socket::Socket(const Socket& other) :
 Socket* Socket::getInstance(const string& ip, int port) {
     return new Socket(ip, port);
 }
-
 
 void Socket::init() {
     openSocket();
@@ -83,8 +81,6 @@ void Socket::bindToAddress(struct sockaddr_in address) {
                        std::to_string(ntohs(address.sin_port)));
 }
 
-
-
 void Socket::startListening() {
     int result = listen(_socketDescriptor, SOMAXCONN);
     checkError(result, "startListening()");
@@ -97,8 +93,6 @@ int Socket::getSocketDescriptor() const {
 const std::string& Socket::getIp() const {
     return _ip;
 }
-
-
 
 string Socket::getPortString() const {
     return std::to_string(_port);

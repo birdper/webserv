@@ -50,7 +50,7 @@ FileReader::file_contents(const std::string& path)
     // representing matching the bytes of the file on the file system.
     std::ifstream file(path, std::ios::binary);
     if (!file.is_open())
-        throw FileNotFoundException(path);
+        throw FileNotFoundException("File " + path + " not found.");
 
     // Read contents
     std::string content;

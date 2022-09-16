@@ -14,7 +14,9 @@ void Server::initSockets() {
     for (size_t i = 0; i < hosts.size(); ++i) {
         string& ip = hosts[i].first;
         int port = hosts[i].second;
+
         Socket& socket = *Socket::getInstance(ip, port);
+        socket.init();
 
         int socketDescriptor = socket.getSocketDescriptor();
         Socket::setNonblockMode(socketDescriptor);
@@ -36,7 +38,6 @@ struct pollfd Server::initPollFd(int socketDescriptor, short eventTypes) {
 }
 
 #pragma clang diagnostic push
-
 #pragma ide diagnostic ignored "EndlessLoop"
 
 void Server::run() {
@@ -44,6 +45,7 @@ void Server::run() {
 
     while (true) {
         polling();
+        acceptConnections();
         handleEvents();
     }
 }
@@ -51,24 +53,49 @@ void Server::run() {
 #pragma clang diagnostic pop
 
 void Server::polling() {
-    int result = poll(pollFds.data(), pollFds.size(), InfinityTimeout);
+    int result = poll(pollFds.data(), pollFds.size(), PollInfinityTimeout);
 //	TODO read man, what handling errors
     if (result < 0) {
-        cerr << "poll() failed: " << strerror(errno) << endl;
+        cerr << "poll() failure: " << strerror(errno) << endl;
+        perror("Webserv: poll() failure");
+        exit(EXIT_FAILURE);
     } else if (result == 0) {
-        cerr << "poll() timed out." << endl;
+        Utils::printStatus("poll() timed out.");
     }
 }
 
-void Server::handleEvents() {
-//	Check listening sockets
+void Server::acceptConnections() {
     for (int i = 0; i < countListenSockets; ++i) {
         pollfd& listenSocket = pollFds[i];
         if (listenSocket.revents & POLLIN) {
             acceptClient(listenSocket);
+            listenSocket.revents &= ~POLLIN;
         }
     }
-//	Check clients
+}
+
+void Server::acceptClient(pollfd& listenSocket) {
+    struct sockaddr_in address;
+    socklen_t size = sizeof(address);
+
+    int clientSocketDescriptor = accept(listenSocket.fd, (struct sockaddr*) &address, &size);
+    if (clientSocketDescriptor <= 0) {
+        Utils::printStatus("cannot accept connection");
+        return;
+    }
+    Socket::setNonblockMode(clientSocketDescriptor);
+
+    Client* client = new Client(clientSocketDescriptor, listenSocket.fd);
+    clientRepository.addClient(client);
+
+    pollFds.push_back(initPollFd(clientSocketDescriptor, POLLIN | POLLOUT | POLLHUP));
+
+    string ip = string(inet_ntoa(address.sin_addr));
+    string sd = std::to_string(clientSocketDescriptor);
+    Utils::printStatus("accept connection client " + ip + ", sd = " + sd);
+}
+
+void Server::handleEvents() {
     for (size_t i = countListenSockets; i < pollFds.size(); ++i) {
         pollfd& clientSocket = pollFds[i];
 
@@ -77,73 +104,32 @@ void Server::handleEvents() {
 
         Client* client = clientRepository.findBySocketDescriptor(pollFds[i].fd);
         if (clientSocket.revents & POLLIN) {
-            clientSocket.events = readClient(client);
-//            readClient(client);
+//            clientSocket.events = readClient(client);
+            readClient(client);
+            clientSocket.revents &= ~POLLIN;
         }
         if (clientSocket.revents & POLLOUT) {
-            clientSocket.events = writeClient(client);
-//            writeClient(client);
+//            clientSocket.events = writeClient(client);
+//            if (!client->isReadyRequest()) {
+                writeClient(client);
+                clientSocket.revents &= ~POLLOUT;
+//            }
+
         }
         if (clientSocket.revents & POLLHUP) {
             disconnectClient(client, true);
             close(clientSocket.fd);
             pollFds.erase(pollFds.begin() + i);
+            clientSocket.revents &= ~POLLHUP;
         }
     }
-}
-
-void Server::acceptClient(pollfd& listenSocket) {
-    struct sockaddr_in address;
-
-    socklen_t size = sizeof(sockaddr);
-    int clientSocketDescriptor = accept(listenSocket.fd, (struct sockaddr*) &address, &size);
-    if (clientSocketDescriptor <= 0) {
-        Utils::printStatus("cannot accept connection");
-        return;
-    }
-//    TODO закоментил для теста работы без обновления events
-//    Socket::setNonblockMode(clientSocketDescriptor);
-
-    Client* client = new Client(clientSocketDescriptor, listenSocket.fd);
-    clientRepository.addClient(client);
-    Utils::printStatus("created client");
-
-    pollFds.push_back(initPollFd(clientSocketDescriptor, POLLIN | POLLOUT | POLLHUP));
-
-    const string ip = std::string(inet_ntoa(address.sin_addr));
-    const string sd = std::to_string(clientSocketDescriptor);
-    Utils::printStatus("accept connection client " + ip + ", sd = " + sd);
-}
-
-void Server::disconnectClient(Client* client, bool isRemoveClient) {
-    if (client == nullptr)
-        return;
-
-    struct sockaddr_in address;
-    getsockname(client->getSocketDescriptor(), (struct sockaddr*) &address,
-                reinterpret_cast<socklen_t*>(sizeof(sockaddr)));
-
-    const string ip = std::string(inet_ntoa(address.sin_addr));
-    const string sd = std::to_string(client->getSocketDescriptor());
-    Utils::printStatus("disconnect client " + ip + ", sd = " + sd);
-
-//	cout << "[" << client->getClientIP() << "] has opted to close the connection" << endl;
-// TODO должны закрыть pollfd клиента. И удалить из vector pollfds это делается снаружи при обработке POLLHUP
-//	close(client->getSocketDescriptor());
-    Utils::printStatus("client clear()");
-//	client->clear();
-    if (isRemoveClient) {
-        Utils::printStatus("remove client");
-        clientRepository.removeBySocketDescriptor(client->getSocketDescriptor());
-    }
-    delete client;
-    Utils::printStatus("deleted client");
 }
 
 short Server::readClient(Client* client) {
 
 //	TODO Хватит ли объёма буфера?
     char buffer[BUFFER_SIZE];
+//    std::vector<char> buffer(BUFFER_SIZE);
     ssize_t bytesReadCount = recv(client->getSocketDescriptor(),
                                   buffer,
                                   BUFFER_SIZE - 1,
@@ -151,6 +137,8 @@ short Server::readClient(Client* client) {
 
     if (bytesReadCount < 0) {
         Utils::printStatus("recv() error");
+        cerr << "recv() failure: " << strerror(errno) << endl;
+        perror("Webserv: recv() failure");
         return POLLHUP;
     }
     if (bytesReadCount == 0) {
@@ -165,19 +153,23 @@ short Server::readClient(Client* client) {
 //	checkBuffer();
 //    client->addToSendQueue(new string(buffer));
 
-
+    Utils::printStatus("parse request");
     Request* request = requestParser.parse(buffer);
-    Utils::printStatus("parsed request");
+    if (request != nullptr) {
 
-    Config& config = findConfig(*client, *request);
-    Utils::printStatus("found config");
+        Config& config = findConfig(*client, *request);
 
-
-//    Response response = requestHandler.handle(*request, config);
-    Utils::printStatus("handled request");
+        Response response = RequestHandler::getInstance(*request, config).handle();
+        client->setResponse(&response);
+        //    Response response = requestHandler.handle(*request, config);
+        client->setIsReadyRequest(true);
+        Utils::printStatus("handled request");
+    } else {
+        client->setIsReadyRequest(false);
+        Utils::printStatus("request not ready");
+    }
 
     return POLLOUT;
-
 }
 
 Config& Server::findConfig(const Client& client, const Request& request) {
@@ -185,7 +177,7 @@ Config& Server::findConfig(const Client& client, const Request& request) {
     Socket& listenSocket = *listenSockets.find(client.getListenSocketDescriptor())->second;
     VirtualServer virtualServer = configRepository.getServerConfig(listenSocket.getIp(),
                                                                    listenSocket.getPortString(),
-                                                                   request.findHeaderByName("ServerName"));
+                                                                   request.findHeaderValue("ServerName"));
 
     Config* config = configRepository.findLocationConfigByUri(virtualServer, request.getUri());
     if (config == nullptr) {
@@ -197,7 +189,7 @@ Config& Server::findConfig(const Client& client, const Request& request) {
 
 short Server::writeClient(Client* client) {
 //	TODO check null?
-    Utils::printStatus("<<<");
+    Utils::printStatus("<<< write");
     string body = "<html>\n"
                   "<body>\n"
                   "<h1>Hello, World!</h1>\n"
@@ -206,8 +198,8 @@ short Server::writeClient(Client* client) {
 
     string buffer = "HTTP/1.1 200 OK\n"
                     "Content-Length: " + std::to_string(body.size()) + "\n"
-                    "Connection: close\r\n"
-                    "\r\n" +
+                                                                       "Connection: close\r\n"
+                                                                       "\r\n" +
                     body;
 
     ssize_t countSendBytes = send(client->getSocketDescriptor(), buffer.c_str(), buffer.size(),
@@ -240,6 +232,31 @@ short Server::writeClient(Client* client) {
 	}
  */
     return true;
+}
+
+void Server::disconnectClient(Client* client, bool isShouldRemoveClient) {
+    if (client == nullptr)
+        return;
+
+    struct sockaddr_in address;
+    socklen_t size = sizeof(sockaddr);
+    getsockname(client->getSocketDescriptor(), (struct sockaddr*) &address, &size);
+
+    const string ip = std::string(inet_ntoa(address.sin_addr));
+    const string sd = std::to_string(client->getSocketDescriptor());
+    Utils::printStatus("disconnect client " + ip + ", sd = " + sd);
+
+//	cout << "[" << client->getClientIP() << "] has opted to close the connection" << endl;
+// TODO должны закрыть pollfd клиента. И удалить из vector pollfds это делается снаружи при обработке POLLHUP
+//	close(client->getSocketDescriptor());
+    Utils::printStatus("client clear()");
+//	client->clear();
+    if (isShouldRemoveClient) {
+        Utils::printStatus("remove client");
+        clientRepository.removeBySocketDescriptor(client->getSocketDescriptor());
+    }
+    delete client;
+    Utils::printStatus("deleted client");
 }
 
 void Server::putListenSocket(Socket& socket) {

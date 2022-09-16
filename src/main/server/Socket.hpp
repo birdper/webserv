@@ -20,17 +20,17 @@ public:
     Socket(const Socket& other);
     Socket& operator=(Socket other);
 
+	static void setNonblockMode(int socketDescriptor);
+	static Socket* getInstance(const string& ip, int port);
+
+    void init();
+
     int getSocketDescriptor() const;
     const string& getIp() const;
     string getPortString() const;
 
-	static void setNonblockMode(int socketDescriptor);
-	static Socket* getInstance(const string& ip, int port);
-
-
 private:
     Socket(const string& ip, int port);
-    void init();
 	void openSocket();
 	static void checkError(int result, const std::string& nameFunFromError);
 	void setAddressReuseMode();

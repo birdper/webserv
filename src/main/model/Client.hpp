@@ -18,10 +18,15 @@ private:
 	std::string buffer;
 	std::queue<std::string*> sendQueue;
 
+    bool _isReadyRequest;
+
 public:
-	/*Client(int socketDescriptor, int* listenSocketDescriptor, const sockaddr_in& clientAddress)*/;
+    bool isReadyRequest() const;
+    void setIsReadyRequest(bool isReadyRequest);
 
     explicit Client(int socketDescriptor);
+    Response* getResponse() const;
+    void setResponse(Response* response);
     Client(int socketDescriptor, int listenSocketDescriptor);
     virtual ~Client();
 

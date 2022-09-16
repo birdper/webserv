@@ -2,25 +2,32 @@
 // Created by Aleksei S on 05.09.2022.
 //
 
-#ifndef HTTPMESSAGE_HPP
-#define HTTPMESSAGE_HPP
+#pragma once
 
 #include <iostream>
 #include <map>
+#include "Utils.hpp"
 
 class HttpMessage {
 protected:
-	std::string version;
-	std::string parseErrorString;
+	std::string _httpVersion;
+    std::string parseErrorString;
+
 private:
-	std::map<std::string, std::string> headers;
+	std::map<string, string> _headers;
 
 public:
 	virtual ~HttpMessage();
 
-	void addHeader(const std::string& line);
-	void addHeader(const std::string& key, const std::string& value);
-	void clearHeaders();
-};
+    void addHeader(const string& line);
+    void addHeader(const string& key, const string& value);
+    string findHeaderValue(const string& key) const;
 
-#endif
+    void setHttpVersion(const string& httpVersion);
+    void setParseErrorString(const string& parseErrorString);
+    void setHeaders(const std::map<std::string, std::string>& headers);
+    const string& getHttpVersion() const;
+    const string& getParseErrorString() const;
+    const std::map<string, string>& getHeaders() const;
+    void clearHeaders();
+};

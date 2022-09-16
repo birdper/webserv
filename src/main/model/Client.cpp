@@ -65,3 +65,19 @@ void Client::clear() {
 int Client::getListenSocketDescriptor() const {
     return listenSocketDescriptor;
 }
+
+bool Client::isReadyRequest() const {
+    return _isReadyRequest;
+}
+
+void Client::setIsReadyRequest(bool isReadyRequest) {
+    Client::_isReadyRequest = isReadyRequest;
+}
+
+Response* Client::getResponse() const {
+    return response;
+}
+
+void Client::setResponse(Response* response) {
+    Client::response = response;
+}
