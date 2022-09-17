@@ -12,6 +12,7 @@
 #include "VirtualServer.hpp"
 #include "ConfigStorage.hpp"
 #include "Utils.hpp"
+#include "FileReader.hpp"
 
 class ConfigParser {
 
@@ -19,7 +20,7 @@ public:
 	explicit ConfigParser();
 	~ConfigParser();
 
-	void parseConfig(const std::string& inputString, ConfigStorage* storage);
+	void parseConfig(const std::string& configFileName, ConfigStorage* storage);
 
 private:
     std::map<std::string, std::string> parseErrorPagePaths(const std::string &input);

@@ -104,22 +104,17 @@ void Server::handleEvents() {
 
         Client* client = clientRepository.findBySocketDescriptor(pollFds[i].fd);
         if (clientSocket.revents & POLLIN) {
-//            clientSocket.events = readClient(client);
-            readClient(client);
             clientSocket.revents &= ~POLLIN;
+            readClient(client);
+            cout << endl;
         }
-        if (clientSocket.revents & POLLOUT) {
-//            clientSocket.events = writeClient(client);
-//            if (!client->isReadyRequest()) {
-                writeClient(client);
-                clientSocket.revents &= ~POLLOUT;
-//            }
 
+        if (clientSocket.revents & POLLOUT && client->isReadyRequest()) {
+            clientSocket.revents &= ~POLLOUT;
+            writeClient(client);
         }
         if (clientSocket.revents & POLLHUP) {
             disconnectClient(client, true);
-            close(clientSocket.fd);
-            pollFds.erase(pollFds.begin() + i);
             clientSocket.revents &= ~POLLHUP;
         }
     }
@@ -136,9 +131,10 @@ short Server::readClient(Client* client) {
                                   MsgNoFlag);
 
     if (bytesReadCount < 0) {
-        Utils::printStatus("recv() error");
-        cerr << "recv() failure: " << strerror(errno) << endl;
-        perror("Webserv: recv() failure");
+        Utils::printStatus("PRINT_STATUS() recv() error");
+        cerr << "STRERROR: recv() failure: " << strerror(errno) << endl;
+        perror("PERROR: recv() failure");
+        disconnectClient(client, false);
         return POLLHUP;
     }
     if (bytesReadCount == 0) {
@@ -168,7 +164,6 @@ short Server::readClient(Client* client) {
         client->setIsReadyRequest(false);
         Utils::printStatus("request not ready");
     }
-
     return POLLOUT;
 }
 
@@ -177,7 +172,7 @@ Config& Server::findConfig(const Client& client, const Request& request) {
     Socket& listenSocket = *listenSockets.find(client.getListenSocketDescriptor())->second;
     VirtualServer virtualServer = configRepository.getServerConfig(listenSocket.getIp(),
                                                                    listenSocket.getPortString(),
-                                                                   request.findHeaderValue("ServerName"));
+                                                                   request.findHeaderValue("Host"));
 
     Config* config = configRepository.findLocationConfigByUri(virtualServer, request.getUri());
     if (config == nullptr) {
@@ -189,6 +184,8 @@ Config& Server::findConfig(const Client& client, const Request& request) {
 
 short Server::writeClient(Client* client) {
 //	TODO check null?
+    client->setIsReadyRequest(false);
+
     Utils::printStatus("<<< write");
     string body = "<html>\n"
                   "<body>\n"
@@ -246,17 +243,16 @@ void Server::disconnectClient(Client* client, bool isShouldRemoveClient) {
     const string sd = std::to_string(client->getSocketDescriptor());
     Utils::printStatus("disconnect client " + ip + ", sd = " + sd);
 
-//	cout << "[" << client->getClientIP() << "] has opted to close the connection" << endl;
-// TODO должны закрыть pollfd клиента. И удалить из vector pollfds это делается снаружи при обработке POLLHUP
-//	close(client->getSocketDescriptor());
-    Utils::printStatus("client clear()");
-//	client->clear();
-    if (isShouldRemoveClient) {
-        Utils::printStatus("remove client");
-        clientRepository.removeBySocketDescriptor(client->getSocketDescriptor());
+//    if (isShouldRemoveClient) {
+    clientRepository.removeBySocketDescriptor(client->getSocketDescriptor());
+//    }
+    for (int i = 0; i < pollFds.size(); ++i) {
+        if (pollFds[i].fd == client->getSocketDescriptor()) {
+            pollFds.erase(pollFds.begin() + i);
+        }
     }
+    close(client->getSocketDescriptor());
     delete client;
-    Utils::printStatus("deleted client");
 }
 
 void Server::putListenSocket(Socket& socket) {
