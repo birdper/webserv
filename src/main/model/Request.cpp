@@ -25,7 +25,7 @@ bool Request::isBadRequest() const {
 }
 
 void Request::setBadStatus() {
-	Request::isBadStatus = true;
+	isBadStatus = true;
 }
 
 HttpMethod Request::getHttpMethod() const {
@@ -33,7 +33,7 @@ HttpMethod Request::getHttpMethod() const {
 }
 
 void Request::setMethodEnum(HttpMethod method) {
-	Request::_methodEnum = method;
+	_methodEnum = method;
 }
 
 const std::string& Request::getUri() const {
@@ -41,7 +41,7 @@ const std::string& Request::getUri() const {
 }
 
 void Request::setUri(const std::string& requestUri) {
-	Request::uri = requestUri;
+	uri = requestUri;
 }
 
 const std::string& Request::getMethodString() const {
@@ -50,4 +50,16 @@ const std::string& Request::getMethodString() const {
 
 void Request::setMethodString(const std::string& httpMethodString) {
     this->_methodString = httpMethodString;
+}
+
+const string& Request::getBody() const {
+    return _body;
+}
+
+void Request::setBody(const string& body) {
+    _body = body;
+}
+
+void Request::appendBody(const string& buffer) {
+    _body.append(buffer);
 }

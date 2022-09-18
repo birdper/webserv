@@ -28,7 +28,7 @@ private:
 
 	int countListenSockets;
 	std::vector<struct pollfd> pollFds;
-	static const int BUFFER_SIZE = 1024;
+	static const int BUFFER_SIZE = 256 * 1024;
     std::map<int, Socket*> listenSockets;
 
 public:
@@ -48,11 +48,12 @@ private:
 
 	void handleEvents();
 
-	short readClient(Client* client);
+	void readClient(Client* client);
 	short writeClient(Client* client);
 
 	void disconnectClient(Client* client, bool isShouldRemoveClient);
     Config& findConfig(const Client& client, const Request& request);
     void acceptConnections();
+    void handleRequest(Client* client);
 };
 
