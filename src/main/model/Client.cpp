@@ -83,7 +83,7 @@ void Client::setResponse(Response* response) {
 }
 
 void Client::appendToBuffer(const string& chunk) {
-    this->buffer.append(buffer);
+    this->buffer.append(chunk);
 }
 
 Request& Client::getRequest() {

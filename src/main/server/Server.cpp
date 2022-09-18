@@ -149,9 +149,10 @@ void Server::readClient(Client* client) {
 	cout << "========================" << endl;
 */
 
-    Utils::printStatus("parse request");
     client->appendToBuffer(buffer);
-    requestParser.parse(client->getBuffer(), client->getRequest());
+    requestParser.parse(client->getBuffer(), client->getRequest(), *client);
+    Utils::printStatus("request parsed");
+
 }
 
 void Server::handleRequest(Client* client) {
@@ -160,7 +161,7 @@ void Server::handleRequest(Client* client) {
     Response response = RequestHandler::getInstance(client->getRequest(), config).handle();
 
     client->setResponse(&response);
-    Utils::printStatus("handled request");
+
 }
 
 Config& Server::findConfig(const Client& client, const Request& request) {
@@ -179,7 +180,8 @@ Config& Server::findConfig(const Client& client, const Request& request) {
 }
 
 short Server::writeClient(Client* client) {
-//	TODO check null?
+    Utils::printStatus(" >>>> write client");
+
     client->setIsReadyRequest(false);
     Response& response = *client->getResponse();
 

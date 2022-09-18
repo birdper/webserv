@@ -1,10 +1,15 @@
 #include "RequestParser.hpp"
+#include "Client.hpp"
 
-void RequestParser::parse(const string& requestBuffer, Request& request) const {
+void RequestParser::parse(const string& requestBuffer, Request& request, Client& client) const {
 
+    Utils::printStatus("parse request");
+    std::cout << "REQUEST_BUFFER:\n" << requestBuffer << "\nEND REQUEST==============" << std::endl;
     size_t borderLinePosition = requestBuffer.find(HTTP_BORDER_LINE);
 
-    if (borderLinePosition != string::npos && isHasHeaders(request)) {
+
+    if (borderLinePosition != string::npos && request.getHeaders().empty()) {
+        Utils::printStatus("parse headers");
         string headersString = requestBuffer.substr(0, borderLinePosition);
 
         string bodyString(requestBuffer.substr(borderLinePosition + HTTP_BORDER_LINE.length()));
@@ -14,10 +19,17 @@ void RequestParser::parse(const string& requestBuffer, Request& request) const {
 
         parseStartLine(headerLines[0], request);
         parseHeaders(headerLines, request);
-        parsePost(request);
+
+        if (!(request.getHttpMethod() == POST || request.getHttpMethod() == PUT)) {
+            Utils::printStatus("REQUEST READY");
+            client.setIsReadyRequest(true);
+        }
+//        parsePost(request);
     }
 //    try {
-    parseBody(request, requestBuffer);
+    if (request.getHttpMethod() == POST || request.getHttpMethod() == PUT) {
+        parseBody(request, requestBuffer, client);
+    }
 //    } catch (ParseRequestException& ex) {
 //        Utils::printStatus(ex.what());
 //        request.setBadStatus();
@@ -26,7 +38,7 @@ void RequestParser::parse(const string& requestBuffer, Request& request) const {
 }
 
 bool RequestParser::isHasHeaders(const Request& request) const {
-    return !request.getHeaders().empty();
+    return request.getHeaders().empty();
 }
 
 void RequestParser::parseStartLine(const string& line, Request& request) const {
@@ -92,7 +104,7 @@ void RequestParser::parseHeaders(std::vector<string>& headerLines, Request& requ
 //    }
 }
 
-void RequestParser::parsePost(Request& request) const {
+void RequestParser::parsePostHeaders(Request& request) const {
     if (request.getHttpMethod() == POST || request.getHttpMethod() == PUT) {
         if (request.findHeaderValue("Transfer-Encoding") == "chunked") {
 //            request.setPostType(CHUNKED);
@@ -116,43 +128,43 @@ long RequestParser::ContentLengthToInt(const string& contentLength) const {
     if (number < INT32_MIN || number > INT32_MAX) {
         throw ParseRequestException("Content-Length value incorrect number");
     }
+    return number;
 }
 
-void RequestParser::parseBody(Request& request, const string& clientBuffer) const {
-//	TODO (not yet implement)
-    if ((request.getHttpMethod() != POST) && (request.getHttpMethod() != PUT)) {
-        return;
-    }
+bool RequestParser::parseBody(Request& request, const string& clientBuffer, Client& client) const {
 
     if (request.findHeaderValue("Transfer-Encoding") == "chunked") {
-        parseChunked(request);
-        return;
+        return parseChunked(request);
     }
 
     string contentLength = request.findHeaderValue("Content-Length");
-
     if (!contentLength.empty()) {
-        parseContent(request, clientBuffer);
-        return;
+        parseBodyContent(request, clientBuffer, client);
     }
+    return false;
 }
 
-void RequestParser::parseChunked(Request& request) const {
-//      TODO Not yet implement
-}
 
-void RequestParser::parseContent(Request& request, const string& clientBuffer) const {
+void RequestParser::parseBodyContent(Request& request, const string& clientBuffer, Client& client) const {
 //    TODO перенести в PostHandler
-//    string fileName = Utils::getFileName(request.getUri());
+//    string fileName = Utils::getFileName(request.getLocationUri());
 //    request.setFileName(fileName);
+    Utils::printStatus("parse content");
 
     size_t contentLength = ContentLengthToInt(request.findHeaderValue("Content-Length"));
     if (request.getBody().size() > contentLength) {
         throw ParseRequestException("400 BAD REQUEST! RECV size > then MUST BE");
     }
     request.appendBody(clientBuffer);
+    if (contentLength == request.getBody().size()) {
+        Utils::printStatus("POST REQUEST READY");
+        client.setIsReadyRequest(true);
+    }
+}
 
-//    request.setBuffer("");
-//    request.setBody(firstBody + client.getBuffer() );
+bool RequestParser::parseChunked(Request& request) const {
+    Utils::printStatus("parse chunked");
+    return true;
 
+//    TODO Not yet implement
 }
