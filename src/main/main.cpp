@@ -7,8 +7,10 @@
 
 
 bool isIncorrectConfigFile(const std::string& configFileName) {
-//  TODO not yet implement
-	return false;
+    if (Utils::isFileExists(configFileName))
+        if(Utils::isAccessRights(configFileName))
+            return false;
+	return true;
 }
 
 int main(int argc, char *argv[]) {
