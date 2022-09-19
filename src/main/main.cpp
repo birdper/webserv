@@ -7,9 +7,10 @@
 
 
 bool isIncorrectConfigFile(const std::string& configFileName) {
-    if (Utils::isFileExists(configFileName))
-        if(Utils::isAccessRights(configFileName))
+    if (Utils::isFileExists(configFileName)) {
+        if (Utils::isAccessRights(configFileName))
             return false;
+    }
 	return true;
 }
 
