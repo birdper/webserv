@@ -7,8 +7,8 @@
 class RequestHandler {
 private:
     std::map<string, BaseHandler*> _methods;
-    Request& request;
-    Config& config;
+    Request& _request;
+    Config& _config;
 
 public:
     virtual ~RequestHandler();

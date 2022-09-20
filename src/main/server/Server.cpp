@@ -37,6 +37,7 @@ struct pollfd Server::initPollFd(int socketDescriptor, short eventTypes) {
     return pollFd;
 }
 
+
 #pragma clang diagnostic push
 #pragma ide diagnostic ignored "EndlessLoop"
 
@@ -51,6 +52,7 @@ void Server::run() {
 }
 
 #pragma clang diagnostic pop
+
 
 void Server::polling() {
     int result = poll(pollFds.data(), pollFds.size(), PollInfinityTimeout);
@@ -106,9 +108,10 @@ void Server::handleEvents() {
         if (clientSocket.revents & POLLIN) {
             clientSocket.revents &= ~POLLIN;
             readClient(client);
-            cout << endl;
+            if (client->isReadyRequest()) {
+                handleRequest(client);
+            }
         }
-
         if (clientSocket.revents & POLLOUT && client->isReadyRequest()) {
             clientSocket.revents &= ~POLLOUT;
             writeClient(client);
@@ -120,11 +123,10 @@ void Server::handleEvents() {
     }
 }
 
-short Server::readClient(Client* client) {
+void Server::readClient(Client* client) {
 
 //	TODO Хватит ли объёма буфера?
     char buffer[BUFFER_SIZE];
-//    std::vector<char> buffer(BUFFER_SIZE);
     ssize_t bytesReadCount = recv(client->getSocketDescriptor(),
                                   buffer,
                                   BUFFER_SIZE - 1,
@@ -135,36 +137,31 @@ short Server::readClient(Client* client) {
         cerr << "STRERROR: recv() failure: " << strerror(errno) << endl;
         perror("PERROR: recv() failure");
         disconnectClient(client, false);
-        return POLLHUP;
+//        return POLLHUP;
     }
     if (bytesReadCount == 0) {
         Utils::printStatus("recv() timeout");
-        return POLLHUP;
+//        return POLLHUP;
     }
     buffer[bytesReadCount] = '\0';
-//	const string& sd = std::to_string(client->getSocketDescriptor());
-//	Utils::printStatus(">>> " + sd + "\n" + string(buffer));
-//	cout << "========================" << endl;
+/*	const string& sd = std::to_string(client->getSocketDescriptor());
+	Utils::printStatus(">>> " + sd + "\n" + string(buffer));
+	cout << "========================" << endl;
+*/
 
-//	checkBuffer();
-//    client->addToSendQueue(new string(buffer));
+    client->appendToBuffer(buffer);
+    requestParser.parse(client->getBuffer(), client->getRequest(), *client);
+    Utils::printStatus("request parsed");
 
-    Utils::printStatus("parse request");
-    Request* request = requestParser.parse(buffer);
-    if (request != nullptr) {
+}
 
-        Config& config = findConfig(*client, *request);
+void Server::handleRequest(Client* client) {
+    Config& config = findConfig(*client, client->getRequest());
 
-        Response response = RequestHandler::getInstance(*request, config).handle();
-        client->setResponse(&response);
-        //    Response response = requestHandler.handle(*request, config);
-        client->setIsReadyRequest(true);
-        Utils::printStatus("handled request");
-    } else {
-        client->setIsReadyRequest(false);
-        Utils::printStatus("request not ready");
-    }
-    return POLLOUT;
+    Response response = RequestHandler::getInstance(client->getRequest(), config).handle();
+
+    client->setResponse(&response);
+
 }
 
 Config& Server::findConfig(const Client& client, const Request& request) {
@@ -183,24 +180,33 @@ Config& Server::findConfig(const Client& client, const Request& request) {
 }
 
 short Server::writeClient(Client* client) {
-//	TODO check null?
+    Utils::printStatus(" >>>> write client");
+
     client->setIsReadyRequest(false);
+    Response& response = *client->getResponse();
 
-    Utils::printStatus("<<< write");
-    string body = "<html>\n"
-                  "<body>\n"
-                  "<h1>Hello, World!</h1>\n"
-                  "</body>\n"
-                  "</html>\n";
+    string buff = response.serialize();
 
-    string buffer = "HTTP/1.1 200 OK\n"
-                    "Content-Length: " + std::to_string(body.size()) + "\n"
-                                                                       "Connection: close\r\n"
-                                                                       "\r\n" +
-                    body;
-
-    ssize_t countSendBytes = send(client->getSocketDescriptor(), buffer.c_str(), buffer.size(),
+    ssize_t countSendBytes = send(client->getSocketDescriptor(), buff.c_str(), buff.size(),
                                   MsgNoFlag);
+
+    /*  Utils::printStatus("<<< write");
+      string body = "<html>\n"
+                    "<body>\n"
+                    "<h1>Hello, World!</h1>\n"
+                    "</body>\n"
+                    "</html>\n";
+
+      string buffer = "HTTP/1.1 200 OK\n"
+                      "Content-Length: " + std::to_string(body.size()) + "\n"
+                                                                         "Connection: close\r\n"
+                                                                         "\r\n" +
+                      body;
+
+
+
+      ssize_t countSendBytes = send(client->getSocketDescriptor(), buffer.c_str(), buffer.size(),
+                                    MsgNoFlag);*/
     return POLLIN;
     /*
 //	if (!client)
@@ -243,9 +249,9 @@ void Server::disconnectClient(Client* client, bool isShouldRemoveClient) {
     const string sd = std::to_string(client->getSocketDescriptor());
     Utils::printStatus("disconnect client " + ip + ", sd = " + sd);
 
-//    if (isShouldRemoveClient) {
-    clientRepository.removeBySocketDescriptor(client->getSocketDescriptor());
-//    }
+    if (isShouldRemoveClient) {
+        clientRepository.removeBySocketDescriptor(client->getSocketDescriptor());
+    }
     for (int i = 0; i < pollFds.size(); ++i) {
         if (pollFds[i].fd == client->getSocketDescriptor()) {
             pollFds.erase(pollFds.begin() + i);

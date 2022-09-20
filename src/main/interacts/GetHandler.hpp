@@ -22,11 +22,15 @@ public:
     static BaseHandler* getInstance(Request& request, Config& config);
     virtual ~GetHandler();
 
-    Response handle(Request& request, Config& config);
+    Response handle();
 
 private:
     explicit GetHandler(Request& request, Config& config);
-    string getAutoindexBody(std::vector<string> fileNames, const string& path, const string& uri);
+    string getAutoindexBody(const string& path, const string& uri);
     std::vector<string> getFileNamesFromDirectory(const string& path);
-    std::string getPathFromUri() const;
+    std::string handleDirectory() const;
+    string findPathToIndexFile(string& root) const;
+    void handleDirectory(Response& response, string& path);
+    void handleFile(Response& response, string& path);
+    string getErrorPage(const string& errorCode);
 };

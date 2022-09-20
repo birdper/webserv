@@ -17,38 +17,86 @@ GetHandler::~GetHandler() {
 
 }
 
-Response GetHandler::handle(Request& request, Config& config) {
+Response GetHandler::handle() {
+    Utils::printStatus("HANDLE GET");
+
     Response response;
-    const string path = getPathFromUri();
+    Utils::printStatus("GET REQUEST HANDLER: location uri = " + _config->getLocationUri());
+    Utils::printStatus("GET REQUEST HANDLER: request_uri = " + _request->getUri());
+    Utils::printStatus("GET REQUEST HANDLER: getRoot = " + _config->getRoot());
 
-//    isDirectory
+    std::string path = getResourcePath(_config->getLocationUri(),
+                                       _config->getRoot(),
+                                       _request->getUri());
+
+    Utils::printStatus("GET REQUEST HANDLER: after resource_path = " + path);
+
+
     if (Utils::isDirectory(path)) {
-
-//        check index files
-        _config->getIndexFiles();
-//        if (isNotFoundIndexFile)
-
-//        check autoindex
-        if (_config->isAutoindexEnabled()) {
-            string body = getAutoindexBody(getFileNamesFromDirectory(path),
-                                           path,
-                                           _request->getUri());
-            response.addHeader("Content-Length", std::to_string(body.size()));
-            response.setStatusCode("200 OK");
-        } else {
-            response.setStatusCode("403 Forbidden");
-        }
-    } else {
-        readfileToBody(response, path);
+        handleDirectory(response, path);
+        return response;
+    }
+    if (Utils::isFileExists(path)) {
+        handleFile(response, path);
+        return response;
+    }
+    Utils::printStatus("response 403");
+    response.setStatusCode("403 Forbidden");
+    string body = getErrorPage("403");
+    if (!body.empty()) {
+        response.setBody(body);
+        response.addHeader("Content-Length", std::to_string(body.size()));
     }
     return response;
 }
 
-string GetHandler::getAutoindexBody(std::vector<string> fileNames,
-                                             const string& path,
-                                             const string& uri) {
-    std::ostringstream body;
+void GetHandler::handleDirectory(Response& response, string& path) {
+    Utils::printStatus("GET REQUEST HANDLER: resource is directory");
 
+    response.setStatusCode("200 OK");
+
+    string body;
+    string pathToIndexFile = findPathToIndexFile(path);
+    std::cout << "path : " << path << std::endl;
+    std::cout << "path to index file: " << pathToIndexFile << std::endl;
+    std::cout << "size index_files: " << _config->getIndexFiles().size() << std::endl;
+
+    if (!pathToIndexFile.empty()) {                             // check index files
+        Utils::printStatus("GET REQUEST HANDLER: found index file");
+        body = FileReader::readFile(pathToIndexFile);
+    } else if (_config->isAutoindexEnabled()) {                 // check Autoindex
+        Utils::printStatus("GET REQUEST HANDLER: not found index file");
+        body = getAutoindexBody(path, _request->getUri());
+    } else {
+        Utils::printStatus("GET REQUEST HANDLER: AUTOINDEX disabled  403 Forbidden");
+        response.setStatusCode("403 Forbidden");
+        body = getErrorPage("403");
+    }
+    if (!body.empty()) {
+        response.setBody(body);
+        response.addHeader("Content-Length", std::to_string(body.size()));
+    }
+}
+
+std::string GetHandler::findPathToIndexFile(string& root) const {
+    std::vector<std::string> indexFiles = _config->getIndexFiles();
+
+    if (root.back() != '/') {
+        root.append("/");
+    }
+    for (int i = 0; i < indexFiles.size(); ++i) {
+        string indexFileName = indexFiles[i];
+        string pathToIndexFile = root + indexFileName;
+        if (Utils::isFileExists(pathToIndexFile)) {
+            return pathToIndexFile;
+        }
+    }
+    return "";
+}
+
+string GetHandler::getAutoindexBody(const string& path, const string& uri) {
+
+    std::ostringstream body;
     string title = "Index of " + uri;
 /*	body.append("<html>\n"
 					"<head><title>" + title + "</title></head>\n" +
@@ -61,6 +109,8 @@ string GetHandler::getAutoindexBody(std::vector<string> fileNames,
          << "<body>\n"
          << "<h1>" << title << "</h1>"
          << "<hr><pre><a href=\"../\">../</a>\n";
+
+    std::vector<string> fileNames = getFileNamesFromDirectory(path);
     for (int i = 0; i < fileNames.size(); ++i) {
         string fileName = fileNames[i];
         if (strcmp(fileName.c_str(), ".") && strcmp(fileName.c_str(), "..")) {
@@ -102,6 +152,12 @@ string GetHandler::getAutoindexBody(std::vector<string> fileNames,
     return body.str();
 }
 
+void GetHandler::handleFile(Response& response, string& path) {
+    response.setStatusCode("200 OK");
+    response.setBody(FileReader::readFile(path));
+    response.addHeader("Content-Length", std::to_string(response.getBody().size()));
+}
+
 std::vector<std::string> GetHandler::getFileNamesFromDirectory(const std::string& path) {
     std::vector<std::string> fileNames;
     struct dirent* di_struct;
@@ -116,32 +172,12 @@ std::vector<std::string> GetHandler::getFileNamesFromDirectory(const std::string
     return fileNames;
 }
 
-std::string GetHandler::getPathFromUri() const {
 
-    std::string path = _config->getRoot() + "/" + _request->getUri();
-
-    if (Utils::isFileExists(path)) {
-        if (Utils::isDirectory(path)) {
-            if (path.back() != '/') {
-                path.append("/");
-            }
-
-            std::vector<std::string> indexes = _config->getIndexFiles();
-            for (int i = 0; i < indexes.size(); ++i) {
-                std::string indexFileName = indexes[i];
-                std::string pathToIndexFile;
-                if (indexFileName.front() == '/') {
-                    pathToIndexFile = _config->getRoot() + indexFileName;
-                } else {
-                    pathToIndexFile = path + indexFileName;
-                }
-                if (Utils::isFileExists(pathToIndexFile) && !Utils::isDirectory(pathToIndexFile) &&
-                    !access(pathToIndexFile.c_str(), W_OK)) {
-                    return pathToIndexFile;
-                }
-            }
-        }
-        return path;
+string GetHandler::getErrorPage(const string& errorCode) {
+//    string pathToErrorPage = _config.findErrorPagePath("403");
+    string pathToErrorPage;
+    if (!pathToErrorPage.empty()) {
+        return FileReader::readFile(pathToErrorPage);
     }
-    return std::string();
+     return "";
 }

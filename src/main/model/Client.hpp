@@ -12,8 +12,8 @@ private:
     int socketDescriptor;
     int listenSocketDescriptor;
 
-	Request* request;
-	Response* response;
+	Request request;
+    Response* response;
 
 	std::string buffer;
 	std::queue<std::string*> sendQueue;
@@ -21,17 +21,18 @@ private:
     bool _isReadyRequest;
 
 public:
-    bool isReadyRequest() const;
-    void setIsReadyRequest(bool isReadyRequest);
-
     explicit Client(int socketDescriptor);
-    Response* getResponse() const;
-    void setResponse(Response* response);
     Client(int socketDescriptor, int listenSocketDescriptor);
     virtual ~Client();
 
 	int getSocketDescriptor() const;
     int getListenSocketDescriptor() const;
+    void setResponse(Response* response);
+    Response* getResponse() const;
+    Request& getRequest();
+
+    bool isReadyRequest() const;
+    void setIsReadyRequest(bool isReadyRequest);
 
     void addToSendQueue(std::string* item);
 	unsigned int sendQueueSize();
@@ -41,6 +42,7 @@ public:
 
     const std::string& getBuffer() const;
 	void setBuffer(const std::string& buffer);
+    void appendToBuffer(const string& chunk);
 
     void clear();
 };

@@ -58,7 +58,7 @@ void Client::setBuffer(const std::string& buffer) {
 }
 
 void Client::clear() {
-    delete (request);
+//    delete (request);
     delete (response);
 }
 
@@ -80,4 +80,12 @@ Response* Client::getResponse() const {
 
 void Client::setResponse(Response* response) {
     Client::response = response;
+}
+
+void Client::appendToBuffer(const string& chunk) {
+    this->buffer.append(chunk);
+}
+
+Request& Client::getRequest() {
+    return request;
 }
