@@ -5,6 +5,7 @@
 #pragma once
 
 #include "usings.hpp"
+#include "Utils.hpp"
 #include "SettingTypes.hpp"
 #include "ConfigStorage.hpp"
 #include "ConfigRepository.hpp"
@@ -23,12 +24,12 @@ public:
                                    const string& serverName) const;
 
 	Config* findLocationConfigByUri(const VirtualServer& virtualServer,
-                              const string& requestUri) const;
+                                    string requestUri) const;
 
 private:
-	size_t getLengthMatch(const string& locationUri,
-						  const string& requestUri) const;
 	std::vector<VirtualServer*> getVirtualServersForBind() const;
+    bool isAnyRequest(const std::vector<string>& locs) const;
+    bool findMatchUri(const std::vector<string>& reqs, const std::vector<string>& locs) const;
 };
 
 

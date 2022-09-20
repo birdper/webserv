@@ -13,12 +13,13 @@ class Location {
 
 private:
 //	VirtualServer* parentServer;
-	Parameters params;
+	Parameters _params;
+	std::string _uri;
 
 public:
 	Location(const std::string& uri,
 			 Parameters* parentParams);
 
 	Parameters* getParameters();
-	const std::string& getUri() const;
+	std::string getUri() const;
 };

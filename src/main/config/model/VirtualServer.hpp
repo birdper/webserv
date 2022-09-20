@@ -15,17 +15,17 @@ class Location;
 
 class VirtualServer {
 private:
-	std::string ip;
     int port;
+	std::string ip;
 	std::string host;
 	std::vector<std::string> serverNames;
 
-	Parameters params;
-	std::vector<Location*> locations;
+	Parameters _params;
+	std::vector<Location*> _locations;
 
 public:
 	VirtualServer();
-	VirtualServer(Parameters *defaultParameters);
+//	VirtualServer(Parameters *defaultParameters);
 
     const std::string &getIp() const;
     void setIp(const std::string &ip);
