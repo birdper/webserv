@@ -98,13 +98,3 @@ string Utils::getFileName(const string& path) {
     size_t pos = path.find_last_of('/');
     return (pos != string::npos) ? path.substr(pos + 1) : "";
 }
-
-int Utils::stringToInt(const string& str, int base) {
-    char* endPtr;
-    long number = std::strtol(str.c_str(), &endPtr, base);
-
-//    if (*endPtr || number < INT32_MIN || number > INT32_MAX) {
-//        throw CastToIntException();
-//    }
-    return number;
-}
