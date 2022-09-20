@@ -42,33 +42,69 @@ string CGI::execute() {
     return m_body;
 }
 
+//todo
 void CGI::writeBodyToFile() {
-    write(m_cgiReadFrom, m_request.body.c_str(), m_request.body.length()); //todo
+    write(m_cgiReadFrom, m_request.body.c_str(), m_request.body.length());
     lseek(m_cgiReadFrom, 0, SEEK_SET);
 }
 
+//todo
+//char **CGI::createEnv() {
+//    std::map<string, string> envMap;
+//    //CONTENT_LENGTH
+//    envMap["GATEWAY_INTERFACE"] = m_request.findHeaderValue("content-length");
+//    //CONTENT_TYPE
+//    envMap["CONTENT_TYPE"] = m_request.findHeaderValue("content-type");
+//    //GATEWAY_INTERFACE
+//    envMap["GATEWAY_INTERFACE"] = "CGI/1.1";
+//    //PATH_INFO - request uri
+//    envMap["PATH_INFO"] = m_request.getUri();
+//    //REQUEST_METHOD
+//    envMap["REQUEST_METHOD"] = m_request.findHeaderValue("method");
+//    //SERVER_PROTOCOL
+//
+//    //DOCUMENT_URI
+//    //REQUEST_URI
+//    //QUERY_STRING
+//    //SCRIPT_NAME
+//    //SCRIPT_FILENAME
+//    envMap["SCRIPT_FILENAME"] = m_root + m_pathToCGI;
+//    //DOCUMENT_ROOT
+//    envMap["DOCUMENT_ROOT"] = m_root;
+//    //SERVER_NAME
+//    envMap["SERVER_NAME"] = m_ip;
+//    //SERVER_PORT
+//    envMap["SERVER_PORT"] = m_port;
+//    //SERVER_SOFTWARE
+//    envMap["SERVER_SOFTWARE"] = "http_server/1.0.0";
+//    return convertMapToStrArray(envMap);
+//}
+
 char **CGI::createEnv() {
     std::map<string, string> envMap;
-//    envMap["REDIRECT_STATUS"] = "200";
-//    envMap["GATEWAY_INTERFACE"] = "CGI/1.1";
-//    envMap["SERVER_PROTOCOL"] = "HTTP/1.1";
-//    envMap["SERVER_SOFTWARE"] = "webserv/1.0";
-//    envMap["REQUEST_METHOD"] = m_request.getMethodString();
-//    envMap["REQUEST_URI"] = m_request.getUri();
-//    envMap["PATH_INFO"] = getPathInfo(path);
-//    envMap["PATH_TRANSLATED"] = getPathInfo(path);
-//    envMap["QUERY_STRING"] = query;
-//    string header = m_request.findHeaderValue("Authorization");
-//    if (!header.empty()) {
-//        envMap["AUTH_TYPE"] = header;
-//        envMap["REMOTE_IDENT"] = header;
-//        envMap["REMOTE_USER"] = header;
-//    }
-//    header = m_request.findHeaderValue("Content-Type");
-//    if (!header.empty()) {
-//        envMap["CONTENT_TYPE"] = header;
-//    }
-//    envMap["SERVER_NAME"] = m_request.findHeaderValue("Host");
+    envMap["REDIRECT_STATUS"] = "200"; //todo need to be approved
+    envMap["GATEWAY_INTERFACE"] = "CGI/1.1";
+    envMap["SERVER_NAME"] = m_ip;
+    envMap["SERVER_SOFTWARE"] = "webserv";
+    envMap["SERVER_PROTOCOL"] = m_request.findHeaderValue("protocol"); //todo could be "HTTP/1.1"
+    envMap["SERVER_PORT"] = m_port;
+    envMap["REQUEST_METHOD"] = m_request.getMethodString();
+    envMap["PATH_INFO"] = m_pathToCGI;
+    envMap["PATH_TRANSLATED"] = m_pathToCGI;
+//    envMap["SCRIPT_NAME"] = ;
+    envMap["DOCUMENT_ROOT"] = m_root;
+//    envMap["QUERY_STRING"] = ;
+//    envMap["REMOTE_HOST"] = ;
+//    envMap["REMOTE_ADDR"] = ;
+    envMap["AUTH_TYPE"] = m_request.findHeaderValue("Authorization");
+    envMap["REMOTE_USER"] = m_request.findHeaderValue("Authorization");
+    envMap["REMOTE_IDENT"] = m_request.findHeaderValue("Authorization");
+    envMap["CONTENT_TYPE"] = m_request.findHeaderValue("Content-Type");
+    envMap["CONTENT_LENGTH"] = m_request.findHeaderValue("Content-Length");
+//    envMap["HTTP_FROM"] = ;
+//    envMap["HTTP_ACCEPT"] = ;
+//    envMap["HTTP_USER_AGENT"] = ;
+//    envMap["HTTP_REFERER"] = ;
     return convertMapToStrArray(envMap);
 }
 

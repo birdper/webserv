@@ -8,10 +8,12 @@ ConfigParser::ConfigParser() {
 ConfigParser::~ConfigParser() {
 }
 
-void ConfigParser::parseConfig(const std::string &inputString,
+void ConfigParser::parseConfig(const std::string &configFileName,
                                ConfigStorage *storage) {
 // TODO 1: Определить как создаются VirtualServer и Location
-    std::istringstream iss(inputString);
+
+    string configString = FileReader::readFile(configFileName);
+    std::istringstream iss(configString);
 
     Tokenizer tokenizer;
     std::vector<Token> tokens = tokenizer.tokenize(iss);
@@ -20,7 +22,6 @@ void ConfigParser::parseConfig(const std::string &inputString,
     Location *location;
     Parameters *currentParams;
 
-//	bool listen;
     bool isHasLocation;
     for (size_t i = 0; i < tokens.size(); ++i) {
         Token &token = tokens[i];
