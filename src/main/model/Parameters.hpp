@@ -29,6 +29,6 @@ public:
 	std::string clientMaxBodySize;
 
 	MapErrorPagePaths errorPagePaths;
-	std::vector<std::string> indexFiles;
+	std::vector<std::string> indexNameFiles;
 	std::vector<HttpMethod> forbiddenMethods;
 };

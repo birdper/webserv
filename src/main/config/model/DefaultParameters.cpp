@@ -13,6 +13,6 @@ DefaultParameters::DefaultParameters() {
 	params.pathCGI = "";
 	params.extensionCGI = ".php";
 	params.clientMaxBodySize = "10m";
-	params.indexFiles.push_back("index");
-	params.indexFiles.push_back("index.html");
+	params.indexNameFiles.push_back("index");
+	params.indexNameFiles.push_back("index.html");
 }

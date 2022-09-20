@@ -44,7 +44,7 @@ string CGI::execute() {
 
 //todo
 void CGI::writeBodyToFile() {
-    write(m_cgiReadFrom, m_request.body.c_str(), m_request.body.length());
+    write(m_cgiReadFrom, m_request.getBody().c_str(), m_request.getBody().length());
     lseek(m_cgiReadFrom, 0, SEEK_SET);
 }
 
@@ -91,20 +91,14 @@ char **CGI::createEnv() {
     envMap["REQUEST_METHOD"] = m_request.getMethodString();
     envMap["PATH_INFO"] = m_pathToCGI;
     envMap["PATH_TRANSLATED"] = m_pathToCGI;
-//    envMap["SCRIPT_NAME"] = ;
+    envMap["SCRIPT_NAME"] = m_pathToCGI;
     envMap["DOCUMENT_ROOT"] = m_root;
-//    envMap["QUERY_STRING"] = ;
-//    envMap["REMOTE_HOST"] = ;
-//    envMap["REMOTE_ADDR"] = ;
+//    envMap["QUERY_STRING"] = ; //todo get query
     envMap["AUTH_TYPE"] = m_request.findHeaderValue("Authorization");
     envMap["REMOTE_USER"] = m_request.findHeaderValue("Authorization");
     envMap["REMOTE_IDENT"] = m_request.findHeaderValue("Authorization");
-    envMap["CONTENT_TYPE"] = m_request.findHeaderValue("Content-Type");
-    envMap["CONTENT_LENGTH"] = m_request.findHeaderValue("Content-Length");
-//    envMap["HTTP_FROM"] = ;
-//    envMap["HTTP_ACCEPT"] = ;
-//    envMap["HTTP_USER_AGENT"] = ;
-//    envMap["HTTP_REFERER"] = ;
+    envMap["CONTENT_TYPE"] = m_request.findHeaderValue("content-type");
+    envMap["CONTENT_LENGTH"] = m_request.findHeaderValue("content-length");
     return convertMapToStrArray(envMap);
 }
 

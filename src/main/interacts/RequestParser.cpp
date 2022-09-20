@@ -1,34 +1,47 @@
 #include "RequestParser.hpp"
+#include "Client.hpp"
 
-Request* RequestParser::parse(const string& requestString) {
-    Request* request = new Request();
+void RequestParser::parse(const string& requestBuffer, Request& request, Client& client) const {
 
-    size_t borderLinePosition = requestString.find(HTTP_BORDER_LINE);
-    if (borderLinePosition == string::npos) {
-        std::cout << "not found borderline!" << std::endl;
-        return nullptr;
+    Utils::printStatus("parse request");
+    std::cout << "REQUEST_BUFFER:\n" << requestBuffer << "\nEND REQUEST==============" << std::endl;
+    size_t borderLinePosition = requestBuffer.find(HTTP_BORDER_LINE);
+
+
+    if (borderLinePosition != string::npos && request.getHeaders().empty()) {
+        Utils::printStatus("parse headers");
+        string headersString = requestBuffer.substr(0, borderLinePosition);
+
+        string bodyString(requestBuffer.substr(borderLinePosition + HTTP_BORDER_LINE.length()));
+        request.setBody(bodyString);
+
+        std::vector<string> headerLines = Utils::split(headersString, END_OF_LINE);
+
+        parseStartLine(headerLines[0], request);
+        parseHeaders(headerLines, request);
+
+        if (!(request.getHttpMethod() == POST || request.getHttpMethod() == PUT)) {
+            Utils::printStatus("REQUEST READY");
+            client.setIsReadyRequest(true);
+        }
+//        parsePost(request);
     }
-
-//    if (pos != string::npos && request->emptyHeader()) {
-    string headersString = requestString.substr(0, borderLinePosition);
-    string bodyString(requestString.substr(borderLinePosition + 4));
-
-    std::vector<string> headerLines = Utils::split(headersString, END_OF_LINE);
-//}
-
-    try {
-        parseStartLine(headerLines[0], *request);
-        parseHeaders(headerLines, *request);
-        parseBody(*request);
-    } catch (ParseRequestException& ex) {
-        Utils::printStatus(ex.what());
-        request->setBadStatus();
+//    try {
+    if (request.getHttpMethod() == POST || request.getHttpMethod() == PUT) {
+        parseBody(request, requestBuffer, client);
     }
-
-    return request;
+//    } catch (ParseRequestException& ex) {
+//        Utils::printStatus(ex.what());
+//        request.setBadStatus();
+//    }
+//    return request;
 }
 
-void RequestParser::parseStartLine(const string& line, Request& request) {
+bool RequestParser::isHasHeaders(const Request& request) const {
+    return request.getHeaders().empty();
+}
+
+void RequestParser::parseStartLine(const string& line, Request& request) const {
     std::vector<string> startLineTokens = Utils::split(line, " ");
 
     if (startLineTokens.size() != 3) {
@@ -71,7 +84,7 @@ void RequestParser::parseHttpVersion(Request& request, const string& httpVersion
     }
 }
 
-void RequestParser::parseHeaders(std::vector<string>& headerLines, Request& request) {
+void RequestParser::parseHeaders(std::vector<string>& headerLines, Request& request) const {
     std::map<string, string>* headers = new std::map<string, string>();
 
     for (int i = 1; i < headerLines.size(); ++i) {
@@ -91,11 +104,67 @@ void RequestParser::parseHeaders(std::vector<string>& headerLines, Request& requ
 //    }
 }
 
-void RequestParser::parseBody(Request& request) {
-//	TODO (not yet implement)
-    if ((request.getHttpMethod() != POST) && (request.getHttpMethod() != PUT)) {
-        return;
+void RequestParser::parsePostHeaders(Request& request) const {
+    if (request.getHttpMethod() == POST || request.getHttpMethod() == PUT) {
+        if (request.findHeaderValue("Transfer-Encoding") == "chunked") {
+//            request.setPostType(CHUNKED);
+            return;
+        }
+        string contentLength = request.findHeaderValue("Content-Length");
+        if (!contentLength.empty()) {
+            ContentLengthToInt(contentLength);
+//            request.setPostType(SIMPLE)
+            return;
+        }
     }
-    string contentLength = request.findHeaderValue("Content-Length");
+}
 
+
+long RequestParser::ContentLengthToInt(const string& contentLength) const {
+
+    char* endPtr;
+    long number = std::strtol(contentLength.c_str(), &endPtr, 10);
+
+    if (number < INT32_MIN || number > INT32_MAX) {
+        throw ParseRequestException("Content-Length value incorrect number");
+    }
+    return number;
+}
+
+bool RequestParser::parseBody(Request& request, const string& clientBuffer, Client& client) const {
+
+    if (request.findHeaderValue("Transfer-Encoding") == "chunked") {
+        return parseChunked(request);
+    }
+
+    string contentLength = request.findHeaderValue("Content-Length");
+    if (!contentLength.empty()) {
+        parseBodyContent(request, clientBuffer, client);
+    }
+    return false;
+}
+
+
+void RequestParser::parseBodyContent(Request& request, const string& clientBuffer, Client& client) const {
+//    TODO перенести в PostHandler
+//    string fileName = Utils::getFileName(request.getLocationUri());
+//    request.setFileName(fileName);
+    Utils::printStatus("parse content");
+
+    size_t contentLength = ContentLengthToInt(request.findHeaderValue("Content-Length"));
+    if (request.getBody().size() > contentLength) {
+        throw ParseRequestException("400 BAD REQUEST! RECV size > then MUST BE");
+    }
+    request.appendBody(clientBuffer);
+    if (contentLength == request.getBody().size()) {
+        Utils::printStatus("POST REQUEST READY");
+        client.setIsReadyRequest(true);
+    }
+}
+
+bool RequestParser::parseChunked(Request& request) const {
+    Utils::printStatus("parse chunked");
+    return true;
+
+//    TODO Not yet implement
 }

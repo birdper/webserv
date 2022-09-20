@@ -24,4 +24,6 @@ public:
     static string ft_toLower(const string& line);
     static string ltrim(string str, const string& chars);
     static string rtrim(string str, const string& chars);
+    static string getExtension(const string& fileName);
+    static string getFileName(const string& path);
 };

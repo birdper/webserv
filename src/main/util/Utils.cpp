@@ -85,3 +85,16 @@ string Utils::rtrim(string str, const string& chars) {
     str.erase(str.find_last_not_of(chars) + 1);
     return str;
 }
+
+std::string Utils::getExtension(const string& fileName) {
+    std::string ext;
+    size_t ext_pos = fileName.find_last_of(".");
+    if (ext_pos != std::string::npos)
+        ext = fileName.substr(ext_pos + 1);
+    return ext;
+}
+
+string Utils::getFileName(const string& path) {
+    size_t pos = path.find_last_of('/');
+    return (pos != string::npos) ? path.substr(pos + 1) : "";
+}

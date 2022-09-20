@@ -50,35 +50,53 @@ ConfigRepositoryImpl::getServerConfig(const std::string& ip,
 }
 
 Config* ConfigRepositoryImpl::findLocationConfigByUri(const VirtualServer& virtualServer,
-                                                const string& requestUri) const {
+                                                      string requestUri) const {
 
     const std::vector<Location*>& locations = virtualServer.getLocations();
 
+    Location* rootLocation;
     Location* mostLengthMatch;
-    Location* currentLocation;
     size_t maxLength = 0;
-    for (int i = 0; i < locations.size(); ++i) {
-        currentLocation = locations[i];
-        std::string locationUri = currentLocation->getParameters()->uri;
+    std::vector<string> reqs = Utils::split(requestUri, "/");
 
-//		TODO implement location search by uri
-        size_t lengthMatch = getLengthMatch(locationUri, requestUri);
-        if (lengthMatch > maxLength) {
-            maxLength = lengthMatch;
-            mostLengthMatch = currentLocation;
+    for (int i = 0; i < locations.size(); ++i) {
+        Location* currentLocation = locations[i];
+        std::vector<string> locs = Utils::split(currentLocation->getUri(), "/");
+
+        if (locs.size() > reqs.size()) {
+            break;
+        }
+        if (isAnyRequest(locs)) {
+            if (rootLocation == nullptr) {
+                rootLocation = currentLocation;
+            }
+        } else {
+            if (findMatchUri(reqs, locs)) {
+                if (locs.size() > maxLength) {
+                    maxLength = locs.size();
+                    mostLengthMatch = currentLocation;
+                }
+            }
         }
     }
-    if (maxLength)
+
+    if (mostLengthMatch != nullptr) {
         return new Config(mostLengthMatch->getParameters(), true);
+    } else if (rootLocation != nullptr) {
+        return new Config(rootLocation->getParameters(), true);
+    }
     return nullptr;
 }
 
-size_t ConfigRepositoryImpl::getLengthMatch(const std::string& locationUri,
-                                            const std::string& requestUri) const {
-    size_t length = 0;
-    for (int i = 0; i < locationUri.length(); ++i) {
-        if (locationUri[i] == requestUri[i])
-            ++length;
+bool ConfigRepositoryImpl::findMatchUri(const std::vector<string>& reqs, const std::vector<string>& locs) const {
+    for (int i = 0; i < locs.size(); ++i) {
+        if (locs[i] != reqs[i]) {
+            return false;
+        }
     }
-    return length;
+    return true;
+}
+
+bool ConfigRepositoryImpl::isAnyRequest(const std::vector<string>& locs) const {
+    return locs.empty();
 }

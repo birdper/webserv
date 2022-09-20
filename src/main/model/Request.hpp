@@ -4,14 +4,16 @@
 #include <map>
 #include "HttpMethod.hpp"
 #include "HttpMessage.hpp"
+#include "usings.hpp"
 
 class Request : public HttpMessage {
 private:
 	HttpMethod _methodEnum;
-    std::string _methodString;
-	std::string uri;
+    string _methodString;
+	string uri;
+    string _body;
 
-	bool isBadStatus;
+    bool isBadStatus;
 
 public:
 	Request();
@@ -23,10 +25,13 @@ public:
 	void setBadStatus();
 
 	HttpMethod getHttpMethod() const;
-	const std::string& getMethodString() const;
+	const string& getMethodString() const;
 	void setMethodEnum(HttpMethod method);
-    void setMethodString(const std::string& httpMethodString);
+    void setMethodString(const string& httpMethodString);
 
-    void setUri(const std::string& requestUri);
-	const std::string& getUri() const;
+    void setUri(const string& requestUri);
+    void appendBody(const string& buffer);
+	const string& getUri() const;
+    const string& getBody() const;
+    void setBody(const string& body);
 };

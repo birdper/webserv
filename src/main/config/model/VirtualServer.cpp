@@ -6,7 +6,8 @@
 
 VirtualServer::VirtualServer() {}
 
-VirtualServer::VirtualServer(Parameters* defaultParameters) {
+/*
+    VirtualServer::VirtualServer(Parameters* defaultParameters) {
 	ip = defaultParameters->ip;
 	port = std::stoi(defaultParameters->port);
 
@@ -16,9 +17,10 @@ VirtualServer::VirtualServer(Parameters* defaultParameters) {
 	params.clientMaxBodySize = defaultParameters->clientMaxBodySize;
 	params.indexFiles = defaultParameters->indexFiles;
 }
+*/
 
 Parameters* VirtualServer::getParameters() {
-	return &params;
+	return &_params;
 }
 
 const std::vector<std::string>& VirtualServer::getServerNames() const {
@@ -26,11 +28,11 @@ const std::vector<std::string>& VirtualServer::getServerNames() const {
 }
 
 const std::vector<Location*>& VirtualServer::getLocations() const {
-	return locations;
+	return _locations;
 }
 
 void VirtualServer::addLocation(Location* location) {
-	locations.push_back(location);
+	_locations.push_back(location);
 }
 
 void VirtualServer::addServerNames(const std::vector<std::string>& names) {

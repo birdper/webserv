@@ -5,8 +5,8 @@ RequestHandler RequestHandler::getInstance(Request& request, Config& config) {
 }
 
 RequestHandler::RequestHandler(Request& request, Config& config) :
-        request(request),
-        config(config) {
+        _request(request),
+        _config(config) {
     _methods["GET"] = GetHandler::getInstance(request, config);
     _methods["POST"] = PostHandler::getInstance(request, config);
 }
@@ -22,19 +22,19 @@ Response RequestHandler::handle() {
     if (!validate(response)) {
         return response;
     }
-    response = _methods[request.getMethodString()]->handle(request, config);
-    Utils::printStatus("handled method");
+    response = _methods[_request.getMethodString()]->handle();
+    Utils::printStatus("request handled");
 
     return response;
 }
 
 bool RequestHandler::validate(Response& response) {
 
-    if (request.isBadRequest()) {
+    if (_request.isBadRequest()) {
         Utils::printStatus("400 Bad Request");
         return false;
     }
-    if (!config.isLocationConfig()) {
+    if (!_config.isLocationConfig()) {
         Utils::printStatus("404 Not Found");
         return false;
     }

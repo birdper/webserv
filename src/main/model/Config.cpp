@@ -41,7 +41,7 @@ const std::string& Config::getServerName() const {
 	return parameters->serverName;
 }
 
-const std::string& Config::getUri() const {
+const std::string& Config::getLocationUri() const {
 	return parameters->uri;
 }
 
@@ -81,14 +81,18 @@ std::string Config::getPathErrorPageWithRoot(const std::string& errorCode) {
 			return getRoot() + path;
 		}
 		else {
-			return getRoot() + getUri() + path;
+			return getRoot() + getLocationUri() + path;
 		}
 }
 
 std::vector<std::string>& Config::getIndexFiles() const {
-	return parameters->indexFiles;
+	return parameters->indexNameFiles;
 }
 
 bool Config::isLocationConfig() const {
     return _isLocationConfig;
+}
+
+bool Config::isCGI() {
+    return !getPathCGI().empty();
 }

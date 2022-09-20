@@ -39,3 +39,33 @@ std::string BaseHandler::getRedirectPageBody(std::pair<int, std::string> redirec
     } else
         return redirect.second;
 }
+
+string BaseHandler::getResourcePath(const string& locationUri,
+                                    string root,
+                                    const string& requestUri) const {
+    std::cout << "init root " << root << std::endl;
+    if (root.back() == '/') {
+        root = root.substr(0, root.length() - 1);
+    }
+    if (root.front() == '/') {
+        root = root.substr(0, 1);
+    }
+
+    size_t startPos = locationUri.length();
+    if (startPos == 1) {
+        startPos = 0;
+    }
+    if (requestUri != "/") {
+        return root + requestUri.substr(startPos, requestUri.length());
+    } else {
+        return root + requestUri;
+    }
+}
+
+bool validateFile(const string& path) {
+    if (Utils::isFileExists(path) && !Utils::isDirectory(path) &&
+        !access(path.c_str(), W_OK)) {
+        return true;
+    }
+    return false;
+}
