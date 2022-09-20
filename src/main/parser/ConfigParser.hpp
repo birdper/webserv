@@ -29,8 +29,6 @@ private:
     bool checkPort(const std::string &str);
     bool checkIpAndPort(const std::string &ipStr, const std::string &portStr);
 
-	std::vector<std::string> splitStringToVector(const std::string& input);
-
     std::string rtrim(std::string str, const std::string &chars);
     bool isDigits(const std::string &str);
 

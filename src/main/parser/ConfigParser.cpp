@@ -49,7 +49,7 @@ void ConfigParser::parseConfig(const std::string &configFileName,
                 }
                 break;
             case SERVER_NAME:
-                currentServer->addServerNames(splitStringToVector(token.content));
+                currentServer->addServerNames(Utils::split(token.content, " "));
                 break;
             case LISTEN:
                 parseListen(token.content, *currentServer);
@@ -77,10 +77,10 @@ void ConfigParser::parseConfig(const std::string &configFileName,
 //				currentParams->errorPagePaths;
                 break;
             case INDEX:
-                currentParams->indexFiles = splitStringToVector(token.content);
+                currentParams->indexNameFiles = Utils::split(token.content, " ");
                 break;
             case FORBIDDEN_METHODS:
-                std::vector<std::string> methods = splitStringToVector(token.content);
+                std::vector<std::string> methods = Utils::split(token.content, " ");
                 for (int j = 0; j < methods.size(); ++j) {
                     if (methods[j] == "POST")
                         currentParams->forbiddenMethods.push_back(POST);
@@ -164,7 +164,7 @@ std::map<std::string, std::string>
 ConfigParser::parseErrorPagePaths(const std::string &input) {
 
     std::map<std::string, std::string> map;
-    std::vector<std::string> vec = splitStringToVector(input);
+    std::vector<std::string> vec = Utils::split(input, " ");
 
     for (int i = 1; i < vec.size(); i += 2) {
         std::string key = vec[i - 1];
@@ -172,18 +172,6 @@ ConfigParser::parseErrorPagePaths(const std::string &input) {
         map[key] = value;
     }
     return map;
-}
-
-std::vector<std::string>
-ConfigParser::splitStringToVector(const std::string &input) {
-    std::vector<std::string> vector;
-    std::istringstream iss(input);
-
-    std::string word;
-    while (iss >> word) {
-        vector.push_back(word);
-    }
-    return vector;
 }
 
 std::string ConfigParser::rtrim(std::string str, const std::string &chars) {

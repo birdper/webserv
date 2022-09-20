@@ -6,20 +6,22 @@
 
 Location::Location(const std::string& uri,
 				   Parameters* parentParams) {
-	params.uri = uri;
-	params.root = parentParams->root;
-	params.redirect = parentParams->redirect;
-	params.pathCGI = parentParams->pathCGI;
-	params.extensionCGI = parentParams->extensionCGI;
-	params.errorPagePaths = parentParams->errorPagePaths;
-	params.indexFiles = parentParams->indexFiles;
-	params.forbiddenMethods = parentParams->forbiddenMethods;
+    _uri = uri;
+    _params = *parentParams;
+//	params.uri = uri;
+//	params.root = parentParams->root;
+//	params.redirect = parentParams->redirect;
+//	params.pathCGI = parentParams->pathCGI;
+//	params.extensionCGI = parentParams->extensionCGI;
+//	params.errorPagePaths = parentParams->errorPagePaths;
+//	params.indexNameFiles = parentParams->indexNameFiles;
+//	params.forbiddenMethods = parentParams->forbiddenMethods;
 }
 
 Parameters* Location::getParameters() {
-	return &params;
+	return &_params;
 }
 
-const std::string& Location::getUri() const {
-	return params.uri;
+std::string Location::getUri() const {
+	return _uri;
 }
