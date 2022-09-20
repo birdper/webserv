@@ -5,6 +5,9 @@
 #include <fstream>
 #include <cstdio>
 #include <unistd.h>
+#include <fcntl.h>
+#include <sstream>
+#include "CGIException.hpp"
 #include "Request.hpp"
 #include "usings.hpp"
 
@@ -25,11 +28,19 @@ private:
     char        **m_args;
 
 public:
+    /**
+     *
+     * @param request - session request
+     * @param pathToCGI - interpretator full path
+     * @param extension - file extension
+     * @param root - ?
+     * @param ip - ?
+     * @param port - ?
+     */
     CGI(Request& request, const string& pathToCGI, const string& extension,
         const string& root, const string& ip, const string& port);
     ~CGI();
-    void        execute();
-    string      getBody();
+    string      execute();
 
 private:
     void        createReadWriteFiles(int &read, int &write);

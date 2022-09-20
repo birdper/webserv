@@ -14,20 +14,19 @@ CGI::~CGI() {
     destroyReadWriteFiles();
 }
 
-//todo implement
-void CGI::execute() {
+string CGI::execute() {
     writeBodyToFile();
     int pid;
     int status;
     if ((pid = fork()) == -1) {
-        throw InternalServerErrorException(); //todo
+        throw CGIException("Fork error.");
     }
     else if (pid == 0)
     {
         dup2(m_cgiOut, 1);
         dup2(m_cgiReadFrom, 0);
         if (execve(m_args[0], m_args, m_env) == -1) {
-            throw InternalServerErrorException();
+            throw CGIException("Execve error.");
         }
         close(m_cgiOut);
         close(m_cgiReadFrom);
@@ -40,9 +39,6 @@ void CGI::execute() {
         close(m_cgiOut);
         close(m_cgiReadFrom);
     }
-}
-
-string CGI::getBody() {
     return m_body;
 }
 
@@ -51,7 +47,6 @@ void CGI::writeBodyToFile() {
     lseek(m_cgiReadFrom, 0, SEEK_SET);
 }
 
-//todo
 char **CGI::createEnv() {
     std::map<string, string> envMap;
 //    envMap["REDIRECT_STATUS"] = "200";
@@ -133,7 +128,6 @@ std::string CGI::gen_random(const int len) {
     return tmp_s;
 }
 
-//todo
 void CGI::createReadWriteFiles(int &read, int &write) {
     std::string uniqueHash = gen_random(8);
     m_filenameOut = "./cgi/cgi_out" + uniqueHash;
@@ -142,7 +136,6 @@ void CGI::createReadWriteFiles(int &read, int &write) {
     read = open(m_filenameFrom.c_str() , O_RDWR | O_TRUNC | O_CREAT, 0777);
 }
 
-//todo
 std::string CGI::getDataFileAsString(const std::string &filename) {
     std::stringstream buffer;
     std::ifstream file(filename);
