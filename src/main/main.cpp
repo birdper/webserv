@@ -49,7 +49,8 @@ int main()
             "localhost",
             "80");
 
-
-
+    std::string str;
+    str = cgi->execute();
+    std::cout << str << std::endl;
     return 0;
 }

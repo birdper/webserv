@@ -72,6 +72,7 @@ char **CGI::createEnv() {
 char **CGI::createArgs()
 {
     char **args = new char*[2];
+//    args[0] = strdup(("." + m_pathToCGI).c_str());
     args[0] = strdup(("." + m_pathToCGI).c_str());
     args[1] = NULL;
     return args;

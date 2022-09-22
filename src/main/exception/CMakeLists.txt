@@ -7,6 +7,7 @@ add_library(${MODULE_NAME}
         ErrorPagePathNotFoundException.hpp ErrorPagePathNotFoundException.cpp
         FileNotFoundException.hpp FileNotFoundException.cpp
         ParseRequestException.hpp ParseRequestException.cpp
+        CGIException.hpp CGIException.cpp
         )
 
 target_include_directories(${MODULE_NAME} PUBLIC ../util)

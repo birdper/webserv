@@ -1,5 +1,6 @@
-#ifndef WEBSERV_CGI_HPP
-#define WEBSERV_CGI_HPP
+
+#pragma once
+
 #include <map>
 #include <string>
 #include <fstream>
@@ -7,11 +8,11 @@
 #include <unistd.h>
 #include <fcntl.h>
 #include <sstream>
+
 #include "CGIException.hpp"
 #include "Request.hpp"
 #include "usings.hpp"
 
-#endif //WEBSERV_CGI_HPP
 
 //Reference https://www.oreilly.com/openbook/cgi/ch02_02.html
 //Table 2.1: List of CGI Environment Variables
