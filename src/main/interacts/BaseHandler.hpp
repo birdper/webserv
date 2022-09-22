@@ -18,7 +18,7 @@ public:
     BaseHandler();
     virtual ~BaseHandler();
 
-    virtual Response handle() = 0;
+    virtual void handle(Response& response) = 0;
 
 //    virtual  BaseHandler* getInstance(Request& request, Config& config) = 0;
 protected:

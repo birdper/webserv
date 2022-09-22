@@ -17,13 +17,8 @@ GetHandler::~GetHandler() {
 
 }
 
-Response GetHandler::handle() {
+void GetHandler::handle(Response& response) {
     Utils::printStatus("HANDLE GET");
-
-    Response response;
-    Utils::printStatus("GET REQUEST HANDLER: location uri = " + _config->getLocationUri());
-    Utils::printStatus("GET REQUEST HANDLER: request_uri = " + _request->getUri());
-    Utils::printStatus("GET REQUEST HANDLER: getRoot = " + _config->getRoot());
 
     std::string path = getResourcePath(_config->getLocationUri(),
                                        _config->getRoot(),
@@ -31,23 +26,21 @@ Response GetHandler::handle() {
 
     Utils::printStatus("GET REQUEST HANDLER: after resource_path = " + path);
 
-
     if (Utils::isDirectory(path)) {
         handleDirectory(response, path);
-        return response;
+        return;
     }
     if (Utils::isFileExists(path)) {
         handleFile(response, path);
-        return response;
+        return;
     }
-    Utils::printStatus("response 403");
+    Utils::printStatus("RESPONSE 403");
     response.setStatusCode("403 Forbidden");
     string body = getErrorPage("403");
     if (!body.empty()) {
         response.setBody(body);
         response.addHeader("Content-Length", std::to_string(body.size()));
     }
-    return response;
 }
 
 void GetHandler::handleDirectory(Response& response, string& path) {
@@ -57,9 +50,6 @@ void GetHandler::handleDirectory(Response& response, string& path) {
 
     string body;
     string pathToIndexFile = findPathToIndexFile(path);
-    std::cout << "path : " << path << std::endl;
-    std::cout << "path to index file: " << pathToIndexFile << std::endl;
-    std::cout << "size index_files: " << _config->getIndexFiles().size() << std::endl;
 
     if (!pathToIndexFile.empty()) {                             // check index files
         Utils::printStatus("GET REQUEST HANDLER: found index file");
@@ -74,6 +64,8 @@ void GetHandler::handleDirectory(Response& response, string& path) {
     }
     if (!body.empty()) {
         response.setBody(body);
+//        TODO реализовать mime/types
+        response.addHeader("Content-Type", "plain/text");
         response.addHeader("Content-Length", std::to_string(body.size()));
     }
 }
@@ -153,6 +145,8 @@ string GetHandler::getAutoindexBody(const string& path, const string& uri) {
 }
 
 void GetHandler::handleFile(Response& response, string& path) {
+    Utils::printStatus("resource is file");
+
     response.setStatusCode("200 OK");
     response.setBody(FileReader::readFile(path));
     response.addHeader("Content-Length", std::to_string(response.getBody().size()));

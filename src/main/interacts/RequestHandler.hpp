@@ -13,7 +13,7 @@ private:
 public:
     virtual ~RequestHandler();
     static RequestHandler getInstance(Request& request, Config& config);
-	Response handle();
+	Response& handle();
 
 private:
     RequestHandler(Request& request, Config& config);

@@ -14,15 +14,17 @@ RequestHandler::RequestHandler(Request& request, Config& config) :
 RequestHandler::~RequestHandler() {
 }
 
-Response RequestHandler::handle() {
+Response& RequestHandler::handle() {
 
     Utils::printStatus("start handle request");
 
-    Response response;
+    Response& response = *new Response();
+
     if (!validate(response)) {
         return response;
     }
-    response = _methods[_request.getMethodString()]->handle();
+
+    _methods[_request.getMethodString()]->handle(response);
     Utils::printStatus("request handled");
 
     return response;

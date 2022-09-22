@@ -55,10 +55,11 @@ string BaseHandler::getResourcePath(const string& locationUri,
     if (startPos == 1) {
         startPos = 0;
     }
-    if (requestUri != "/") {
+    if (requestUri != "/" && locationUri.back() != '/') {
         return root + requestUri.substr(startPos, requestUri.length());
     } else {
-        return root + requestUri;
+        Utils::printStatus("RETURN ROOT");
+        return root;
     }
 }
 

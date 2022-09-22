@@ -2,7 +2,9 @@
 
 #include <iostream>
 #include <sstream>
+
 #include "HttpMessage.hpp"
+#include "Constants.hpp"
 #include "Utils.hpp"
 
 
@@ -15,7 +17,8 @@ private:
 	std::string body;
 
 public:
-	std:: string& serialize();
+    friend std::ostream& operator<<(std::ostream& os, const Response& response);
+    std::string& serialize();
     virtual ~Response();
 
     const std::string& getReason() const;
@@ -25,4 +28,5 @@ public:
 	const std::string& getBody() const;
 	void setBody(const std::string& body);
 
+    string& parseToHeaders();
 };

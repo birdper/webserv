@@ -158,7 +158,7 @@ void Server::readClient(Client* client) {
 void Server::handleRequest(Client* client) {
     Config& config = findConfig(*client, client->getRequest());
 
-    Response response = RequestHandler::getInstance(client->getRequest(), config).handle();
+    Response& response = RequestHandler::getInstance(client->getRequest(), config).handle();
 
     client->setResponse(&response);
 
@@ -185,8 +185,8 @@ short Server::writeClient(Client* client) {
     client->setIsReadyRequest(false);
     Response& response = *client->getResponse();
 
-    string buff = response.serialize();
-
+    string& buff = response.serialize();
+    std::cout << "============" << buff << std::endl;
     ssize_t countSendBytes = send(client->getSocketDescriptor(), buff.c_str(), buff.size(),
                                   MsgNoFlag);
 

@@ -22,7 +22,7 @@ public:
     static BaseHandler* getInstance(Request& request, Config& config);
     virtual ~GetHandler();
 
-    Response handle();
+    void handle(Response& response);
 
 private:
     explicit GetHandler(Request& request, Config& config);
