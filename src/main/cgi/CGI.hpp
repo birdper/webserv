@@ -129,7 +129,7 @@ public:
      * @param request - session request
      * @param pathToCGI - interpretator full path
      * @param extension - file extension
-     * @param root - ?
+     * @param root - root
      * @param ip - ?
      * @param port - ?
      */
