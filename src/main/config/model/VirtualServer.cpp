@@ -19,15 +19,15 @@ VirtualServer::VirtualServer() {}
 }
 */
 
-Parameters* VirtualServer::getParameters() {
-	return &_params;
+Parameters& VirtualServer::getParameters() {
+	return _params;
 }
 
 const std::vector<std::string>& VirtualServer::getServerNames() const {
 	return serverNames;
 }
 
-const std::vector<Location*>& VirtualServer::getLocations() const {
+std::vector<Location*> VirtualServer::getLocations() const {
 	return _locations;
 }
 
