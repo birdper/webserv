@@ -33,10 +33,11 @@ public:
     void setPort(int port);
 	const std::string& getHost() const;
 	void setHost(const std::string& host);
-	Parameters* getParameters();
-	const std::vector<Location*>& getLocations() const;
-	const std::vector<std::string>& getServerNames() const;
-	void addLocation(Location* location);
-	void addServerNames(const std::vector<std::string>& names);
+
 	bool isContainServerName(const std::string& serverName) const;
+	void addServerNames(const std::vector<std::string>& names);
+	const std::vector<std::string>& getServerNames() const;
+	Parameters& getParameters();
+	std::vector<Location*> getLocations() const;
+	void addLocation(Location* location);
 };

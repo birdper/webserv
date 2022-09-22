@@ -4,79 +4,67 @@
 
 #include "Config.hpp"
 
-Config::Config(Parameters* parameters) :
-		parameters(parameters) {}
+Config::Config(Parameters& parameters) :
+        _parameters(&parameters) {}
 
-Config::Config(Parameters* parameters, bool isLocation) :
-        parameters(parameters),
+Config::Config(Parameters& parameters, bool isLocation) :
+        _parameters(&parameters),
         _isLocationConfig(isLocation) {
 }
 
 bool Config::isMethodAllowed(HttpMethod method) const {
-	std::vector<HttpMethod>::iterator it = std::find(parameters->forbiddenMethods.begin(),
-													 parameters->forbiddenMethods.end(),
-													 method);
+	std::vector<HttpMethod>::const_iterator it = std::find(_parameters->forbiddenMethods.begin(),
+                                                           _parameters->forbiddenMethods.end(),
+                                                           method);
 	if (*it == method)
 		return false;
 	return true;
 }
 
 bool Config::isAutoindexEnabled() const {
-	return parameters->hasAutoindexEnabled;
+	return _parameters->hasAutoindexEnabled;
 }
 
 bool Config::isUploadEnabled() const {
-	return parameters->hasUploadEnabled;
+	return _parameters->hasUploadEnabled;
 }
 
-const std::string& Config::getIp() const {
-	return parameters->ip;
+const string& Config::getLocationUri() const {
+	return _parameters->uri;
 }
 
-const std::string& Config::getPort() const {
-	return parameters->port;
+const string& Config::getRoot() const {
+	return _parameters->root;
 }
 
-const std::string& Config::getServerName() const {
-	return parameters->serverName;
+const string& Config::getRedirect() const {
+	return _parameters->redirect;
 }
 
-const std::string& Config::getLocationUri() const {
-	return parameters->uri;
+const string& Config::getPathCGI() const {
+	return _parameters->pathCGI;
 }
 
-const std::string& Config::getRoot() const {
-	return parameters->root;
+const string& Config::getExtensionCGI() const {
+	return _parameters->extensionCGI;
 }
 
-const std::string& Config::getRedirect() const {
-	return parameters->redirect;
+const string& Config::getClientMaxBody() const {
+	return _parameters->clientMaxBodySize;
 }
 
-const std::string& Config::getPathCGI() const {
-	return parameters->pathCGI;
-}
-
-const std::string& Config::getExtensionCGI() const {
-	return parameters->extensionCGI;
-}
-
-const std::string& Config::getClientMaxBody() const {
-	return parameters->clientMaxBodySize;
-}
-
-const std::string& Config::getErrorPageRelativePath(const std::string& errorCode) const {
-	Parameters::MapErrorPagePaths::iterator it =
-			parameters->errorPagePaths.find(errorCode);
-	if (it == parameters->errorPagePaths.end()) {
+const string& Config::getErrorPageRelativePath(const string& errorCode) const {
+	Parameters::MapErrorPagePaths::const_iterator it =
+			_parameters->errorPagePaths.find(errorCode);
+	if (it == _parameters->errorPagePaths.end()) {
 		throw ErrorPagePathNotFoundException(errorCode);
 //		return nullptr;
 	}
 	return it->second;
 }
 
-std::string Config::getPathErrorPageWithRoot(const std::string& errorCode) {
-		std::string path = getErrorPageRelativePath(errorCode);
+string Config::getPathErrorPageWithRoot(const string& errorCode) {
+		string path = getErrorPageRelativePath(errorCode);
 		if (path.at(0) == '/') {
 			return getRoot() + path;
 		}
@@ -85,8 +73,8 @@ std::string Config::getPathErrorPageWithRoot(const std::string& errorCode) {
 		}
 }
 
-std::vector<std::string>& Config::getIndexFiles() const {
-	return parameters->indexNameFiles;
+std::vector<string> Config::getIndexFiles() const {
+	return _parameters->indexNameFiles;
 }
 
 bool Config::isLocationConfig() const {
