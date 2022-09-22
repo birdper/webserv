@@ -18,9 +18,9 @@ void ConfigParser::parseConfig(const std::string &configFileName,
     Tokenizer tokenizer;
     std::vector<Token> tokens = tokenizer.tokenize(iss);
 
-    VirtualServer *currentServer;
-    Location *location;
-    Parameters *currentParams;
+    VirtualServer* currentServer;
+    Location* location;
+    Parameters* currentParams;
 
     bool isHasLocation;
     for (size_t i = 0; i < tokens.size(); ++i) {
@@ -29,14 +29,14 @@ void ConfigParser::parseConfig(const std::string &configFileName,
             case SERVER:
                 isHasLocation = false;
                 currentServer = new VirtualServer();
-                currentParams = currentServer->getParameters();
+                currentParams = &currentServer->getParameters();
                 break;
             case LOCATION:
                 isHasLocation = true;
                 location = new Location(
                         token.content,
                         currentServer->getParameters());
-                currentParams = location->getParameters();
+                currentParams = &location->getParameters();
                 currentServer->addLocation(location);
                 break;
             case ENDSERVER:

@@ -24,12 +24,12 @@ public:
                                    const string& serverName) const;
 
 	Config* findLocationConfigByUri(const VirtualServer& virtualServer,
-                                    string requestUri) const;
+                                    const string& requestUri) const;
 
 private:
 	std::vector<VirtualServer*> getVirtualServersForBind() const;
     bool isAnyRequest(const std::vector<string>& locs) const;
-    bool findMatchUri(const std::vector<string>& reqs, const std::vector<string>& locs) const;
+    bool isMatchUri(const std::vector<string>& reqs, const std::vector<string>& locs) const;
 };
 
 

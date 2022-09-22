@@ -5,23 +5,27 @@
 #include "Location.hpp"
 
 Location::Location(const std::string& uri,
-				   Parameters* parentParams) {
-    _uri = uri;
-    _params = *parentParams;
-//	params.uri = uri;
-//	params.root = parentParams->root;
-//	params.redirect = parentParams->redirect;
-//	params.pathCGI = parentParams->pathCGI;
-//	params.extensionCGI = parentParams->extensionCGI;
-//	params.errorPagePaths = parentParams->errorPagePaths;
-//	params.indexNameFiles = parentParams->indexNameFiles;
-//	params.forbiddenMethods = parentParams->forbiddenMethods;
+                   const Parameters& parentParams) {
+
+    _params = parentParams;
+    _params.uri = uri;
 }
 
-Parameters* Location::getParameters() {
-	return &_params;
+Location::Location(Location& location) :
+        _params(location._params) {
+}
+
+Location& Location::operator=(const Location& other) {
+    if (this != &other) {
+        _params = other._params;
+    }
+    return *this;
+}
+
+Parameters& Location::getParameters() {
+	return _params;
 }
 
 std::string Location::getUri() const {
-	return _uri;
+	return _params.uri;
 }

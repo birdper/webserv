@@ -50,45 +50,46 @@ ConfigRepositoryImpl::getServerConfig(const std::string& ip,
 }
 
 Config* ConfigRepositoryImpl::findLocationConfigByUri(const VirtualServer& virtualServer,
-                                                      string requestUri) const {
+                                                      const string& requestUri) const {
 
-    const std::vector<Location*>& locations = virtualServer.getLocations();
+    std::vector<Location*> locations = virtualServer.getLocations();
 
-    Location* rootLocation;
-    Location* mostLengthMatch;
+    Location* rootLocation = nullptr;
+    Location* mostLengthMatch = nullptr;
     size_t maxLength = 0;
-    std::vector<string> reqs = Utils::split(requestUri, "/");
+
+    std::vector<string> splittedRequestUri = Utils::split(requestUri, "/");
 
     for (int i = 0; i < locations.size(); ++i) {
         Location* currentLocation = locations[i];
-        std::vector<string> locs = Utils::split(currentLocation->getUri(), "/");
+        std::vector<string> splittedLocationUri = Utils::split(currentLocation->getUri(), "/");
 
-        if (locs.size() > reqs.size()) {
-            break;
-        }
-        if (isAnyRequest(locs)) {
+        if (isAnyRequest(splittedLocationUri)) {
             if (rootLocation == nullptr) {
                 rootLocation = currentLocation;
             }
-        } else {
-            if (findMatchUri(reqs, locs)) {
-                if (locs.size() > maxLength) {
-                    maxLength = locs.size();
-                    mostLengthMatch = currentLocation;
-                }
+        }
+        if (splittedLocationUri.size() > splittedRequestUri.size()) {
+            break;
+        } else if (isMatchUri(splittedRequestUri, splittedLocationUri)) {
+            if (splittedLocationUri.size() > maxLength) {
+                maxLength = splittedLocationUri.size();
+                mostLengthMatch = currentLocation;
             }
         }
     }
 
+    Config* config = nullptr;
     if (mostLengthMatch != nullptr) {
-        return new Config(mostLengthMatch->getParameters(), true);
+        config = new Config(mostLengthMatch->getParameters(), true);
     } else if (rootLocation != nullptr) {
-        return new Config(rootLocation->getParameters(), true);
+        config = new Config(rootLocation->getParameters(), true);
     }
-    return nullptr;
+    return config;
 }
 
-bool ConfigRepositoryImpl::findMatchUri(const std::vector<string>& reqs, const std::vector<string>& locs) const {
+bool ConfigRepositoryImpl::isMatchUri(const std::vector<string>& reqs,
+                                      const std::vector<string>& locs) const {
     for (int i = 0; i < locs.size(); ++i) {
         if (locs[i] != reqs[i]) {
             return false;

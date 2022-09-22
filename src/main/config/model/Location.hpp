@@ -10,16 +10,15 @@
 class VirtualServer;
 
 class Location {
-
 private:
-//	VirtualServer* parentServer;
 	Parameters _params;
-	std::string _uri;
 
 public:
-	Location(const std::string& uri,
-			 Parameters* parentParams);
+    Location(const std::string& uri,
+             const Parameters& parentParams);
+    Location(Location& location);
+    Location& operator=(const Location& other);
 
-	Parameters* getParameters();
-	std::string getUri() const;
+	Parameters& getParameters();
+    std::string getUri() const;
 };
