@@ -43,7 +43,6 @@ std::string BaseHandler::getRedirectPageBody(std::pair<int, std::string> redirec
 string BaseHandler::getResourcePath(const string& locationUri,
                                     string root,
                                     const string& requestUri) const {
-    std::cout << "init root " << root << std::endl;
     if (root.back() == '/') {
         root = root.substr(0, root.length() - 1);
     }

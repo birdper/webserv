@@ -12,7 +12,6 @@
 class BaseHandler;
 
 class GetHandler : public BaseHandler {
-
 private:
     Request* _request;
     Config* _config;

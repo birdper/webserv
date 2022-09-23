@@ -124,7 +124,6 @@ void Server::handleEvents() {
 }
 
 void Server::readClient(Client* client) {
-
 //	TODO Хватит ли объёма буфера?
     char buffer[BUFFER_SIZE];
     ssize_t bytesReadCount = recv(client->getSocketDescriptor(),
@@ -148,11 +147,9 @@ void Server::readClient(Client* client) {
 	Utils::printStatus(">>> " + sd + "\n" + string(buffer));
 	cout << "========================" << endl;
 */
-
     client->appendToBuffer(buffer);
     requestParser.parse(client->getBuffer(), client->getRequest(), *client);
     Utils::printStatus("request parsed");
-
 }
 
 void Server::handleRequest(Client* client) {
@@ -165,7 +162,6 @@ void Server::handleRequest(Client* client) {
 }
 
 Config& Server::findConfig(const Client& client, const Request& request) {
-
     Socket& listenSocket = *listenSockets.find(client.getListenSocketDescriptor())->second;
     VirtualServer virtualServer = configRepository.getServerConfig(listenSocket.getIp(),
                                                                    listenSocket.getPortString(),
@@ -182,59 +178,27 @@ Config& Server::findConfig(const Client& client, const Request& request) {
 short Server::writeClient(Client* client) {
     Utils::printStatus(" >>>> write client");
 
-    client->setIsReadyRequest(false);
-    Response& response = *client->getResponse();
+    Response* response = client->getResponse();
 
-    string& buff = response.serialize();
-    std::cout << "============" << buff << std::endl;
-    ssize_t countSendBytes = send(client->getSocketDescriptor(), buff.c_str(), buff.size(),
+    string* buffer = response->serialize();
+    std::cout << "=========RESPONSE=========\n" << *buffer << std::endl;
+    ssize_t countSendBytes = send(client->getSocketDescriptor(),
+                                  buffer->c_str(),
+                                  buffer->size(),
                                   MsgNoFlag);
+    if (countSendBytes < 0) {
+        Utils::printStatus("Client ended the userfd! " + client->getSocketDescriptor());
+    }
 
-    /*  Utils::printStatus("<<< write");
-      string body = "<html>\n"
-                    "<body>\n"
-                    "<h1>Hello, World!</h1>\n"
-                    "</body>\n"
-                    "</html>\n";
+    client->setBuffer(buffer->substr(countSendBytes));
+    delete buffer;
 
-      string buffer = "HTTP/1.1 200 OK\n"
-                      "Content-Length: " + std::to_string(body.size()) + "\n"
-                                                                         "Connection: close\r\n"
-                                                                         "\r\n" +
-                      body;
-
-
-
-      ssize_t countSendBytes = send(client->getSocketDescriptor(), buffer.c_str(), buffer.size(),
-                                    MsgNoFlag);*/
-    return POLLIN;
-    /*
-//	if (!client)
-//		return false;
-
-//	requestHandler.formResponse(client);
-//	if (!client->getResponse()->toSend.empty()) {
-
-
-	if (!response->toSend.empty()) {
-		string buffer = client->getResponse()->toSend;
-
-		ssize_t countSendBytes = send(client->getSocketDescriptor(), buffer.c_str(), buffer.size(),
-									  MsgNoFlag);
-
-		if (countSendBytes < 0) {
-			return false;
-		}
-		if (countSendBytes > 0) {
-			client->getResponse()->toSend = buffer.substr(countSendBytes);
-			cout << "Sent " << countSendBytes << " bytes to fd: "
-					  << client->getSocketDescriptor() << endl;
-			if (client->getResponse()->toSend.empty())
-				client->update();
-		}
-	}
- */
-    return true;
+    if (client->getBuffer().empty()) {
+        client->setIsReadyRequest(false);
+//        printResponse(client->getResponse());
+//        client->clear();
+//        events = POLLIN;
+    }
 }
 
 void Server::disconnectClient(Client* client, bool isShouldRemoveClient) {
@@ -264,21 +228,3 @@ void Server::disconnectClient(Client* client, bool isShouldRemoveClient) {
 void Server::putListenSocket(Socket& socket) {
     listenSockets[socket.getSocketDescriptor()] = &socket;
 }
-
-/* TODO uncomment?
- * void Server::closeConnections() {
-	nfds_t numberOfClients = clients.size();
-
-	for (nfds_t i = 0; i < numberOfClients; ++i) {
-		WebClient*& client = clients[i];
-
-		if (client->getStatus() == Client::Close) {
-			close(client->getSocketDescriptor());
-			delete client;
-			clients.erase(clients.begin() + i);
-			pollFds.erase(pollFds.begin() + i + countListenSockets);
-		}
-	}
-}*/
-
-

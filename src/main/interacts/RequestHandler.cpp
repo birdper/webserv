@@ -15,7 +15,6 @@ RequestHandler::~RequestHandler() {
 }
 
 Response& RequestHandler::handle() {
-
     Utils::printStatus("start handle request");
 
     Response& response = *new Response();
@@ -42,4 +41,3 @@ bool RequestHandler::validate(Response& response) {
     }
     return true;
 }
-

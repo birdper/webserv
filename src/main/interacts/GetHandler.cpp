@@ -14,7 +14,6 @@ GetHandler::GetHandler(Request& request, Config& config) :
 }
 
 GetHandler::~GetHandler() {
-
 }
 
 void GetHandler::handle(Response& response) {

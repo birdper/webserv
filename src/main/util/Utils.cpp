@@ -87,11 +87,11 @@ string Utils::rtrim(string str, const string& chars) {
 }
 
 std::string Utils::getExtension(const string& fileName) {
-    std::string ext;
+    std::string extension;
     size_t ext_pos = fileName.find_last_of(".");
     if (ext_pos != std::string::npos)
-        ext = fileName.substr(ext_pos + 1);
-    return ext;
+        extension = fileName.substr(ext_pos + 1);
+    return extension;
 }
 
 string Utils::getFileName(const string& path) {
