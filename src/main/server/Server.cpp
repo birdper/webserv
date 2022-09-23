@@ -155,7 +155,7 @@ void Server::readClient(Client* client) {
 void Server::handleRequest(Client* client) {
     Config& config = findConfig(*client, client->getRequest());
 
-    Response& response = RequestHandler::getInstance(client->getRequest(), config).handle();
+    Response& response = RequestHandler::getInstance(client->getRequest(), config, mimeTypesRepo).handle();
 
     client->setResponse(&response);
 

@@ -1,13 +1,14 @@
 #include "RequestHandler.hpp"
 
-RequestHandler RequestHandler::getInstance(Request& request, Config& config) {
-    return RequestHandler(request, config);
+RequestHandler RequestHandler::getInstance(Request& request, Config& config, MimeTypesRepo& mimeTypeRepo) {
+    return RequestHandler(request, config, mimeTypeRepo);
 }
 
-RequestHandler::RequestHandler(Request& request, Config& config) :
+RequestHandler::RequestHandler(Request& request, Config& config, MimeTypesRepo& mimeTypesRepo) :
         _request(request),
-        _config(config) {
-    _methods["GET"] = GetHandler::getInstance(request, config);
+        _config(config),
+        _mimeTypesRepo(mimeTypesRepo) {
+    _methods["GET"] = GetHandler::getInstance(request, config, mimeTypesRepo);
     _methods["POST"] = PostHandler::getInstance(request, config);
 }
 

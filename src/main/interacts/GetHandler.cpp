@@ -1,16 +1,15 @@
 
 #include "GetHandler.hpp"
 
-GetHandler::GetHandler() {
+
+BaseHandler* GetHandler::getInstance(Request& request, Config& config, MimeTypesRepo& mimeTypeRepo) {
+    return new GetHandler(request, config, mimeTypeRepo);
 }
 
-BaseHandler* GetHandler::getInstance(Request& request, Config& config) {
-    return new GetHandler(request, config);
-}
-
-GetHandler::GetHandler(Request& request, Config& config) :
+GetHandler::GetHandler(Request& request, Config& config, MimeTypesRepo& mimeTypesRepo) :
         _request(&request),
-        _config(&config) {
+        _config(&config),
+        _mimeTypesRepo(mimeTypesRepo) {
 }
 
 GetHandler::~GetHandler() {
@@ -25,6 +24,7 @@ void GetHandler::handle(Response& response) {
 
     Utils::printStatus("GET REQUEST HANDLER: after resource_path = " + path);
 
+    response.setStatusCode("200 OK");
     if (Utils::isDirectory(path)) {
         handleDirectory(response, path);
         return;
@@ -33,28 +33,39 @@ void GetHandler::handle(Response& response) {
         handleFile(response, path);
         return;
     }
+
     Utils::printStatus("RESPONSE 403");
     response.setStatusCode("403 Forbidden");
     string body = getErrorPage("403");
     if (!body.empty()) {
-        response.setBody(body);
-        response.addHeader("Content-Length", std::to_string(body.size()));
+        string extension = Utils::getExtension(path);
+        setBodyToResponse(response, extension, body);
     }
+}
+
+void GetHandler::setBodyToResponse(Response& response,
+                                   const string& extension,
+                                   const string& body) {
+    response.setBody(body);
+    string contentType = _mimeTypesRepo.getTypeByExtension(extension);
+    response.addHeader("Content-Type", contentType);
+    response.addHeader("Content-Length", std::to_string(body.size()));
 }
 
 void GetHandler::handleDirectory(Response& response, string& path) {
     Utils::printStatus("GET REQUEST HANDLER: resource is directory");
 
-    response.setStatusCode("200 OK");
-
     string body;
     string pathToIndexFile = findPathToIndexFile(path);
 
+    string extension;
+
     if (!pathToIndexFile.empty()) {                             // check index files
         Utils::printStatus("GET REQUEST HANDLER: found index file");
-        body = FileReader::readFile(pathToIndexFile);
+        handleFile(response, pathToIndexFile);
     } else if (_config->isAutoindexEnabled()) {                 // check Autoindex
         Utils::printStatus("GET REQUEST HANDLER: not found index file");
+        extension = _mimeTypesRepo.getTypeByExtension("html");
         body = getAutoindexBody(path, _request->getUri());
     } else {
         Utils::printStatus("GET REQUEST HANDLER: AUTOINDEX disabled  403 Forbidden");
@@ -62,10 +73,18 @@ void GetHandler::handleDirectory(Response& response, string& path) {
         body = getErrorPage("403");
     }
     if (!body.empty()) {
-        response.setBody(body);
-//        TODO реализовать mime/types
-        response.addHeader("Content-Type", "plain/text");
-        response.addHeader("Content-Length", std::to_string(body.size()));
+        setBodyToResponse(response, extension, body);
+    }
+}
+
+void GetHandler::handleFile(Response& response, string& path) {
+    Utils::printStatus("GET REQUEST HANDLER: resource is a file");
+
+    string body = FileReader::readFile(path);
+
+    if (!body.empty()) {
+        string extension = Utils::getExtension(path);
+        setBodyToResponse(response, extension, body);
     }
 }
 
@@ -143,14 +162,6 @@ string GetHandler::getAutoindexBody(const string& path, const string& uri) {
     return body.str();
 }
 
-void GetHandler::handleFile(Response& response, string& path) {
-    Utils::printStatus("resource is file");
-
-    response.setStatusCode("200 OK");
-    response.setBody(FileReader::readFile(path));
-    response.addHeader("Content-Length", std::to_string(response.getBody().size()));
-}
-
 std::vector<std::string> GetHandler::getFileNamesFromDirectory(const std::string& path) {
     std::vector<std::string> fileNames;
     struct dirent* di_struct;
@@ -172,5 +183,5 @@ string GetHandler::getErrorPage(const string& errorCode) {
     if (!pathToErrorPage.empty()) {
         return FileReader::readFile(pathToErrorPage);
     }
-     return "";
+    return "";
 }
