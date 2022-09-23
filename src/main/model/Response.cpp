@@ -4,15 +4,17 @@
 
 #include "Response.hpp"
 
-std::string& Response::serialize() {
+string* Response::serialize() {
     std::ostringstream ss;
 
     // start-line
+
+    addHeader("Date", Utils::getCurrentTimestamp(false, "%a, %d %b %Y %H:%M:%S GMT"));
     ss << "HTTP/1.1 " << statusCode << END_OF_LINE;
 
-	string& headers = parseToHeaders();
+
+    string& headers = parseToHeaders();
     ss << headers;
-    ss << "Date: " << Utils::getCurrentTimestamp(false, "%a, %d %b %Y %H:%M:%S GMT") << END_OF_LINE;
 
     if (!body.empty()) {
 		ss << END_OF_LINE;
@@ -20,7 +22,9 @@ std::string& Response::serialize() {
     }
 
     ss << END_OF_LINE;
-    return *new std::string(ss.str());
+    string* res = new std::string(ss.str());
+    responseSize = res->length();
+    return res;
 }
 
 const std::string& Response::getReason() const {
@@ -58,4 +62,8 @@ string& Response::parseToHeaders() {
 }
 
 Response::~Response() {
+}
+
+int Response::getResponseSize() const {
+    return responseSize;
 }

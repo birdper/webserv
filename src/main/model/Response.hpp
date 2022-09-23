@@ -15,12 +15,12 @@ private:
 
 	// Возможно стоит перенести боди в клиента
 	std::string body;
+    int responseSize;
 
 public:
-    friend std::ostream& operator<<(std::ostream& os, const Response& response);
-    std::string& serialize();
+    string* serialize();
     virtual ~Response();
-
+    int getResponseSize() const;
     const std::string& getReason() const;
 	void setReason(const std::string& reason);
 	const std::string& getStatusCode() const;
