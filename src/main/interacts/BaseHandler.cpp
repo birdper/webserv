@@ -54,7 +54,8 @@ string BaseHandler::getResourcePath(const string& locationUri,
     if (startPos == 1) {
         startPos = 0;
     }
-    if (requestUri != "/" && locationUri.back() != '/') {
+//    TODO удалилил  && locationUri.back() != '/'
+    if (requestUri != "/") {
         return root + requestUri.substr(startPos, requestUri.length());
     } else {
         Utils::printStatus("RETURN ROOT");
