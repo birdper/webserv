@@ -69,11 +69,12 @@ char **CGI::createEnv() {
     return convertMapToStrArray(envMap);
 }
 
+//todo make pathes relative!
 char **CGI::createArgs()
 {
     char **args = new char*[2];
 //    args[0] = strdup(("." + m_pathToCGI).c_str());
-    args[0] = strdup(("." + m_pathToCGI).c_str());
+    args[0] = strdup((m_pathToCGI).c_str());
     args[1] = NULL;
     return args;
 }
@@ -128,8 +129,8 @@ std::string CGI::gen_random(const int len) {
 
 void CGI::createReadWriteFiles(int &read, int &write) {
     std::string uniqueHash = gen_random(8);
-    m_filenameOut = "./cgi/cgi_out" + uniqueHash;
-    m_filenameFrom = "./cgi/cgi_read_from" + uniqueHash;
+    m_filenameOut = "./cgi/cgi_out" + uniqueHash + ".txt";
+    m_filenameFrom = "./cgi/cgi_read_from" + uniqueHash + ".txt";
     write = open(m_filenameOut.c_str(), O_RDWR | O_TRUNC | O_CREAT, 0777);
     read = open(m_filenameFrom.c_str() , O_RDWR | O_TRUNC | O_CREAT, 0777);
 }

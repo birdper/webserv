@@ -41,9 +41,9 @@ void validateConfigFile(int argc, char *argv[]) {
 
 int main()
 {
-    Request req;
+    Request req;    req.setBody("yolo small case. CamelCase\n");
     CGI* cgi = new CGI(req,
-            "/Users/igearhea/Projects/web_solo/resources/cgi-bin/cgi_tester.cgi",
+            "/Users/igearhea/Projects/web_solo/resources/cgi-bin/rafael.cgi",
             ".cgi",
             "/Users/igearhea/Projects/web_solo/resources/cgi-bin/",
             "localhost",
