@@ -22,7 +22,7 @@ void GetHandler::handle(Response& response) {
                                        _config->getRoot(),
                                        _request->getUri());
 
-    Utils::printStatus("GET REQUEST HANDLER: after resource_path = " + path);
+    Utils::printStatus("GET REQUEST HANDLER: resource_path = " + path);
 
     response.setStatusCode("200 OK");
     if (Utils::isDirectory(path)) {
@@ -68,7 +68,7 @@ void GetHandler::handleDirectory(Response& response, string& path) {
         extension = _mimeTypesRepo.getTypeByExtension("html");
         body = getAutoindexBody(path, _request->getUri());
     } else {
-        Utils::printStatus("GET REQUEST HANDLER: AUTOINDEX disabled  403 Forbidden");
+        Utils::printStatus("GET REQUEST HANDLER: Index file not found and AUTOINDEX disabled  403 Forbidden");
         response.setStatusCode("403 Forbidden");
         body = getErrorPage("403");
     }

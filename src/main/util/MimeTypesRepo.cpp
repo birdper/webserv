@@ -95,7 +95,8 @@ MimeTypesRepo::MimeTypesRepo() {
     _extensionTypeMap["htm"] = "text/html";
     _extensionTypeMap["html"] = "text/html";
     _extensionTypeMap["ics"] = "text/calendar";
-    _extensionTypeMap["ief"] = "image/ief";
+	_extensionTypeMap["ico"] = "image/x-icon";
+	_extensionTypeMap["ief"] = "image/ief";
     _extensionTypeMap["ifb"] = "text/calendar";
     _extensionTypeMap["iges"] = "model/iges";
     _extensionTypeMap["igs"] = "model/iges";
@@ -351,10 +352,15 @@ MimeTypesRepo::MimeTypesRepo() {
 }
 
 string MimeTypesRepo::getTypeByExtension(const string& extension) {
+	std::map<string, string>::iterator it = _extensionTypeMap.find(extension);
     string type = _extensionTypeMap[extension];
     if (type.empty())
         type = string("text/html");
-    return type;
+	return type;
+//	if (it == _extensionTypeMap.end()) {
+//		return "text/html";
+//	}
+//    return it->second;
 }
 
 string MimeTypesRepo::getExtensionByHttpType(const string& httpType) {
