@@ -17,6 +17,7 @@
 #include "VirtualServer.hpp"
 #include "ClientRepository.hpp"
 #include "ConfigRepository.hpp"
+#include "MimeTypesRepo.hpp"
 
 
 class Server {
@@ -25,6 +26,7 @@ private:
 	RequestParser& requestParser;
 	ConfigRepository& configRepository;
 	ClientRepository clientRepository;
+    MimeTypesRepo mimeTypesRepo;
 
 	int countListenSockets;
 	std::vector<struct pollfd> pollFds;

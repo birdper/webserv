@@ -4,43 +4,66 @@
 
 #include "Response.hpp"
 
-std::string& Response::serialize() {
-	std::stringstream ss;
+string* Response::serialize() {
+    std::ostringstream ss;
 
-	// start-line
-	ss << getHttpVersion() << ' '
-	   << statusCode << "\r\n";
+    // start-line
 
-	// date header
-	ss << "Date: " << Utils::getCurrentTimestamp(false, "%a, %d %b %Y %H:%M:%S GMT") << "\r\n";
+    addHeader("Date", Utils::getCurrentTimestamp(false, "%a, %d %b %Y %H:%M:%S GMT"));
+    ss << "HTTP/1.1 " << statusCode << END_OF_LINE;
 
-	return *new std::string (ss.str());
+
+    string& headers = parseToHeaders();
+    ss << headers;
+
+    if (!body.empty()) {
+		ss << END_OF_LINE;
+        ss << body << END_OF_LINE;
+    }
+
+    ss << END_OF_LINE;
+    string* res = new std::string(ss.str());
+    responseSize = res->length();
+    return res;
 }
 
 const std::string& Response::getReason() const {
-	return reason;
+    return reason;
 }
 
 void Response::setReason(const std::string& reason) {
-	this->reason = reason;
+    this->reason = reason;
 }
 
 const std::string& Response::getStatusCode() const {
-	return statusCode;
+    return statusCode;
 }
 
 void Response::setStatusCode(const std::string& statusCode) {
-	this->statusCode = statusCode;
+    this->statusCode = statusCode;
 }
 
 const std::string& Response::getBody() const {
-	return body;
+    return body;
 }
 
 void Response::setBody(const std::string& body) {
-	Response::body = body;
+    Response::body = body;
+}
+
+string& Response::parseToHeaders() {
+	std::ostringstream ss;
+	std::map<string, string> headers = getHeaders();
+	std::map<string, string>::iterator it = headers.begin();
+	for (; it != headers.end(); ++it) {
+		ss << it->first << ": " << it->second << END_OF_LINE;
+	}
+	return *new string (ss.str());
 }
 
 Response::~Response() {
+}
 
+int Response::getResponseSize() const {
+    return responseSize;
 }

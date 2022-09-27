@@ -41,25 +41,14 @@ std::string BaseHandler::getRedirectPageBody(std::pair<int, std::string> redirec
 }
 
 string BaseHandler::getResourcePath(const string& locationUri,
-                                    string root,
+                                    const string& root,
                                     const string& requestUri) const {
-    std::cout << "init root " << root << std::endl;
-    if (root.back() == '/') {
-        root = root.substr(0, root.length() - 1);
-    }
-    if (root.front() == '/') {
-        root = root.substr(0, 1);
-    }
-
-    size_t startPos = locationUri.length();
-    if (startPos == 1) {
-        startPos = 0;
-    }
-    if (requestUri != "/") {
-        return root + requestUri.substr(startPos, requestUri.length());
-    } else {
-        return root + requestUri;
-    }
+	unsigned long endPos = locationUri.rfind("/");
+	if (endPos != 0) {
+		return root + requestUri.substr(endPos, requestUri.length());
+	} else {
+		return root + requestUri;
+	}
 }
 
 bool validateFile(const string& path) {

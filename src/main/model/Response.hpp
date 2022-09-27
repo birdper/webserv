@@ -2,7 +2,9 @@
 
 #include <iostream>
 #include <sstream>
+
 #include "HttpMessage.hpp"
+#include "Constants.hpp"
 #include "Utils.hpp"
 
 
@@ -13,11 +15,12 @@ private:
 
 	// Возможно стоит перенести боди в клиента
 	std::string body;
+    int responseSize;
 
 public:
-	std:: string& serialize();
+    string* serialize();
     virtual ~Response();
-
+    int getResponseSize() const;
     const std::string& getReason() const;
 	void setReason(const std::string& reason);
 	const std::string& getStatusCode() const;
@@ -25,4 +28,5 @@ public:
 	const std::string& getBody() const;
 	void setBody(const std::string& body);
 
+    string& parseToHeaders();
 };

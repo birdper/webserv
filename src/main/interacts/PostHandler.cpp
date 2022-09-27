@@ -17,6 +17,6 @@ PostHandler::~PostHandler() {
 
 }
 
-Response PostHandler::handle() {
-    return Response();
+void PostHandler::handle(Response& response) {
+
 }

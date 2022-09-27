@@ -4,7 +4,7 @@
 void RequestParser::parse(const string& requestBuffer, Request& request, Client& client) const {
 
     Utils::printStatus("parse request");
-    std::cout << "REQUEST_BUFFER:\n" << requestBuffer << "\nEND REQUEST==============" << std::endl;
+    std::cout << "=========REQUEST_BUFFER=========\n" << requestBuffer << "=========END REQUEST=========" << std::endl;
     size_t borderLinePosition = requestBuffer.find(HTTP_BORDER_LINE);
 
 
