@@ -12,6 +12,7 @@ add_library(${PROJECT_NAME} SHARED
         parser
         interacts
         server
+        cgi
         )
 
 add_executable(webserv
@@ -25,6 +26,7 @@ add_subdirectory(config)
 add_subdirectory(parser)
 add_subdirectory(interacts)
 add_subdirectory(server)
+add_subdirectory(cgi)
 
 target_link_libraries(${PROJECT_NAME} PUBLIC
         exception
@@ -34,6 +36,7 @@ target_link_libraries(${PROJECT_NAME} PUBLIC
         parser
         interacts
         server
+        cgi
         )
 
 target_include_directories(${PROJECT_NAME} PUBLIC
@@ -48,6 +51,7 @@ target_include_directories(${PROJECT_NAME} PUBLIC
         parser
         interacts
         server
+        cgi
         )
 
 target_link_libraries(webserv PUBLIC

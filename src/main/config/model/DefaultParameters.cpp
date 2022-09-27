@@ -5,8 +5,6 @@
 #include "DefaultParameters.hpp"
 
 DefaultParameters::DefaultParameters() {
-//	params.ip = "0.0.0.0";
-//	params.port = "8080";
 //	TODO установить текущий каталог
 	params.root = "";
 //	TODO установить каталог
