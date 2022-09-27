@@ -12,22 +12,22 @@
 
 class ConfigRepositoryImpl : public ConfigRepository {
 private:
-	ConfigStorage* storage;
+    ConfigStorage* storage;
 
 public:
-	explicit ConfigRepositoryImpl(ConfigStorage* storage);
+    explicit ConfigRepositoryImpl(ConfigStorage* storage);
 
-	std::vector<std::pair<string, int> > getHostsForBind() const;
+    std::vector<std::pair<string, int> > getHostsForBind() const;
 
-	VirtualServer& getServerConfig(const string& ip,
-	                               const string& port,
-	                               const string& serverName) const;
+    VirtualServer& getServerConfig(const string& ip,
+                                   const string& port,
+                                   const string& serverName) const;
 
-	Config* findLocationConfigByUri(const VirtualServer& virtualServer,
-	                                const string& requestUri) const;
+    Config* findLocationConfigByUri(const VirtualServer& virtualServer,
+                                    const string& requestUri) const;
 
 private:
-	std::vector<VirtualServer*> getVirtualServersForBind() const;
+    std::vector<VirtualServer*> getVirtualServersForBind() const;
 };
 
 
