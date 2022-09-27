@@ -20,19 +20,37 @@ void validateConfigFile(int argc, char *argv[]) {
     }
 }
 
-int main(int argc, char *argv[]) {
+//int main(int argc, char *argv[]) {
+//
+//    validateConfigFile(argc, argv);
+//
+//    string configFileName = argv[1];
+//
+//    ConfigParser* configParser = new ConfigParser();
+//    ConfigStorage* configStorage = new ConfigStorage();
+//    configParser->parseConfig(configFileName, configStorage);
+//
+//    RequestParser* requestParser = new RequestParser();
+//    ConfigRepositoryImpl* configRepository = new ConfigRepositoryImpl(configStorage);
+//    Server* server = new Server(*requestParser, *configRepository);
+//    server->run();
+//	return 0;
+//}
 
-    validateConfigFile(argc, argv);
+#include "CGI.hpp"
 
-    string configFileName = argv[1];
+int main()
+{
+    Request req;    req.setBody("yolo small case. CamelCase\n");
+    CGI* cgi = new CGI(req,
+            "/Users/igearhea/Projects/web_solo/resources/cgi-bin/rafael.cgi",
+            ".cgi",
+            "/Users/igearhea/Projects/web_solo/resources/cgi-bin/",
+            "localhost",
+            "80");
 
-    ConfigParser* configParser = new ConfigParser();
-    ConfigStorage* configStorage = new ConfigStorage();
-    configParser->parseConfig(configFileName, configStorage);
-
-    RequestParser* requestParser = new RequestParser();
-    ConfigRepositoryImpl* configRepository = new ConfigRepositoryImpl(configStorage);
-    Server* server = new Server(*requestParser, *configRepository);
-    server->run();
-	return 0;
+    std::string str;
+    str = cgi->execute();
+    std::cout << str << std::endl;
+    return 0;
 }

@@ -17,10 +17,9 @@ public:
     static BaseHandler* getInstance(Request& request, Config& config);
     virtual ~PostHandler();
 
-    Response handle(Request& request, Config& config);
+    Response handle();
 
 private:
     PostHandler(Request& request, Config& config);
 
 };
-
