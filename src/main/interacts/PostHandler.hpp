@@ -11,7 +11,7 @@
 class PostHandler : public BaseHandler {
 private:
     Request& _request;
-    Config& _config;
+//    Config& _config;
 
 public:
     static BaseHandler* getInstance(Request& request, Config& config);
@@ -22,5 +22,6 @@ public:
 private:
     PostHandler(Request& request, Config& config);
 
+	bool saveBodyToFile(const string& pathToFile, const string& content);
 };
 

@@ -67,9 +67,9 @@ server {
 [index](#index)  
 [error_page](#error_page)  
 [client_max_body_size](#client_max_body_size)  
-[autoindex](#autoindex)
-[cgi](#cgi)
-[upload_store](#upload_store)
+[autoindex](#autoindex)  
+[cgi](#cgi)  
+[upload_store](#upload_store)  
 
 
 

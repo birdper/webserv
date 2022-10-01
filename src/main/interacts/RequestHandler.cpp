@@ -8,7 +8,7 @@ RequestHandler::RequestHandler(Request& request, Config& config, MimeTypesRepo& 
         _request(request),
         _config(config),
         _mimeTypesRepo(mimeTypesRepo) {
-    _methods["GET"] = GetHandler::getInstance(request, config, mimeTypesRepo);
+    _methods["GET"] = GetHandler::getInstance(request, config);
     _methods["POST"] = PostHandler::getInstance(request, config);
 }
 

@@ -9,10 +9,15 @@
 #include "SettingTypes.hpp"
 #include "ConfigStorage.hpp"
 #include "ConfigRepository.hpp"
+#include "MimeTypesRepo.hpp"
+#include "DefaultErrorPagesRepo.hpp"
 
 class ConfigRepositoryImpl : public ConfigRepository {
 private:
     ConfigStorage* storage;
+	DefaultErrorPagesRepo defaultErrorPagesRepo;
+	MimeTypesRepo mimeTypesRepo;
+
 
 public:
     explicit ConfigRepositoryImpl(ConfigStorage* storage);
@@ -24,8 +29,10 @@ public:
                                    const string& serverName) const;
 
     Config* findLocationConfigByUri(const VirtualServer& virtualServer,
-                                    const string& requestUri) const;
+                                    const string& requestUri);
 
+	Config* getLocationConfig(Parameters& parameters);
+	Config* getServerConfig(Parameters& parameters);
 private:
     std::vector<VirtualServer*> getVirtualServersForBind() const;
 };

@@ -24,7 +24,7 @@ Tokenizer::Tokenizer() :
 	mapperParameters["server"] = SERVER;
 	mapperParameters["listen"] = LISTEN;
 	mapperParameters["server_name"] = SERVER_NAME;
-	mapperParameters["}"] = ENDSERVER;
+	mapperParameters["}"] = BLOCK_END;
 	mapperParameters["location"] = LOCATION;
 	mapperParameters["root"] = ROOT;
 	mapperParameters["upload_directory"] = UPLOAD_DIRECTORY;
@@ -57,7 +57,7 @@ std::vector<Token> Tokenizer::tokenize(std::istringstream& configText) {
 				case LOCATION:
 					content = defineLocation(issLine);
 					break;
-				case ENDSERVER:
+				case BLOCK_END:
 					 defineCloseBrace();
 					break;
 				case UNKNOWN_TYPE:

@@ -4,18 +4,29 @@
 
 #include "Config.hpp"
 
+/*
 Config::Config(Parameters& parameters) :
-        _parameters(&parameters) {}
+		_parameters(&parameters) {}
 
 Config::Config(Parameters& parameters, bool isLocation) :
-        _parameters(&parameters),
-        _isLocationConfig(isLocation) {
+		_parameters(&parameters),
+		_isLocationConfig(isLocation) {
 }
+*/
+
+Config::Config(Parameters& parameters,
+               MimeTypesRepo* mimeTypesRepo,
+               DefaultErrorPagesRepo* defaultErrorPagesRepo,
+               bool isLocationConfig) :
+		_parameters(&parameters),
+		_mimeTypesRepo(mimeTypesRepo),
+		_defaultErrorPagesRepo(defaultErrorPagesRepo),
+		_isLocationConfig(isLocationConfig) {}
 
 bool Config::isMethodAllowed(HttpMethod method) const {
 	std::vector<HttpMethod>::const_iterator it = std::find(_parameters->forbiddenMethods.begin(),
-                                                           _parameters->forbiddenMethods.end(),
-                                                           method);
+	                                                       _parameters->forbiddenMethods.end(),
+	                                                       method);
 	if (*it == method)
 		return false;
 	return true;
@@ -64,13 +75,12 @@ const string& Config::getErrorPageRelativePath(const string& errorCode) const {
 }
 
 string Config::getPathErrorPageWithRoot(const string& errorCode) {
-		string path = getErrorPageRelativePath(errorCode);
-		if (path.at(0) == '/') {
-			return getRoot() + path;
-		}
-		else {
-			return getRoot() + getLocationUri() + path;
-		}
+	string path = getErrorPageRelativePath(errorCode);
+	if (path.at(0) == '/') {
+		return getRoot() + path;
+	} else {
+		return getRoot() + getLocationUri() + path;
+	}
 }
 
 std::vector<string> Config::getIndexFiles() const {
@@ -78,9 +88,17 @@ std::vector<string> Config::getIndexFiles() const {
 }
 
 bool Config::isLocationConfig() const {
-    return _isLocationConfig;
+	return _isLocationConfig;
 }
 
 bool Config::isCGI() {
-    return !getPathCGI().empty();
+	return !getPathCGI().empty();
+}
+
+const string& Config::getUploadStorePath() const {
+	return _parameters->uploadStorePath;
+}
+
+string Config::getMimeTypeByExtension(const string& extension) const {
+	return _mimeTypesRepo->getMimeTypeByExtension(extension);
 }

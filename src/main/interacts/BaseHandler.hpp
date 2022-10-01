@@ -14,8 +14,11 @@
 
 
 class BaseHandler {
+protected:
+	Config& _config;
+
 public:
-    BaseHandler();
+	explicit BaseHandler(Config& config);
     virtual ~BaseHandler();
 
     virtual void handle(Response& response) = 0;
@@ -29,4 +32,5 @@ protected:
     string getResourcePath(const string& locationUri,
                            const string& root,
                            const string& requestUri) const;
+	void setBodyToResponse(Response& response, const string& path, const string& body);
 };

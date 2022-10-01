@@ -346,23 +346,23 @@ MimeTypesRepo::MimeTypesRepo() {
     _extensionTypeMap["zip"] = "application/zip";
     _extensionTypeMap["7z"] = "application/x-7z-compressed";
 
-    std::map<string, string>::iterator it;
-    for (it = _extensionTypeMap.begin(); it != _extensionTypeMap.end(); it++)
-        _typeExtensionMap[it->second] = it->first;
+//    std::map<string, string>::iterator it;
+//    for (it = _extensionTypeMap.begin(); it != _extensionTypeMap.end(); it++)
+//        _typeExtensionMap[it->second] = it->first;
 }
 
-string MimeTypesRepo::getTypeByExtension(const string& extension) {
+string MimeTypesRepo::getMimeTypeByExtension(const string& extension) {
 	std::map<string, string>::iterator it = _extensionTypeMap.find(extension);
-    string type = _extensionTypeMap[extension];
-    if (type.empty())
-        type = string("text/html");
-	return type;
-//	if (it == _extensionTypeMap.end()) {
-//		return "text/html";
-//	}
-//    return it->second;
+//    string type = _extensionTypeMap[extension];
+//    if (type.empty())
+//        type = string("text/html");
+//	return type;
+	if (it == _extensionTypeMap.end()) {
+		return "text/html";
+	}
+    return it->second;
 }
 
-string MimeTypesRepo::getExtensionByHttpType(const string& httpType) {
-    return _typeExtensionMap[httpType];
-}
+//string MimeTypesRepo::getExtensionByHttpType(const string& httpType) {
+//    return _typeExtensionMap[httpType];
+//}

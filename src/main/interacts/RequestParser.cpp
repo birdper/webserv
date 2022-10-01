@@ -23,6 +23,7 @@ void RequestParser::parse(const string& requestBuffer, Request& request, Client&
         if (!(request.getHttpMethod() == POST || request.getHttpMethod() == PUT)) {
             Utils::printStatus("REQUEST READY");
             client.setIsReadyRequest(true);
+			client.setBuffer("");
         }
 //        parsePost(request);
     }
@@ -159,6 +160,7 @@ void RequestParser::parseBodyContent(Request& request, const string& clientBuffe
     if (contentLength == request.getBody().size()) {
         Utils::printStatus("POST REQUEST READY");
         client.setIsReadyRequest(true);
+	    client.setBuffer("");
     }
 }
 

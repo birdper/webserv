@@ -18,7 +18,7 @@ private:
     int responseSize;
 
 public:
-    string* serialize();
+    string serialize();
     virtual ~Response();
     int getResponseSize() const;
     const std::string& getReason() const;

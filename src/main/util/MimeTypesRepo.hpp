@@ -11,10 +11,10 @@ using std::string;
 class MimeTypesRepo {
 private:
     std::map<string, string> _extensionTypeMap;
-    std::map<string, string> _typeExtensionMap;
+//    std::map<string, string> _typeExtensionMap;
 public:
     MimeTypesRepo();
-    string getTypeByExtension(const string& extension);
-    string getExtensionByHttpType(const string& httpType);
+    string getMimeTypeByExtension(const string& extension);
+//    string getExtensionByHttpType(const string& httpType);
 };
 

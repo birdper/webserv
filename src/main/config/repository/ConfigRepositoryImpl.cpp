@@ -50,7 +50,7 @@ ConfigRepositoryImpl::getServerConfig(const std::string& ip,
 }
 
 Config* ConfigRepositoryImpl::findLocationConfigByUri(const VirtualServer& virtualServer,
-                                                      const string& requestUri) const {
+                                                      const string& requestUri) {
     std::vector<Location*> locations = virtualServer.getLocations();
 
     Location* foundLocation = nullptr;
@@ -71,7 +71,19 @@ Config* ConfigRepositoryImpl::findLocationConfigByUri(const VirtualServer& virtu
 
     Config* config = nullptr;
     if (foundLocation != nullptr) {
-        config = new Config(foundLocation->getParameters(), true);
+//        config = new Config(foundLocation->getParameters(), true);
+		config = getLocationConfig(foundLocation->getParameters());
     }
     return config;
+}
+
+
+Config* ConfigRepositoryImpl::getLocationConfig(Parameters& parameters)  {
+	bool isLocation = true;
+	return new Config(parameters, &mimeTypesRepo, &defaultErrorPagesRepo, isLocation);
+}
+
+Config* ConfigRepositoryImpl::getServerConfig(Parameters& parameters)  {
+	bool isLocation = false;
+	return new Config(parameters, &mimeTypesRepo, &defaultErrorPagesRepo, isLocation);
 }

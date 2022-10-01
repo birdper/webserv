@@ -29,8 +29,7 @@ private:
     bool checkPort(const std::string &str);
     bool checkIpAndPort(const std::string &ipStr, const std::string &portStr);
 
-    std::string rtrim(std::string str, const std::string &chars);
-    bool isDigits(const std::string &str);
+	bool isDigits(const std::string &str);
 
 	void fatalError(const std::string &msg);
 };

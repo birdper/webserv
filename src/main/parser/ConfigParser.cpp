@@ -39,7 +39,7 @@ void ConfigParser::parseConfig(const std::string &configFileName,
                 currentParams = &location->getParameters();
                 currentServer->addLocation(location);
                 break;
-            case ENDSERVER:
+            case BLOCK_END:
                 if (token.context == NONE_CONTEXT) {
 //					TODO: обязателен ли listen?
 //					if (!listen)
@@ -72,6 +72,9 @@ void ConfigParser::parseConfig(const std::string &configFileName,
             case CLIENT_MAX_BODY_SIZE:
                 currentParams->clientMaxBodySize = token.content;
                 break;
+			case UPLOAD_DIRECTORY:
+				currentParams->uploadStorePath = token.content;
+				break;
             case ERROR_PAGE:
 //				TODO parse error pages
 //				currentParams->errorPagePaths;
@@ -123,7 +126,7 @@ void ConfigParser::parseListen(const std::string &input, VirtualServer &virtualS
 bool ConfigParser::checkPort(const std::string &str) {
 	std::string errorMessagePortMustBeNumber = "Failed to parse 'listen'. Port must be number from 1 to 65355";
 
-	if (!isDigits(rtrim(str, " "))) {
+	if (!isDigits(Utils::rtrim(str, " "))) {
         fatalError(errorMessagePortMustBeNumber);
     }
     try {
@@ -172,11 +175,6 @@ ConfigParser::parseErrorPagePaths(const std::string &input) {
         map[key] = value;
     }
     return map;
-}
-
-std::string ConfigParser::rtrim(std::string str, const std::string &chars) {
-    str.erase(str.find_last_not_of(chars) + 1);
-    return str;
 }
 
 bool ConfigParser::isDigits(const std::string &str) {
