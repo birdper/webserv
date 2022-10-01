@@ -23,8 +23,9 @@ private:
 	void parseHttpVersion(Request& request, const string& httpVersion) const;
 	bool parseBody(Request& request, const string& clientBuffer, Client& client) const;
     bool isHasHeaders(const Request& request) const;
-    bool parseChunked(Request& request) const;
-    void parseBodyContent(Request& request, const string& clientBuffer, Client& client) const;
+    void parseChunked(Request& request, Client& client) const;
+    void parseBodyContent(Request& request, const string& buffer, Client& client) const;
     long ContentLengthToInt(const string& contentLength) const;
     void parsePostHeaders(Request& request) const;
+    void printRequest(const std::vector<string>& headerLines) const;
 };

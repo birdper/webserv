@@ -12,11 +12,14 @@ private:
     string _methodString;
 	string uri;
     string _body;
+    string _buffer;
 
     bool isBadStatus;
 
 public:
-	Request();
+    const string& getBuffer() const;
+    void setBuffer(const string& buffer);
+    Request();
 	Request(const Request&);
 	Request& operator=(const Request&);
     virtual ~Request();

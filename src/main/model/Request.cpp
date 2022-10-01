@@ -63,3 +63,11 @@ void Request::setBody(const string& body) {
 void Request::appendBody(const string& buffer) {
     _body.append(buffer);
 }
+
+const string& Request::getBuffer() const {
+    return _buffer;
+}
+
+void Request::setBuffer(const string& buffer) {
+    _buffer = buffer;
+}
