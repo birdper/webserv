@@ -51,16 +51,10 @@ string BaseHandler::getResourcePath(const string& locationUri,
 }
 
 void BaseHandler::setBodyToResponse(Response& response,
-                                   const string& path,
+                                   const string& extension,
                                    const string& body) {
 
-//	std::cout << "path: " <<  path << std::endl;
-
-	string extension = Utils::getExtension(path);
-//	std::cout << "extension: " <<  extension<< std::endl;
 	string contentType = _config.getMimeTypeByExtension(extension);
-//	std::cout << "contentType: " <<  contentType << std::endl;
-
 
 	response.setBody(body);
 	response.addHeader("Content-Type", contentType);

@@ -14,8 +14,6 @@ GetHandler::~GetHandler() {
 }
 
 void GetHandler::handle(Response& response) {
-	Utils::printStatus("HANDLE GET");
-
 	std::string path = getResourcePath(_config.getLocationUri(),
 	                                   _config.getRoot(),
 	                                   _request->getUri());
@@ -36,8 +34,8 @@ void GetHandler::handle(Response& response) {
 	response.setStatusCode("403 Forbidden");
 	string body = getErrorPage("403");
 	if (!body.empty()) {
-//		string extension = Utils::getExtension(path);
-		setBodyToResponse(response, path, body);
+		string extension = Utils::getExtension(path);
+		setBodyToResponse(response, extension, body);
 	}
 }
 
@@ -53,20 +51,17 @@ void GetHandler::setBodyToResponse(Response& response,
 */
 
 void GetHandler::handleDirectory(Response& response, string& path) {
-	Utils::printStatus("GET REQUEST HANDLER: resource is directory");
 
 	string body;
 	string pathToIndexFile = findPathToIndexFile(path);
 
 	string extension;
 
-	if (!pathToIndexFile.empty()) {                             // check index files
-		Utils::printStatus("GET REQUEST HANDLER: found index file");
+	if (!pathToIndexFile.empty()) {
 		handleFile(response, pathToIndexFile);
-	} else if (_config.isAutoindexEnabled()) {                 // check Autoindex
-		Utils::printStatus("GET REQUEST HANDLER: not found index file");
-//		extension = _config.getMimeTypeByExtension("html");
-		path = ".html";
+        extension = Utils::getExtension(pathToIndexFile);
+    } else if (_config.isAutoindexEnabled()) {
+		extension = "html";
 //		body = getAutoindexBody(path, _request->getUri());
 		body = autoindex_alter(path, _request->findHeaderValue("Host"), _request->getUri());
 	} else {
@@ -75,18 +70,16 @@ void GetHandler::handleDirectory(Response& response, string& path) {
 		body = getErrorPage("403");
 	}
 	if (!body.empty()) {
-		setBodyToResponse(response, path, body);
+		setBodyToResponse(response, extension, body);
 	}
 }
 
 void GetHandler::handleFile(Response& response, string& path) {
-	Utils::printStatus("GET REQUEST HANDLER: resource is a file");
-
 	string body = FileReader::readFile(path);
 
 	if (!body.empty()) {
 		string extension = Utils::getExtension(path);
-		setBodyToResponse(response, path, body);
+		setBodyToResponse(response, extension, body);
 	}
 }
 

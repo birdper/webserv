@@ -40,10 +40,10 @@ public:
             pathCGI(p.pathCGI),
             extensionCGI(p.extensionCGI),
             clientMaxBodySize(p.clientMaxBodySize),
-			uploadStorePath(p.uploadStorePath)
-//            errorPagePaths(p.errorPagePaths),
-//            indexNameFiles(p.indexNameFiles),
-//            forbiddenMethods(p.forbiddenMethods)
+			uploadStorePath(p.uploadStorePath),
+            errorPagePaths(p.errorPagePaths),
+            indexNameFiles(p.indexNameFiles),
+            forbiddenMethods(p.forbiddenMethods)
             {
     }
 
@@ -58,9 +58,9 @@ public:
             extensionCGI = p.extensionCGI;
             clientMaxBodySize = p.clientMaxBodySize;
             uploadStorePath = p.uploadStorePath;
-//            errorPagePaths = p.errorPagePaths;
-//            indexNameFiles = p.indexNameFiles;
-//            forbiddenMethods = p.forbiddenMethods;
+            errorPagePaths = p.errorPagePaths;
+            indexNameFiles = p.indexNameFiles;
+            forbiddenMethods = p.forbiddenMethods;
         }
         return *this;
     }

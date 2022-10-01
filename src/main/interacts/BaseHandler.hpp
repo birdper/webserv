@@ -32,5 +32,5 @@ protected:
     string getResourcePath(const string& locationUri,
                            const string& root,
                            const string& requestUri) const;
-	void setBodyToResponse(Response& response, const string& path, const string& body);
+	void setBodyToResponse(Response& response, const string& extension, const string& body);
 };
