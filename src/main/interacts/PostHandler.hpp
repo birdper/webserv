@@ -11,7 +11,6 @@
 class PostHandler : public BaseHandler {
 private:
     Request& _request;
-//    Config& _config;
 
 public:
     static BaseHandler* getInstance(Request& request, Config& config);
