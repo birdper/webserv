@@ -42,5 +42,5 @@ void DeleteHandler::handle(Response& response) {
 }
 
 bool DeleteHandler::removeFile(const string& fileName) {
-    return std::remove(fileName.c_str());
+    return std::remove(fileName.c_str()) == 0;
 }
