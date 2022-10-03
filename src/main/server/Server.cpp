@@ -134,7 +134,6 @@ void Server::readClient(Client* client) {
     if (bytesReadCount < 0) {
         Utils::printStatus("PRINT_STATUS() recv() error");
         cerr << "STRERROR: recv() failure: " << strerror(errno) << endl;
-        perror("PERROR: recv() failure");
         disconnectClient(client, false);
 		return;
 //        return POLLHUP;
@@ -149,8 +148,10 @@ void Server::readClient(Client* client) {
 	cout << "========================" << endl;
 */
     client->appendToBuffer(string (buffer, bytesReadCount));
-    requestParser.parse(client->getBuffer(), client->getRequest(), *client);
+	requestParser.parse(client->getRequest(), *client);
+//	TODO delete debug print
     Utils::printStatus("request parsed");
+	std::cout << std::endl;
 }
 
 void Server::handleRequest(Client* client) {

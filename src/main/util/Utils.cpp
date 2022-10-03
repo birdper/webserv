@@ -103,8 +103,11 @@ int Utils::stringToInt(const string& str, int base) {
     char* endPtr;
     long number = std::strtol(str.c_str(), &endPtr, base);
 
-    if (*endPtr || number < INT32_MIN || number > INT32_MAX) {
-//        throw CastToIntException();
+//    if (*endPtr || number < INT32_MIN || number > INT32_MAX) {
+//        throw "Invalid cast to int";
+//    }
+    if (*endPtr != 0) {
+        throw "Invalid cast to int";
     }
     return number;
 }
