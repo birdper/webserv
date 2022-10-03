@@ -3,6 +3,7 @@
 #include "usings.hpp"
 #include "GetHandler.hpp"
 #include "PostHandler.hpp"
+#include "DeleteHandler.hpp"
 #include "MimeTypesRepo.hpp"
 
 class RequestHandler {

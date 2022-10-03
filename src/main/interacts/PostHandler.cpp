@@ -19,11 +19,12 @@ PostHandler::~PostHandler() {
 
 void PostHandler::handle(Response& response) {
 	Utils::printStatus("POST HANDLER!");
-	if (!_config.isMethodAllowed(_request.getHttpMethod())) {
+//    TODO move to common validate
+/*	if (!_config.isMethodAllowed(_request.getHttpMethod())) {
 		Utils::printStatus("Method not Allowed");
 		response.setStatusCode("405 Method Not Allowed");
 		return;
-	}
+	}*/
 
 	if (_config.getUploadStorePath().empty()) {
 		Utils::printStatus("Upload directory not defined");

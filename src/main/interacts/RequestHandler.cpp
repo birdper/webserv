@@ -10,6 +10,7 @@ RequestHandler::RequestHandler(Request& request, Config& config, MimeTypesRepo& 
         _mimeTypesRepo(mimeTypesRepo) {
     _methods["GET"] = GetHandler::getInstance(request, config);
     _methods["POST"] = PostHandler::getInstance(request, config);
+    _methods["DELETE"] = DeleteHandler::getInstance(request, config);
 }
 
 RequestHandler::~RequestHandler() {
@@ -38,6 +39,11 @@ bool RequestHandler::validate(Response& response) {
     }
     if (!_config.isLocationConfig()) {
         Utils::printStatus("404 Not Found");
+        return false;
+    }
+    if (!_config.isMethodAllowed(_request.getHttpMethod())) {
+        Utils::printStatus("405 Method not Allowed");
+        response.setStatusCode("405 Method Not Allowed");
         return false;
     }
     return true;
