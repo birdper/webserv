@@ -30,7 +30,7 @@ void HttpMessage::addHeader(const string& key, const string& value) {
 	_headers.insert(std::pair<string, string>(key, value));
 }
 
-string HttpMessage::findHeaderValue(const string& key) const {
+string HttpMessage::findHeaderValue(const string& key) {
     std::map<string, string>::const_iterator it = _headers.find(key);
 
     if (it == _headers.end()) {

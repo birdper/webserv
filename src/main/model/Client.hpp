@@ -16,6 +16,7 @@ private:
 	Response* response;
 
 	std::string buffer;
+    std::string cookie;
 	std::queue<std::string*> sendQueue;
 
     bool _isReadyRequest;

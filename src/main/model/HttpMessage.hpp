@@ -14,14 +14,14 @@ protected:
     std::string parseErrorString;
 
 private:
-	std::map<string, string> _headers;
+	static std::map<string, string> _headers;
 
 public:
 	virtual ~HttpMessage();
 
     void addHeader(const string& line);
     void addHeader(const string& key, const string& value);
-    string findHeaderValue(const string& key) const;
+    static string findHeaderValue(const string& key);
 
     void setHttpVersion(const string& httpVersion);
     void setParseErrorString(const string& parseErrorString);
