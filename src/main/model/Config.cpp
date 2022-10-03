@@ -27,9 +27,9 @@ bool Config::isMethodAllowed(HttpMethod method) const {
 	std::vector<HttpMethod>::const_iterator it = std::find(_parameters->forbiddenMethods.begin(),
 	                                                       _parameters->forbiddenMethods.end(),
 	                                                       method);
-	if (*it == method)
-		return false;
-	return true;
+	if (it == _parameters->forbiddenMethods.end())
+		return true;
+	return false;
 }
 
 bool Config::isAutoindexEnabled() const {
