@@ -7,8 +7,6 @@
 string Response::serialize() {
     std::ostringstream ss;
 
-    // start-line
-
     addHeader("Date", Utils::getCurrentTimestamp(false, "%a, %d %b %Y %H:%M:%S GMT"));
 
     ss << "HTTP/1.1 " << statusCode << END_OF_LINE;

@@ -126,9 +126,8 @@ void RequestParser::parseChunked(Request& request, Client& client) const {
 			sizeEndPos = chunks.find(END_OF_LINE, chunkEndPos);
 			chunkSize = Utils::stringToInt(chunks.substr(chunkEndPos, sizeEndPos - chunkEndPos), 16);
 		}
-		request.setBuffer("");
-//		request.setFileName(getFileName(request.getUri()));
-//		request.setIsReady(true);
+		request.setBuffer(client.getBuffer());
+		client.setBuffer("");
 		client.setIsReadyRequest(true);
 	}
 }

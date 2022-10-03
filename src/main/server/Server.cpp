@@ -172,8 +172,6 @@ Config& Server::findConfig(const Client& client, const Request& request) {
 
     Config* config = configRepository.findLocationConfigByUri(virtualServer, request.getUri());
     if (config == nullptr) {
-//        bool isLocation = false;
-//        config = new Config(virtualServer.getParameters(), isLocation);
         config = configRepository.getLocationConfig(virtualServer.getParameters());
     }
     return *config;
@@ -190,21 +188,17 @@ short Server::writeClient(Client* client) {
 		buffer = client->getBuffer();
 	}
 	std::cout << "Before: buffer->size(): " << buffer.size() << std::endl;
-//    std::cout << "=========RESPONSE=========\n" << *buffer << std::endl;
     ssize_t countSendBytes = send(client->getSocketDescriptor(),
                                   buffer.c_str(),
                                   buffer.size(),
                                   MsgNoFlag);
-//	Utils::printStatus("send bytes " + countSendBytes);
 	std::cout << "send bytes " << countSendBytes << std::endl;
-
 
 	if (countSendBytes < 0) {
         Utils::printStatus("Client ended the userfd! " + client->getSocketDescriptor());
     }
 
     client->setBuffer(buffer.substr(countSendBytes));
-//	response->setBody(buffer.substr(countSendBytes));
 //    delete buffer;
 
     if (client->getBuffer().empty()) {
