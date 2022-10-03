@@ -16,14 +16,14 @@
 class BaseHandler {
 protected:
 	Config& _config;
+    Request& _request;
 
 public:
-	explicit BaseHandler(Config& config);
+	explicit BaseHandler(Request& request, Config& config);
     virtual ~BaseHandler();
 
     virtual void handle(Response& response) = 0;
 
-//    virtual  BaseHandler* getInstance(Request& request, Config& config) = 0;
 protected:
 
     void readfileToBody(Response& response, const std::string& path);

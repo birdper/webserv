@@ -76,7 +76,7 @@ const string& Config::getErrorPageRelativePath(const string& errorCode) const {
 
 string Config::getPathErrorPageWithRoot(const string& errorCode) {
 	string path = getErrorPageRelativePath(errorCode);
-	if (path.at(0) == '/') {
+	if (path.front() == '/') {
 		return getRoot() + path;
 	} else {
 		return getRoot() + getLocationUri() + path;
@@ -101,4 +101,41 @@ const string& Config::getUploadStorePath() const {
 
 string Config::getMimeTypeByExtension(const string& extension) const {
 	return _mimeTypesRepo->getMimeTypeByExtension(extension);
+}
+
+string Config::findCustomErrorPage(const string& errorCode) {
+    Parameters::MapErrorPagePaths::const_iterator it =
+            _parameters->errorPagePaths.find(errorCode);
+    if (it == _parameters->errorPagePaths.end()) {
+		return "";
+    }
+    return it->second;
+}
+
+string Config::getDescriptionErrorByCode(const string& errorCode) {
+    return _defaultErrorPagesRepo->getDescriptionErrorByCode(errorCode);
+}
+
+string Config::getDefaultErrorPage(const string& errorCode) {
+    return "<!DOCTYPE html>\n"
+           "<html>\n"
+           "<head>\n"
+           "    <title>Error</title>\n"
+           "    <style>\n"
+           "        html {\n"
+           "            color-scheme: light dark;\n"
+           "        }\n"
+           "\n"
+           "        body {\n"
+           "            width: 35em;\n"
+           "            margin: 0 auto;\n"
+           "            font-family: Tahoma, Verdana, Arial, sans-serif;\n"
+           "        }\n"
+           "    </style>\n"
+           "</head>\n"
+           "<body>\n"
+           "<h1>Error " + errorCode + ".</h1>\n"
+            "<p>" + _defaultErrorPagesRepo->getDescriptionErrorByCode(errorCode) + ".</p>\n"
+           "</body>\n"
+           "</html>";
 }

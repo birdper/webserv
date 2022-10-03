@@ -6,52 +6,32 @@ BaseHandler* GetHandler::getInstance(Request& request, Config& config) {
 	return new GetHandler(request, config);
 }
 
-GetHandler::GetHandler(Request& request, Config& config) : BaseHandler(config),
-		_request(&request) {
+GetHandler::GetHandler(Request& request, Config& config) :
+        BaseHandler(request, config) {
 }
 
 GetHandler::~GetHandler() {
 }
 
 void GetHandler::handle(Response& response) {
+
 	std::string path = getResourcePath(_config.getLocationUri(),
 	                                   _config.getRoot(),
-	                                   _request->getUri());
-
+	                                   _request.getUri());
+// TODO delete
 	Utils::printStatus("GET REQUEST HANDLER: resource_path = " + path);
 
-	response.setStatusCode("200 OK");
+	response.setStatusCode("200");
 	if (Utils::isDirectory(path)) {
 		handleDirectory(response, path);
-		return;
-	}
-	if (Utils::isFileExists(path)) {
+	} else if (Utils::isFileExists(path)) {
 		handleFile(response, path);
-		return;
-	}
-
-	Utils::printStatus("RESPONSE 403");
-	response.setStatusCode("403 Forbidden");
-	string body = getErrorPage("403");
-	if (!body.empty()) {
-		string extension = Utils::getExtension(path);
-		setBodyToResponse(response, extension, body);
-	}
+	} else {
+	    response.setStatusCode("404");
+    }
 }
-
-/*
-void GetHandler::setBodyToResponse(Response& response,
-                                   const string& extension,
-                                   const string& body) {
-	response.setBody(body);
-	string contentType = _mimeTypesRepo.getTypeByExtension(extension);
-	response.addHeader("Content-Type", contentType);
-	response.addHeader("Content-Length", std::to_string(body.size()));
-}
-*/
 
 void GetHandler::handleDirectory(Response& response, string& path) {
-
 	string body;
 	string pathToIndexFile = findPathToIndexFile(path);
 
@@ -62,12 +42,9 @@ void GetHandler::handleDirectory(Response& response, string& path) {
         extension = Utils::getExtension(pathToIndexFile);
     } else if (_config.isAutoindexEnabled()) {
 		extension = "html";
-//		body = getAutoindexBody(path, _request->getUri());
-		body = autoindex_alter(path, _request->findHeaderValue("Host"), _request->getUri());
+		body = getAutoindexBody(path, _request.findHeaderValue("Host"), _request.getUri());
 	} else {
-		Utils::printStatus("GET REQUEST HANDLER: Index file not found and AUTOINDEX disabled  403 Forbidden");
-		response.setStatusCode("403 Forbidden");
-		body = getErrorPage("403");
+		response.setStatusCode("403");
 	}
 	if (!body.empty()) {
 		setBodyToResponse(response, extension, body);
@@ -99,67 +76,8 @@ std::string GetHandler::findPathToIndexFile(string& root) const {
 	return "";
 }
 
-string GetHandler::getAutoindexBody(const string& path, const string& uri) {
-
+string GetHandler::getAutoindexBody(const std::string& path, const std::string& host, const std::string& uri) {
 	std::ostringstream body;
-	string title = "Index of " + uri;
-/*	body.append("<html>\n"
-					"<head><title>" + title + "</title></head>\n" +
-					"<body>\n" +
-					"<h1>" + title + "</h1>"
-					"<hr><pre><a href=\"../\">../</a>\n");
-*/
-	body << "<html>\n"
-	     << "<head><title>" << title << "</title></head>\n"
-	     << "<body>\n"
-	     << "<h1>" << title << "</h1>"
-	     << "<hr><pre><a href=\"../\">../</a>\n";
-
-	std::vector<string> fileNames = getFileNamesFromDirectory(path);
-	for (int i = 0; i < fileNames.size(); ++i) {
-		string fileName = fileNames[i];
-		if (strcmp(fileName.c_str(), ".") && strcmp(fileName.c_str(), "..")) {
-			string pathWithFileName = path + "/" + fileName;
-
-			struct stat file_stats;
-			stat(pathWithFileName.data(), &file_stats);
-			bool fileIsDirectory = S_ISDIR(file_stats.st_mode);
-			if (fileIsDirectory) {
-				fileName.append("/");
-			}
-
-			body << "<a href=\"" << uri << fileName << "\">" << fileName << "</a\t";
-			/*
-			body.append("<a href=\"" + uri + fileName);
-			body.append("\">" + fileName);
-			body.append("</a>                                               ");
-			*/
-			time_t lastModified = Utils::getFileModificationDate(pathWithFileName);
-			string date = string(ctime(&lastModified));
-			date = date.substr(0, date.size() - 1);
-//			body.append(date + "                   ");
-			body << date << "                   ";
-			if (fileIsDirectory) {
-//				body.append("-\n");
-				body << "-\n";
-			} else {
-//				body.append(std::to_string(static_cast<float>(file_stats.st_size)) + "\n");
-				body << (std::to_string(static_cast<float>(file_stats.st_size)) + "\n");
-			}
-		}
-	}
-	body << "</pre><hr></body>\n" <<
-	     "</html>\n";
-//	body.append("</pre><hr></body>\n"
-//				"</html>\n");
-//	response->setBody(body);
-//	response->setStatusLine("200 OK");
-	return body.str();
-}
-
-string GetHandler::autoindex_alter(const std::string& path, const std::string& host, const std::string& uri) {
-	std::ostringstream body;
-
 	body << ("<!DOCTYPE html>\n"
 	         "<html>\n"
 	         "<head>\n"
@@ -201,8 +119,6 @@ string GetHandler::autoindex_alter(const std::string& path, const std::string& h
 	         "</body>\n"
 	         "</html>\n"
 	);
-//	_responseContentType = getTypeByExtension("html");
-//	_responseContentLen = responseBody.str().length();
 	return body.str();
 }
 
@@ -218,14 +134,4 @@ std::vector<std::string> GetHandler::getFileNamesFromDirectory(const std::string
 		closedir(dir);
 	}
 	return fileNames;
-}
-
-
-string GetHandler::getErrorPage(const string& errorCode) {
-//    string pathToErrorPage = _config.findErrorPagePath("403");
-	string pathToErrorPage;
-	if (!pathToErrorPage.empty()) {
-		return FileReader::readFile(pathToErrorPage);
-	}
-	return "";
 }

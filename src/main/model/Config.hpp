@@ -46,4 +46,7 @@ public:
 	string getPathErrorPageWithRoot(const string& errorCode);
 
 	string getMimeTypeByExtension(const string& extension) const;
+    string findCustomErrorPage(const string& errorCode);
+    string getDefaultErrorPage(const string& errorCode);
+    string getDescriptionErrorByCode(const string& errorCode);
 };

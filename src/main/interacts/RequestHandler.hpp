@@ -11,22 +11,16 @@ private:
     std::map<string, BaseHandler*> _methods;
     Request& _request;
     Config& _config;
-    MimeTypesRepo& _mimeTypesRepo;
 
 public:
     virtual ~RequestHandler();
-    static RequestHandler getInstance(Request& request, Config& config, MimeTypesRepo& mimeTypeRepo);
+    static RequestHandler getInstance(Request& request, Config& config);
 	Response& handle();
 
 private:
-    RequestHandler(Request& request, Config& config, MimeTypesRepo& mimeTypesRepo);
-    bool validate(Response& response);
-
-
-/*    std::string getPathFromUri(const std::string& uri, Config& config) const;
-    std::string getAutoindexBody(std::vector<std::string> fileNames,
-								 const std::string& path,
-								 const std::string& uri);
-    std::vector<std::string> getFileNamesFromDirectory(const std::string& path);
-    void readfile(Response& response, const std::string& path);*/
+    RequestHandler(Request& request, Config& config);
+    bool isValidResponse(Response& response);
+    string getErrorPage(const string& errorCode);
+    void setErrorPageBodyIfHas(Response& response);
+    void setStatusCodeAndDescription(Response& response);
 };

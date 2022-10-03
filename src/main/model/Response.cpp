@@ -4,6 +4,9 @@
 
 #include "Response.hpp"
 
+Response::~Response() {
+}
+
 string Response::serialize() {
     std::ostringstream ss;
 
@@ -22,16 +25,7 @@ string Response::serialize() {
     ss << END_OF_LINE;
 
     string res = ss.str();
-    responseSize = res.length();
     return string (res);
-}
-
-const std::string& Response::getReason() const {
-    return reason;
-}
-
-void Response::setReason(const std::string& reason) {
-    this->reason = reason;
 }
 
 const std::string& Response::getStatusCode() const {
@@ -58,11 +52,4 @@ string& Response::parseToHeaders() {
 		ss << it->first << ": " << it->second << END_OF_LINE;
 	}
 	return *new string (ss.str());
-}
-
-Response::~Response() {
-}
-
-int Response::getResponseSize() const {
-    return responseSize;
 }

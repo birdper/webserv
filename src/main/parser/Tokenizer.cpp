@@ -3,23 +3,6 @@
 
 Tokenizer::Tokenizer() :
 		context(NONE_CONTEXT) {
-//	TODO delete
-/*
-	mapperParameters.push_back("server");
-	mapperParameters.push_back("listen");
-	mapperParameters.push_back("server_name");
-	mapperParameters.push_back("location");
-	mapperParameters.push_back("root");
-	mapperParameters.push_back("index");
-	mapperParameters.push_back("autoindex");
-	mapperParameters.push_back("error_page");
-	mapperParameters.push_back("methods");
-	mapperParameters.push_back("cgi_extension");
-	mapperParameters.push_back("cgi_path");
-	mapperParameters.push_back("return");
-	mapperParameters.push_back("client_max_body_size");
- */
-
 	mapperParameters["unknown_type"] = UNKNOWN_TYPE;
 	mapperParameters["server"] = SERVER;
 	mapperParameters["listen"] = LISTEN;
@@ -68,6 +51,7 @@ std::vector<Token> Tokenizer::tokenize(std::istringstream& configText) {
 					content = getDirectiveContent(issLine);
 					break;
 			}
+//          TODO delete
 /*			Token currentToken;
 //			currentToken.typeName = word;
 			currentToken.content = content;

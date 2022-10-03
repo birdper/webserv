@@ -7,18 +7,13 @@
 #include "BaseHandler.hpp"
 
 class DeleteHandler : BaseHandler {
-private:
-    Request* _request;
-
 public:
     static BaseHandler* getInstance(Request& request, Config& config);
-
     ~DeleteHandler();
     void handle(Response& response);
 
 private:
     DeleteHandler(Request& request, Config& config);
-
     bool removeFile(const string& fileName);
 };
 
