@@ -6,36 +6,29 @@ BaseHandler* GetHandler::getInstance(Request& request, Config& config) {
 	return new GetHandler(request, config);
 }
 
-GetHandler::GetHandler(Request& request, Config& config) : BaseHandler(config),
-		_request(&request) {
+GetHandler::GetHandler(Request& request, Config& config) :
+        BaseHandler(request, config) {
 }
 
 GetHandler::~GetHandler() {
 }
 
 void GetHandler::handle(Response& response) {
+
 	std::string path = getResourcePath(_config.getLocationUri(),
 	                                   _config.getRoot(),
-	                                   _request->getUri());
-
+	                                   _request.getUri());
+// TODO delete
 	Utils::printStatus("GET REQUEST HANDLER: resource_path = " + path);
 
-	response.setStatusCode("200 OK");
+	response.setStatusCode("200");
 	if (Utils::isDirectory(path)) {
 		handleDirectory(response, path);
-		return;
-	}
-	if (Utils::isFileExists(path)) {
+	} else if (Utils::isFileExists(path)) {
 		handleFile(response, path);
-		return;
-	}
-
-	response.setStatusCode("404 Not Found");
-	string body = getErrorPage("404");
-	if (!body.empty()) {
-		string extension = Utils::getExtension(path);
-		setBodyToResponse(response, extension, body);
-	}
+	} else {
+	    response.setStatusCode("404");
+    }
 }
 
 void GetHandler::handleDirectory(Response& response, string& path) {
@@ -49,10 +42,9 @@ void GetHandler::handleDirectory(Response& response, string& path) {
         extension = Utils::getExtension(pathToIndexFile);
     } else if (_config.isAutoindexEnabled()) {
 		extension = "html";
-		body = getAutoindexBody(path, _request->findHeaderValue("Host"), _request->getUri());
+		body = getAutoindexBody(path, _request.findHeaderValue("Host"), _request.getUri());
 	} else {
-		response.setStatusCode("403 Forbidden");
-		body = getErrorPage("403");
+		response.setStatusCode("403");
 	}
 	if (!body.empty()) {
 		setBodyToResponse(response, extension, body);

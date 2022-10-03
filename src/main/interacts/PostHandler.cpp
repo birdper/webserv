@@ -9,8 +9,7 @@ BaseHandler* PostHandler::getInstance(Request& request, Config& config) {
 }
 
 PostHandler::PostHandler(Request& request, Config& config) :
-	BaseHandler(config),
-	_request(request) {
+        BaseHandler(request, config) {
 }
 
 PostHandler::~PostHandler() {
@@ -19,16 +18,10 @@ PostHandler::~PostHandler() {
 
 void PostHandler::handle(Response& response) {
 	Utils::printStatus("POST HANDLER!");
-//    TODO move to common validate
-/*	if (!_config.isMethodAllowed(_request.getHttpMethod())) {
-		Utils::printStatus("Method not Allowed");
-		response.setStatusCode("405 Method Not Allowed");
-		return;
-	}*/
 
 	if (_config.getUploadStorePath().empty()) {
 		Utils::printStatus("Upload directory not defined");
-		response.setStatusCode("405 Method Not Allowed");
+		response.setStatusCode("405");
 		return;
 	}
 
@@ -37,12 +30,12 @@ void PostHandler::handle(Response& response) {
 
 	if (!saveBodyToFile(fileName, _request.getBody())) {
 		Utils::printStatus("POST HANDLER: 500 Can't save file: " + fileName);
-		response.setStatusCode("500 Can't save file");
+		response.setStatusCode("500");
 		return;
 	}
 	Utils::printStatus("POST HANDLER: 201 Created: " + fileName);
 
-	response.setStatusCode("201 Created");
+	response.setStatusCode("201");
 	string extension = Utils::getExtension(fileName);
 	string contentType = _config.getMimeTypeByExtension(extension);
 

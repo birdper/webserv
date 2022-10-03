@@ -9,9 +9,6 @@
 
 
 class PostHandler : public BaseHandler {
-private:
-    Request& _request;
-
 public:
     static BaseHandler* getInstance(Request& request, Config& config);
     virtual ~PostHandler();

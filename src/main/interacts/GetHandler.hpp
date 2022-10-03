@@ -13,9 +13,6 @@
 class BaseHandler;
 
 class GetHandler : public BaseHandler {
-private:
-    Request* _request;
-
 public:
     static BaseHandler* getInstance(Request& request, Config& config);
     virtual ~GetHandler();

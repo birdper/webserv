@@ -164,9 +164,6 @@ bool ConfigParser::checkIpAndPort(const std::string &ipStr, const std::string &p
 void ConfigParser::parseErrorPagePaths(Parameters* params, const std::string& input) {
     std::vector<std::string> vec = Utils::split(input, " ");
 
-
-    std::cout << "input: " << input << std::endl;
-    std::cout << "vec size: " << vec.size() << std::endl;
     if (vec.size() == 2) {
         params->addErrorPage(vec[0], vec[1]);
     }

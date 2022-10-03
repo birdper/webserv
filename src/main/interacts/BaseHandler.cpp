@@ -4,7 +4,8 @@
 
 #include "BaseHandler.hpp"
 
-BaseHandler::BaseHandler(Config& config) :
+BaseHandler::BaseHandler(Request& request, Config& config) :
+        _request(request),
         _config(config) {}
 
 BaseHandler::~BaseHandler() {
@@ -31,36 +32,6 @@ void BaseHandler::setBodyToResponse(Response& response,
 	response.setBody(body);
 	response.addHeader("Content-Type", contentType);
 	response.addHeader("Content-Length", std::to_string(body.size()));
-}
-
-void BaseHandler::setErrorResponse(Response& response, const string& errorCode) {
-    string description = _config.getDescriptionErrorByCode(errorCode);
-    string errorPageFileName = _config.findCustomErrorPage(errorCode);
-    response.setStatusCode(errorCode + " " + description);
-    string body = getErrorPage(errorCode);
-    if (!body.empty()) {
-        string extension = Utils::getExtension(errorPageFileName);
-        setBodyToResponse(response, extension, body);
-    }
-}
-
-string BaseHandler::getErrorPage(const string& errorCode) {
-    string errorPageFileName = _config.findCustomErrorPage(errorCode);
-    string body;
-    if (!errorPageFileName.empty()) {
-
-        string root = _config.getRoot();
-        if (errorPageFileName.front() != '/' && root.back() != '/') {
-            root.append("/");
-        }
-
-        string pathToErrorPage = root + errorPageFileName;
-        body = FileReader::readFile(pathToErrorPage);
-    } else {
-        body = _config.getDefaultErrorPage(errorCode);
-    }
-
-    return body;
 }
 
 void BaseHandler::readfileToBody(Response& response, const std::string& path) {
@@ -92,10 +63,10 @@ std::string BaseHandler::getRedirectPageBody(std::pair<int, std::string> redirec
         return redirect.second;
 }
 
-bool validateFile(const string& path) {
+/*bool validateFile(const string& path) {
     if (Utils::isFileExists(path) && !Utils::isDirectory(path) &&
         !access(path.c_str(), W_OK)) {
         return true;
     }
     return false;
-}
+}*/
