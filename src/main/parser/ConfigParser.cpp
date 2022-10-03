@@ -76,8 +76,7 @@ void ConfigParser::parseConfig(const std::string &configFileName,
 				currentParams->uploadStorePath = token.content;
 				break;
             case ERROR_PAGE:
-//				TODO parse error pages
-//				currentParams->errorPagePaths;
+                parseErrorPagePaths(currentParams, token.content);
                 break;
             case INDEX:
                 currentParams->indexNameFiles = Utils::split(token.content, " ");
@@ -162,19 +161,15 @@ bool ConfigParser::checkIpAndPort(const std::string &ipStr, const std::string &p
     checkPort(portStr);
 }
 
-
-std::map<std::string, std::string>
-ConfigParser::parseErrorPagePaths(const std::string &input) {
-
-    std::map<std::string, std::string> map;
+void ConfigParser::parseErrorPagePaths(Parameters* params, const std::string& input) {
     std::vector<std::string> vec = Utils::split(input, " ");
 
-    for (int i = 1; i < vec.size(); i += 2) {
-        std::string key = vec[i - 1];
-        std::string value = vec[i];
-        map[key] = value;
+
+    std::cout << "input: " << input << std::endl;
+    std::cout << "vec size: " << vec.size() << std::endl;
+    if (vec.size() == 2) {
+        params->addErrorPage(vec[0], vec[1]);
     }
-    return map;
 }
 
 bool ConfigParser::isDigits(const std::string &str) {

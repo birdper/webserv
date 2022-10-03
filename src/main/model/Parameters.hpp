@@ -65,4 +65,8 @@ public:
         return *this;
     }
 
+    void addErrorPage(const std::string& key, const std::string& value) {
+        errorPagePaths.insert(std::make_pair(key, value));
+    }
+
 };

@@ -33,4 +33,6 @@ protected:
                            const string& root,
                            const string& requestUri) const;
 	void setBodyToResponse(Response& response, const string& extension, const string& body);
+    string getErrorPage(const string& errorCode);
+    void setErrorResponse(Response& response, const string& errorCode);
 };

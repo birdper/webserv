@@ -4,10 +4,63 @@
 
 #include "BaseHandler.hpp"
 
-BaseHandler::BaseHandler(Config& config) : _config(config) {}
+BaseHandler::BaseHandler(Config& config) :
+        _config(config) {}
 
 BaseHandler::~BaseHandler() {
 
+}
+
+string BaseHandler::getResourcePath(const string& locationUri,
+                                    const string& root,
+                                    const string& requestUri) const {
+	unsigned long endPos = locationUri.rfind("/");
+	if (endPos != 0) {
+		return root + requestUri.substr(endPos, requestUri.length());
+	} else {
+		return root + requestUri;
+	}
+}
+
+void BaseHandler::setBodyToResponse(Response& response,
+                                   const string& extension,
+                                   const string& body) {
+
+	string contentType = _config.getMimeTypeByExtension(extension);
+
+	response.setBody(body);
+	response.addHeader("Content-Type", contentType);
+	response.addHeader("Content-Length", std::to_string(body.size()));
+}
+
+void BaseHandler::setErrorResponse(Response& response, const string& errorCode) {
+    string description = _config.getDescriptionErrorByCode(errorCode);
+    string errorPageFileName = _config.findCustomErrorPage(errorCode);
+    response.setStatusCode(errorCode + " " + description);
+    string body = getErrorPage(errorCode);
+    if (!body.empty()) {
+        string extension = Utils::getExtension(errorPageFileName);
+        setBodyToResponse(response, extension, body);
+    }
+}
+
+string BaseHandler::getErrorPage(const string& errorCode) {
+    string errorPageFileName = _config.findCustomErrorPage(errorCode);
+    string body;
+    if (!errorPageFileName.empty()) {
+
+        string root = _config.getRoot();
+        if (errorPageFileName.front() != '/' && root.back() != '/') {
+            root.append("/");
+        }
+
+        string pathToErrorPage = root + errorPageFileName;
+        body = FileReader::readFile(pathToErrorPage);
+    } else {
+        body = _config.getDefaultErrorPage(errorCode);
+    }
+
+    return body;
 }
 
 void BaseHandler::readfileToBody(Response& response, const std::string& path) {
@@ -37,28 +90,6 @@ std::string BaseHandler::getRedirectPageBody(std::pair<int, std::string> redirec
                "</html>";
     } else
         return redirect.second;
-}
-
-string BaseHandler::getResourcePath(const string& locationUri,
-                                    const string& root,
-                                    const string& requestUri) const {
-	unsigned long endPos = locationUri.rfind("/");
-	if (endPos != 0) {
-		return root + requestUri.substr(endPos, requestUri.length());
-	} else {
-		return root + requestUri;
-	}
-}
-
-void BaseHandler::setBodyToResponse(Response& response,
-                                   const string& extension,
-                                   const string& body) {
-
-	string contentType = _config.getMimeTypeByExtension(extension);
-
-	response.setBody(body);
-	response.addHeader("Content-Type", contentType);
-	response.addHeader("Content-Length", std::to_string(body.size()));
 }
 
 bool validateFile(const string& path) {

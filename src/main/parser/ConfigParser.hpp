@@ -23,7 +23,7 @@ public:
 	void parseConfig(const std::string& configFileName, ConfigStorage* storage);
 
 private:
-    std::map<std::string, std::string> parseErrorPagePaths(const std::string &input);
+    void parseErrorPagePaths(Parameters* params, const std::string& input);
 
     void parseListen(const std::string &input, VirtualServer &virtualServer);
     bool checkPort(const std::string &str);
