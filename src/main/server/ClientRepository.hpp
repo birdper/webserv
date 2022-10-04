@@ -13,6 +13,6 @@ private:
 public:
 	void addClient(Client* client);
 	Client* findBySocketDescriptor(int socketDescriptor);
-	Client* findByCookie(std::string key);
+	Client* findClientByCookie(std::string key);
 	void removeBySocketDescriptor(int socketDescriptor);
 };
