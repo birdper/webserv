@@ -23,23 +23,16 @@ Client* ClientRepository::findBySocketDescriptor(int socketDescriptor) {
 	return nullptr;
 }
 
-Client* ClientRepository::findByCookie(std::string key) {
-
-
-    std::string cookie = HttpMessage::findHeaderValue("Cookie");
-    if(cookie != NULL) {
-        size_t position = cookie.find('=');
-        std::string cookieKey = cookie.substr(0, position);
-        std::string cookieValue = cookie.substr(position);
-    }
-
-    std::map<int, Client*>::iterator foundIt;
-    foundIt = clients.find();
-    if (foundIt == clients.end())
+    Client* ClientRepository::findClientByCookie(const string& cookie) {
+        std::map<int, Client*>::iterator it = clients.begin();
+        for (; it != clients.end(); ++it) {
+            string foundCookieId = it->second->getRequest().findHeaderValue("Cookie");
+            if (foundCookieId == cookie) {
+                return it->second;
+            }
+        }
         return nullptr;
-    return foundIt->second;
-
-}
+    }
 
 void ClientRepository::removeBySocketDescriptor(int socketDescriptor) {
 	clients.erase(socketDescriptor);
