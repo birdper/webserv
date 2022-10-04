@@ -5,6 +5,7 @@
 #include "PostHandler.hpp"
 #include "DeleteHandler.hpp"
 #include "MimeTypesRepo.hpp"
+#include "../cgi/CGI.hpp"
 
 class RequestHandler {
 private:
@@ -23,4 +24,5 @@ private:
     string getErrorPage(const string& errorCode);
     void setErrorPageBodyIfHas(Response& response);
     void setStatusCodeAndDescription(Response& response);
+    CGI* initCgi(const string& resource, const string& ip, const string& port);
 };

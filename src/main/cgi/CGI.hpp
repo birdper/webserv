@@ -9,7 +9,7 @@
 #include <fcntl.h>
 #include <sstream>
 
-#include "CGIException.hpp"
+#include "../exception/CGIException.hpp"
 #include "Request.hpp"
 #include "usings.hpp"
 
@@ -111,12 +111,12 @@
 class CGI {
 private:
     Request&    m_request;
+    string      m_requiredResource;
     string      m_pathToCGI;
     string      m_extension;
     string      m_root;
     string      m_ip;
     string      m_port;
-    string      m_body;
     string      m_filenameOut;
     string      m_filenameFrom;
     int         m_cgiOut;
@@ -134,10 +134,15 @@ public:
      * @param ip - ?
      * @param port - ?
      */
-    CGI(Request& request, const string& pathToCGI, const string& extension,
-        const string& root, const string& ip, const string& port);
+    CGI(Request& request,
+        const string& resource,
+        const string& pathToCGI,
+        const string& extension,
+        const string& root,
+        const string& ip,
+        const string& port);
     ~CGI();
-    string      execute();
+    string execute(const string& body);
 
 private:
     void        createReadWriteFiles(int &read, int &write);
@@ -148,7 +153,7 @@ private:
     void        destroyEnv();
     void        destroyArgs();
 
-    void        writeBodyToFile();
+    void writeBodyToFile(const string& body);
     char        **convertMapToStrArray(std::map<string, string>& envMap);
     std::string gen_random(const int len);
     std::string getDataFileAsString(const std::string &filename);

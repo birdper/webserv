@@ -10,9 +10,9 @@ add_library(${PROJECT_NAME} SHARED
         model
         config
         parser
+        cgi
         interacts
         server
-        cgi
         )
 
 add_executable(webserv
@@ -24,9 +24,9 @@ add_subdirectory(util)
 add_subdirectory(model)
 add_subdirectory(config)
 add_subdirectory(parser)
+add_subdirectory(cgi)
 add_subdirectory(interacts)
 add_subdirectory(server)
-add_subdirectory(cgi)
 
 target_link_libraries(${PROJECT_NAME} PUBLIC
         exception
@@ -34,9 +34,9 @@ target_link_libraries(${PROJECT_NAME} PUBLIC
         model
         config
         parser
+        cgi
         interacts
         server
-        cgi
         )
 
 target_include_directories(${PROJECT_NAME} PUBLIC
@@ -49,9 +49,9 @@ target_include_directories(${PROJECT_NAME} PUBLIC
         config/storage
         config/types
         parser
+        cgi
         interacts
         server
-        cgi
         )
 
 target_link_libraries(webserv PUBLIC

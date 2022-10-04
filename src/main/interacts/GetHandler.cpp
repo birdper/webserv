@@ -18,6 +18,7 @@ void GetHandler::handle(Response& response) {
 	std::string path = getResourcePath(_config.getLocationUri(),
 	                                   _config.getRoot(),
 	                                   _request.getUri());
+    response.setResource(path);
 // TODO delete
 	Utils::printStatus("GET REQUEST HANDLER: resource_path = " + path);
 
@@ -39,11 +40,12 @@ void GetHandler::handleDirectory(Response& response, string& path) {
 
 	if (!pathToIndexFile.empty()) {
 		handleFile(response, pathToIndexFile);
+        response.setResource(pathToIndexFile);
         extension = Utils::getExtension(pathToIndexFile);
     } else if (_config.isAutoindexEnabled()) {
 		extension = "html";
 		body = getAutoindexBody(path, _request.findHeaderValue("Host"), _request.getUri());
-	} else {
+    } else {
 		response.setStatusCode("403");
 	}
 	if (!body.empty()) {
