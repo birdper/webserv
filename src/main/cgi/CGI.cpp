@@ -71,29 +71,29 @@ void CGI::writeBodyToFile(const string& body) {
 char** CGI::createEnv() {
     size_t pos = m_request.getUri().rfind('?');;
     std::map<string, string> envMap;
-    envMap["REDIRECT_STATUS"] = "200"; //todo need to be approved
-    envMap["GATEWAY_INTERFACE"] = "CGI/1.1";
-    envMap["SERVER_NAME"] = m_ip;
-    envMap["SERVER_PORT"] = m_port;
-    envMap["SERVER_SOFTWARE"] = "webserv/1.0.0";
+    envMap["HTTP_REDIRECT_STATUS"] = "200"; //todo need to be approved
+    envMap["HTTP_GATEWAY_INTERFACE"] = "CGI/1.1";
+    envMap["HTTP_SERVER_NAME"] = m_ip;
+    envMap["HTTP_SERVER_PORT"] = m_port;
+    envMap["HTTP_SERVER_SOFTWARE"] = "webserv/1.0.0";
 //    envMap["SERVER_PROTOCOL"] = m_request.findHeaderValue("protocol"); //todo could be "HTTP/1.1"
-    envMap["SERVER_PROTOCOL"] = "HTTP/1.1";
-    envMap["SCRIPT_NAME"] = m_pathToCGI;
-    envMap["PATH_INFO"] = m_requiredResource;
+    envMap["HTTP_SERVER_PROTOCOL"] = "HTTP/1.1";
+    envMap["HTTP_SCRIPT_NAME"] = m_pathToCGI;
+    envMap["HTTP_PATH_INFO"] = m_requiredResource;
 
-    envMap["REQUEST_METHOD"] = m_request.getMethodString();
+    envMap["HTTP_REQUEST_METHOD"] = m_request.getMethodString();
 
-    envMap["DOCUMENT_URI"] = pos == std::string::npos ? m_request.getUri() : m_request.getUri().substr(0, pos);
-    envMap["REQUEST_URI"] = m_request.getUri();
-//    envMap["QUERY_STRING"] = ; //todo get query
-    envMap["DOCUMENT_ROOT"] = m_root;
+    envMap["HTTP_DOCUMENT_URI"] = pos == std::string::npos ? m_request.getUri() : m_request.getUri().substr(0, pos);
+    envMap["HTTP_REQUEST_URI"] = m_request.getUri();
+//    envMap["HTTP_QUERY_STRING"] = ; //todo get query
+    envMap["HTTP_DOCUMENT_ROOT"] = m_root;
 
-    envMap["PATH_TRANSLATED"] = m_pathToCGI;
-    envMap["AUTH_TYPE"] = m_request.findHeaderValue("Authorization");
-    envMap["REMOTE_USER"] = m_request.findHeaderValue("Authorization");
-    envMap["REMOTE_IDENT"] = m_request.findHeaderValue("Authorization");
-    envMap["CONTENT_TYPE"] = m_request.findHeaderValue("Сontent-type");
-    envMap["CONTENT_LENGTH"] = m_request.findHeaderValue("Сontent-length");
+    envMap["HTTP_PATH_TRANSLATED"] = m_pathToCGI;
+    envMap["HTTP_AUTH_TYPE"] = m_request.findHeaderValue("Authorization");
+    envMap["HTTP_REMOTE_USER"] = m_request.findHeaderValue("Authorization");
+    envMap["HTTP_REMOTE_IDENT"] = m_request.findHeaderValue("Authorization");
+    envMap["HTTP_CONTENT_TYPE"] = m_request.findHeaderValue("Сontent-type");
+    envMap["HTTP_CONTENT_LENGTH"] = m_request.findHeaderValue("Сontent-length");
     return convertMapToStrArray(envMap);
 }
 
