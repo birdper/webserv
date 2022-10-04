@@ -16,37 +16,6 @@ Client::Client(int socketDescriptor, int listenSocketDescriptor) :
 Client::~Client() {
 //	TODO из-за этих методов сега
 //	clear();
-//    clearSendQueue();
-}
-
-void Client::addToSendQueue(std::string* item) {
-    sendQueue.push(item);
-}
-
-unsigned int Client::sendQueueSize() {
-    return sendQueue.size();
-}
-
-std::string* Client::nextInSendQueue() {
-    if (sendQueue.empty())
-        return nullptr;
-
-    return sendQueue.front();
-}
-
-void Client::dequeueFromSendQueue() {
-    std::string* item = nextInSendQueue();
-    if (item != nullptr) {
-        sendQueue.pop();
-        delete item;
-    }
-}
-
-void Client::clearSendQueue() {
-    while (!sendQueue.empty()) {
-        delete sendQueue.front();
-        sendQueue.pop();
-    }
 }
 
 int Client::getSocketDescriptor() const {
@@ -92,4 +61,12 @@ void Client::appendToBuffer(const string& chunk) {
 
 Request& Client::getRequest() {
     return request;
+}
+
+const string& Client::getCookieId() const {
+    return cookieId;
+}
+
+void Client::setCookieId(const string& cookieId) {
+    Client::cookieId = cookieId;
 }

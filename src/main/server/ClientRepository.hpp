@@ -13,4 +13,5 @@ public:
 	void addClient(Client* client);
 	Client* findBySocketDescriptor(int socketDescriptor);
 	void removeBySocketDescriptor(int socketDescriptor);
+    Client* findClientByCookieId(const string& cookieId);
 };

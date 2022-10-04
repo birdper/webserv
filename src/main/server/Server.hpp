@@ -26,7 +26,6 @@ private:
 	RequestParser& requestParser;
 	ConfigRepository& configRepository;
 	ClientRepository clientRepository;
-    MimeTypesRepo mimeTypesRepo;
 
 	int countListenSockets;
 	std::vector<struct pollfd> pollFds;

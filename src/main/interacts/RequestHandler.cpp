@@ -15,8 +15,7 @@ RequestHandler::RequestHandler(Request& request, Config& config) :
 RequestHandler::~RequestHandler() {
 }
 
-Response& RequestHandler::handle() {
-    Response& response = *new Response();
+void RequestHandler::handle(Response& response) {
 
     if (isValidResponse(response)) {
         _methods[_request.getMethodString()]->handle(response);
@@ -27,7 +26,7 @@ Response& RequestHandler::handle() {
     // TODO delete
     Utils::printStatus("request handled");
 
-    return response;
+//    return response;
 }
 
 bool RequestHandler::isValidResponse(Response& response) {

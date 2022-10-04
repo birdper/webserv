@@ -9,6 +9,7 @@
 
 class Client {
 private:
+    string cookieId;
     int socketDescriptor;
     int listenSocketDescriptor;
 
@@ -16,7 +17,6 @@ private:
     Response* response;
 
 	std::string buffer;
-	std::queue<std::string*> sendQueue;
 
     bool _isReadyRequest;
 
@@ -24,6 +24,9 @@ public:
     explicit Client(int socketDescriptor);
     Client(int socketDescriptor, int listenSocketDescriptor);
     virtual ~Client();
+
+    const string& getCookieId() const;
+    void setCookieId(const string& cookieId);
 
 	int getSocketDescriptor() const;
     int getListenSocketDescriptor() const;
@@ -33,12 +36,6 @@ public:
 
     bool isReadyRequest() const;
     void setIsReadyRequest(bool isReadyRequest);
-
-    void addToSendQueue(std::string* item);
-	unsigned int sendQueueSize();
-    std::string* nextInSendQueue();
-	void dequeueFromSendQueue();
-	void clearSendQueue();
 
     const std::string& getBuffer() const;
 	void setBuffer(const std::string& buffer);

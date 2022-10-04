@@ -34,3 +34,14 @@ void ClientRepository::removeBySocketDescriptor(int socketDescriptor) {
 //	}
 }
 
+Client* ClientRepository::findClientByCookieId(const string& cookieId) {
+    std::map<int, Client*>::iterator it = clients.begin();
+    while (it != clients.end()) {
+        if (it->second->getCookieId() == cookieId) {
+            return it->second;
+        }
+        ++it;
+    }
+    return nullptr;
+}
+

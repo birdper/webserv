@@ -15,7 +15,7 @@ private:
 public:
     virtual ~RequestHandler();
     static RequestHandler getInstance(Request& request, Config& config);
-	Response& handle();
+	void handle(Response& response);
 
 private:
     RequestHandler(Request& request, Config& config);

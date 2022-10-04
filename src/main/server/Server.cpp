@@ -155,9 +155,27 @@ void Server::readClient(Client* client) {
 }
 
 void Server::handleRequest(Client* client) {
+
+    Response& response = *new Response();
+
+    const string& cookie = client->getRequest().findHeaderValue("Cookie");
+    if (cookie.empty()) {
+        string generatedCookie;
+        response.addHeader("Set-Cookie", generatedCookie);
+        client->setCookieId(generatedCookie);
+    } else {
+        Client* existingClient = clientRepository.findClientByCookieId(cookie);
+        if (existingClient != nullptr) {
+//          found
+//            existingClient = client;
+        } else {
+//          not found
+        }
+    }
+
     Config& config = findConfig(*client, client->getRequest());
 
-    Response& response = RequestHandler::getInstance(client->getRequest(), config).handle();
+    RequestHandler::getInstance(client->getRequest(), config).handle(response);
 
     client->setResponse(&response);
 
