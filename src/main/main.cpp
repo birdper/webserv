@@ -7,46 +7,28 @@
 
 
 void validateConfigFile(const string& configFileName) {
-    if (!Utils::isFileExists(configFileName) || !Utils::isAccessRights(configFileName)) {
-        std::cerr << "Incorrect config file '" << configFileName << "'." << std::endl;
-        exit(1);
-    }
+	if (!Utils::isFileExists(configFileName) || !Utils::isAccessRights(configFileName)) {
+		std::cerr << "Incorrect config file '" << configFileName << "'." << std::endl;
+		exit(1);
+	}
 }
 
-int main(int argc, char *argv[]) {
+int main(int argc, char* argv[]) {
 
 	std::string configFileName = "webserv.conf";
 	if (argv[1] != nullptr) {
 		configFileName = argv[1];
 	}
 
-    validateConfigFile(configFileName);
+	validateConfigFile(configFileName);
 
-    ConfigParser* configParser = new ConfigParser();
-    ConfigStorage* configStorage = new ConfigStorage();
-    configParser->parseConfig(configFileName, configStorage);
+	ConfigParser* configParser = new ConfigParser();
+	ConfigStorage* configStorage = new ConfigStorage();
+	configParser->parseConfig(configFileName, configStorage);
 
-    RequestParser* requestParser = new RequestParser();
-    ConfigRepositoryImpl* configRepository = new ConfigRepositoryImpl(configStorage);
-    Server* server = new Server(*requestParser, *configRepository);
-    server->run();
+	RequestParser* requestParser = new RequestParser();
+	ConfigRepositoryImpl* configRepository = new ConfigRepositoryImpl(configStorage);
+	Server* server = new Server(*requestParser, *configRepository);
+	server->run();
 	return 0;
 }
-
-#include "CGI.hpp"
-
-/*int main()
-{
-    Request req;    req.setBody("yolo small case. CamelCase\n");
-    CGI* cgi = new CGI(req,
-            "/Users/igearhea/Projects/web_solo/resources/cgi-bin/rafael.cgi",
-            ".cgi",
-            "/Users/igearhea/Projects/web_solo/resources/cgi-bin/",
-            "localhost",
-            "80");
-
-    std::string str;
-    str = cgi->execute();
-    std::cout << str << std::endl;
-    return 0;
-}*/

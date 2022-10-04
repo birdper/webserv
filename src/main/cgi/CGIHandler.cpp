@@ -10,7 +10,6 @@ std::string CGIHandler::handle(const std::string& cgiName,
 	_cgiName = cgiName;
 	pid_t pid = fork();
 	if (pid == FAILURE_CODE) {
-//		return 500;
 		return "500";
 	} else if (pid == CHILD_PID) {
 		executeCgi(cgiName, pathToFile, request);
@@ -21,7 +20,6 @@ std::string CGIHandler::handle(const std::string& cgiName,
 void CGIHandler::executeCgi(const std::string& cgiName,
                             const std::string& pathToFile,
                             Request* request) {
-
 	char** env = generateEnv(request);
 	if (env == NULL) {
 		exit(2);
@@ -75,20 +73,17 @@ std::string CGIHandler::cgiParent(pid_t pid) {
 	}
 	if (status == EXIT_SUCCESS) {
 		std::ifstream inputCGI(CGI_OUTPUT, std::ifstream::in);
-
 		if (!inputCGI.is_open()) {
 			return "500";
 		}
-
 //		std::string buf;
 //		buf.reserve(inputCGI.tellg());
 //		inputCGI.seekg(0, std::ifstream::beg);
 //		buf.assign(std::istreambuf_iterator<char>(inputCGI), std::istreambuf_iterator<char>());
 //		inputCGI.close();
 		return "200";
-
-
-	} else if (status == EXIT_FAILURE) {
+	}
+	if (status == EXIT_FAILURE) {
 		std::remove(CGI_OUTPUT);
 		return "502";
 	} else {
