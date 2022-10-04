@@ -13,6 +13,16 @@ add_library(${MODULE_NAME}
         )
 
 
-target_include_directories(${MODULE_NAME} PUBLIC ../util ../exception  ../model)
+target_include_directories(${MODULE_NAME} PUBLIC
+        ../util
+        ../exception
+        ../model
+        ../cgi
+        )
 
-include_directories(${MODULE_NAME} PUBLIC ../util ../exception ../model)
+#include_directories(${MODULE_NAME} PUBLIC
+#        ../util
+#        ../exception
+#        ../model
+#        ../cgi
+#        )

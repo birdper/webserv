@@ -4,7 +4,6 @@ set(CMAKE_CXX_STANDARD 98)
 set(MODULE_NAME model)
 
 add_library(${MODULE_NAME}
-#        ../repository/ConfigRepository.hpp
         Client.hpp Client.cpp
         Parameters.hpp
         Config.hpp Config.cpp

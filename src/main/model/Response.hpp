@@ -14,11 +14,13 @@ private:
 
     // Возможно стоит перенести боди в клиента
     std::string body;
+    std::string resource;
 
 public:
     string serialize();
     virtual ~Response();
-
+    const string& getResource() const;
+    void setResource(const string& resource);
     const std::string& getStatusCode() const;
 	void setStatusCode(const std::string& statusCode);
 

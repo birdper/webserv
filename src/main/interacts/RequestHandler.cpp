@@ -21,13 +21,20 @@ Response& RequestHandler::handle() {
     if (isValidResponse(response)) {
         _methods[_request.getMethodString()]->handle(response);
     }
+	if (_config.isCGI() && Utils::getExtension(_request.getUri()) == _config.getExtensionCGI()) {
+		handleCGI(response);
+	}
     setErrorPageBodyIfHas(response);
     setStatusCodeAndDescription(response);
 
-    // TODO delete
-    Utils::printStatus("request handled");
-
     return response;
+}
+
+void RequestHandler::handleCGI(Response& response) const {
+	CGIHandler cgiHandler;
+	response.setStatusCode(cgiHandler.handle(_config.getPathCGI(), response.getResource(), &_request));
+	string body = cgiHandler.getBody();
+	response.setBody(body);
 }
 
 bool RequestHandler::isValidResponse(Response& response) {

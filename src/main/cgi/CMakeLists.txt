@@ -4,8 +4,8 @@ set(CMAKE_CXX_STANDARD 98)
 set(MODULE_NAME cgi)
 
 add_library(${MODULE_NAME}
-        CGI.hpp
-        CGI.cpp)
+        CGIHandler.cpp CGIHandler.hpp
+        )
 
 target_include_directories(${MODULE_NAME} PUBLIC
         ../exception
@@ -13,6 +13,8 @@ target_include_directories(${MODULE_NAME} PUBLIC
         ../util
         )
 
-#include_directories(${MODULE_NAME} PUBLIC
-#        ../exception
-#        )
+include_directories(${MODULE_NAME} PUBLIC
+        ../exception
+        ../model
+        ../util
+        )

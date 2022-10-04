@@ -53,3 +53,11 @@ string& Response::parseToHeaders() {
 	}
 	return *new string (ss.str());
 }
+
+const string& Response::getResource() const {
+    return resource;
+}
+
+void Response::setResource(const string& resource) {
+    Response::resource = resource;
+}

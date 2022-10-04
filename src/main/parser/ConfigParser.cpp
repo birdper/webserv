@@ -63,8 +63,17 @@ void ConfigParser::parseConfig(const std::string &configFileName,
                     fatalError("autoindex may be only 'off' or 'on'");
                 }
                 break;
+            case INDEX:
+                currentParams->indexNameFiles = Utils::split(token.content, " ");
+                break;
             case ROOT:
                 currentParams->root = token.content;
+                break;
+            case PATH_CGI:
+                currentParams->pathCGI = token.content;
+                break;
+            case EXTENSION_CGI:
+                currentParams->extensionCGI = token.content;
                 break;
             case REDIRECT:
                 currentParams->redirect = token.content;
@@ -77,9 +86,6 @@ void ConfigParser::parseConfig(const std::string &configFileName,
 				break;
             case ERROR_PAGE:
                 parseErrorPagePaths(currentParams, token.content);
-                break;
-            case INDEX:
-                currentParams->indexNameFiles = Utils::split(token.content, " ");
                 break;
             case FORBIDDEN_METHODS:
                 std::vector<std::string> methods = Utils::split(token.content, " ");
