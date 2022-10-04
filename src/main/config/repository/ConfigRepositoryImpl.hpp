@@ -9,27 +9,32 @@
 #include "SettingTypes.hpp"
 #include "ConfigStorage.hpp"
 #include "ConfigRepository.hpp"
+#include "MimeTypesRepo.hpp"
+#include "DefaultErrorPagesRepo.hpp"
 
 class ConfigRepositoryImpl : public ConfigRepository {
 private:
-	ConfigStorage* storage;
+    ConfigStorage* storage;
+	DefaultErrorPagesRepo defaultErrorPagesRepo;
+	MimeTypesRepo mimeTypesRepo;
+
 
 public:
-	explicit ConfigRepositoryImpl(ConfigStorage* storage);
+    explicit ConfigRepositoryImpl(ConfigStorage* storage);
 
-	std::vector<std::pair<string, int> > getHostsForBind() const;
+    std::vector<std::pair<string, int> > getHostsForBind() const;
 
     VirtualServer& getServerConfig(const string& ip,
                                    const string& port,
                                    const string& serverName) const;
 
-	Config* findLocationConfigByUri(const VirtualServer& virtualServer,
-                                    const string& requestUri) const;
+    Config* findLocationConfigByUri(const VirtualServer& virtualServer,
+                                    const string& requestUri);
 
+	Config* getLocationConfig(Parameters& parameters);
+	Config* getServerConfig(Parameters& parameters);
 private:
-	std::vector<VirtualServer*> getVirtualServersForBind() const;
-    bool isAnyRequest(const std::vector<string>& locs) const;
-    bool isMatchUri(const std::vector<string>& reqs, const std::vector<string>& locs) const;
+    std::vector<VirtualServer*> getVirtualServersForBind() const;
 };
 
 

@@ -39,7 +39,7 @@ void ConfigParser::parseConfig(const std::string &configFileName,
                 currentParams = &location->getParameters();
                 currentServer->addLocation(location);
                 break;
-            case ENDSERVER:
+            case BLOCK_END:
                 if (token.context == NONE_CONTEXT) {
 //					TODO: обязателен ли listen?
 //					if (!listen)
@@ -72,9 +72,11 @@ void ConfigParser::parseConfig(const std::string &configFileName,
             case CLIENT_MAX_BODY_SIZE:
                 currentParams->clientMaxBodySize = token.content;
                 break;
+			case UPLOAD_DIRECTORY:
+				currentParams->uploadStorePath = token.content;
+				break;
             case ERROR_PAGE:
-//				TODO parse error pages
-//				currentParams->errorPagePaths;
+                parseErrorPagePaths(currentParams, token.content);
                 break;
             case INDEX:
                 currentParams->indexNameFiles = Utils::split(token.content, " ");
@@ -123,7 +125,7 @@ void ConfigParser::parseListen(const std::string &input, VirtualServer &virtualS
 bool ConfigParser::checkPort(const std::string &str) {
 	std::string errorMessagePortMustBeNumber = "Failed to parse 'listen'. Port must be number from 1 to 65355";
 
-	if (!isDigits(rtrim(str, " "))) {
+	if (!isDigits(Utils::rtrim(str, " "))) {
         fatalError(errorMessagePortMustBeNumber);
     }
     try {
@@ -159,24 +161,12 @@ bool ConfigParser::checkIpAndPort(const std::string &ipStr, const std::string &p
     checkPort(portStr);
 }
 
-
-std::map<std::string, std::string>
-ConfigParser::parseErrorPagePaths(const std::string &input) {
-
-    std::map<std::string, std::string> map;
+void ConfigParser::parseErrorPagePaths(Parameters* params, const std::string& input) {
     std::vector<std::string> vec = Utils::split(input, " ");
 
-    for (int i = 1; i < vec.size(); i += 2) {
-        std::string key = vec[i - 1];
-        std::string value = vec[i];
-        map[key] = value;
+    if (vec.size() == 2) {
+        params->addErrorPage(vec[0], vec[1]);
     }
-    return map;
-}
-
-std::string ConfigParser::rtrim(std::string str, const std::string &chars) {
-    str.erase(str.find_last_not_of(chars) + 1);
-    return str;
 }
 
 bool ConfigParser::isDigits(const std::string &str) {

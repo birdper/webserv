@@ -20,9 +20,13 @@ public:
                                            const string& serverName) const = 0;
 
     virtual Config* findLocationConfigByUri(const VirtualServer& virtualServer,
-                                            const string& requestUri) const = 0;
+                                            const string& requestUri) = 0;
 
     virtual std::vector<std::pair<string, int> > getHostsForBind() const = 0;
+
+	virtual Config* getLocationConfig(Parameters& parameters) = 0;
+
+	virtual Config* getServerConfig(Parameters& parameters) = 0;
 };
 
 

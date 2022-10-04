@@ -26,4 +26,5 @@ public:
     static string rtrim(string str, const string& chars);
     static string getExtension(const string& fileName);
     static string getFileName(const string& path);
+    static int stringToInt(const string& str, int base);
 };

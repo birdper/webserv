@@ -8,29 +8,22 @@
 #include <dirent.h>
 
 #include "BaseHandler.hpp"
+#include "MimeTypesRepo.hpp"
 
 class BaseHandler;
 
 class GetHandler : public BaseHandler {
-
-private:
-    Request* _request;
-    Config* _config;
-
 public:
-    GetHandler();
     static BaseHandler* getInstance(Request& request, Config& config);
     virtual ~GetHandler();
 
-    Response handle();
+    void handle(Response& response);
 
 private:
     explicit GetHandler(Request& request, Config& config);
-    string getAutoindexBody(const string& path, const string& uri);
     std::vector<string> getFileNamesFromDirectory(const string& path);
-    std::string handleDirectory() const;
     string findPathToIndexFile(string& root) const;
     void handleDirectory(Response& response, string& path);
     void handleFile(Response& response, string& path);
-    string getErrorPage(const string& errorCode);
+	string getAutoindexBody(const string& path, const string& host, const string& uri);
 };

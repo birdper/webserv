@@ -2,11 +2,15 @@
 
 Client::Client(int socketDescriptor) :
         socketDescriptor(socketDescriptor) {
+    response = nullptr;
+    _isReadyRequest = false;
 }
 
 Client::Client(int socketDescriptor, int listenSocketDescriptor) :
         socketDescriptor(socketDescriptor),
         listenSocketDescriptor(listenSocketDescriptor) {
+    response = nullptr;
+    _isReadyRequest = false;
 }
 
 Client::~Client() {

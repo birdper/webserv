@@ -5,10 +5,11 @@ set(MODULE_NAME interacts)
 
 add_library(${MODULE_NAME}
         RequestParser.hpp RequestParser.cpp
+        RequestHandler.hpp RequestHandler.cpp
         BaseHandler.cpp BaseHandler.hpp
         GetHandler.cpp GetHandler.hpp
         PostHandler.cpp PostHandler.hpp
-        RequestHandler.hpp RequestHandler.cpp
+        DeleteHandler.cpp DeleteHandler.hpp
         )
 
 

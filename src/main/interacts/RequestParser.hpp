@@ -13,7 +13,7 @@
 class RequestParser {
 
 public:
-	void parse(const string& requestBuffer, Request& request, Client& client) const;
+	void parse(Request& request, Client& client) const;
 
 private:
 	void parseStartLine(const string& line, Request& request) const;
@@ -21,10 +21,8 @@ private:
 	void parseMethod(Request& request, const string& httpMethod) const;
 	void parseUri(Request& request, const string& uri) const;
 	void parseHttpVersion(Request& request, const string& httpVersion) const;
-	bool parseBody(Request& request, const string& clientBuffer, Client& client) const;
-    bool isHasHeaders(const Request& request) const;
-    bool parseChunked(Request& request) const;
-    void parseBodyContent(Request& request, const string& clientBuffer, Client& client) const;
-    long ContentLengthToInt(const string& contentLength) const;
-    void parsePostHeaders(Request& request) const;
+	bool isHasHeaders(const Request& request) const;
+    void parseChunked(Request& request, Client& client) const;
+    void parseBodyContent(Request& request, const string& buffer, Client& client) const;
+	void printRequest(const std::vector<string>& headerLines) const;
 };

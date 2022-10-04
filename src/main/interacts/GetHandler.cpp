@@ -1,183 +1,137 @@
 
 #include "GetHandler.hpp"
 
-GetHandler::GetHandler() {
-}
 
 BaseHandler* GetHandler::getInstance(Request& request, Config& config) {
-    return new GetHandler(request, config);
+	return new GetHandler(request, config);
 }
 
 GetHandler::GetHandler(Request& request, Config& config) :
-        _request(&request),
-        _config(&config) {
+        BaseHandler(request, config) {
 }
 
 GetHandler::~GetHandler() {
-
 }
 
-Response GetHandler::handle() {
-    Utils::printStatus("HANDLE GET");
+void GetHandler::handle(Response& response) {
 
-    Response response;
-    Utils::printStatus("GET REQUEST HANDLER: location uri = " + _config->getLocationUri());
-    Utils::printStatus("GET REQUEST HANDLER: request_uri = " + _request->getUri());
-    Utils::printStatus("GET REQUEST HANDLER: getRoot = " + _config->getRoot());
+	std::string path = getResourcePath(_config.getLocationUri(),
+	                                   _config.getRoot(),
+	                                   _request.getUri());
+// TODO delete
+	Utils::printStatus("GET REQUEST HANDLER: resource_path = " + path);
 
-    std::string path = getResourcePath(_config->getLocationUri(),
-                                       _config->getRoot(),
-                                       _request->getUri());
-
-    Utils::printStatus("GET REQUEST HANDLER: after resource_path = " + path);
-
-
-    if (Utils::isDirectory(path)) {
-        handleDirectory(response, path);
-        return response;
+	response.setStatusCode("200");
+	if (Utils::isDirectory(path)) {
+		handleDirectory(response, path);
+	} else if (Utils::isFileExists(path)) {
+		handleFile(response, path);
+	} else {
+	    response.setStatusCode("404");
     }
-    if (Utils::isFileExists(path)) {
-        handleFile(response, path);
-        return response;
-    }
-    Utils::printStatus("response 403");
-    response.setStatusCode("403 Forbidden");
-    string body = getErrorPage("403");
-    if (!body.empty()) {
-        response.setBody(body);
-        response.addHeader("Content-Length", std::to_string(body.size()));
-    }
-    return response;
 }
 
 void GetHandler::handleDirectory(Response& response, string& path) {
-    Utils::printStatus("GET REQUEST HANDLER: resource is directory");
+	string body;
+	string pathToIndexFile = findPathToIndexFile(path);
 
-    response.setStatusCode("200 OK");
+	string extension;
 
-    string body;
-    string pathToIndexFile = findPathToIndexFile(path);
-    std::cout << "path : " << path << std::endl;
-    std::cout << "path to index file: " << pathToIndexFile << std::endl;
-    std::cout << "size index_files: " << _config->getIndexFiles().size() << std::endl;
-
-    if (!pathToIndexFile.empty()) {                             // check index files
-        Utils::printStatus("GET REQUEST HANDLER: found index file");
-        body = FileReader::readFile(pathToIndexFile);
-    } else if (_config->isAutoindexEnabled()) {                 // check Autoindex
-        Utils::printStatus("GET REQUEST HANDLER: not found index file");
-        body = getAutoindexBody(path, _request->getUri());
-    } else {
-        Utils::printStatus("GET REQUEST HANDLER: AUTOINDEX disabled  403 Forbidden");
-        response.setStatusCode("403 Forbidden");
-        body = getErrorPage("403");
-    }
-    if (!body.empty()) {
-        response.setBody(body);
-        response.addHeader("Content-Length", std::to_string(body.size()));
-    }
-}
-
-std::string GetHandler::findPathToIndexFile(string& root) const {
-    std::vector<std::string> indexFiles = _config->getIndexFiles();
-
-    if (root.back() != '/') {
-        root.append("/");
-    }
-    for (int i = 0; i < indexFiles.size(); ++i) {
-        string indexFileName = indexFiles[i];
-        string pathToIndexFile = root + indexFileName;
-        if (Utils::isFileExists(pathToIndexFile)) {
-            return pathToIndexFile;
-        }
-    }
-    return "";
-}
-
-string GetHandler::getAutoindexBody(const string& path, const string& uri) {
-
-    std::ostringstream body;
-    string title = "Index of " + uri;
-/*	body.append("<html>\n"
-					"<head><title>" + title + "</title></head>\n" +
-					"<body>\n" +
-					"<h1>" + title + "</h1>"
-					"<hr><pre><a href=\"../\">../</a>\n");
-*/
-    body << "<html>\n"
-         << "<head><title>" << title << "</title></head>\n"
-         << "<body>\n"
-         << "<h1>" << title << "</h1>"
-         << "<hr><pre><a href=\"../\">../</a>\n";
-
-    std::vector<string> fileNames = getFileNamesFromDirectory(path);
-    for (int i = 0; i < fileNames.size(); ++i) {
-        string fileName = fileNames[i];
-        if (strcmp(fileName.c_str(), ".") && strcmp(fileName.c_str(), "..")) {
-            string pathWithFileName = path + "/" + fileName;
-
-            struct stat file_stats;
-            stat(pathWithFileName.data(), &file_stats);
-            bool fileIsDirectory = S_ISDIR(file_stats.st_mode);
-            if (fileIsDirectory) {
-                fileName.append("/");
-            }
-
-            body << "<a href=\"" << uri << fileName << "\">" << fileName << "</a\t";
-            /*
-            body.append("<a href=\"" + uri + fileName);
-			body.append("\">" + fileName);
-			body.append("</a>                                               ");
-			*/
-            time_t lastModified = Utils::getFileModificationDate(pathWithFileName);
-            string date = string(ctime(&lastModified));
-            date = date.substr(0, date.size() - 1);
-//			body.append(date + "                   ");
-            body << date << "                   ";
-            if (fileIsDirectory) {
-//				body.append("-\n");
-                body << "-\n";
-            } else {
-//				body.append(std::to_string(static_cast<float>(file_stats.st_size)) + "\n");
-                body << (std::to_string(static_cast<float>(file_stats.st_size)) + "\n");
-            }
-        }
-    }
-    body << "</pre><hr></body>\n" <<
-         "</html>\n";
-//	body.append("</pre><hr></body>\n"
-//				"</html>\n");
-//	response->setBody(body);
-//	response->setStatusLine("200 OK");
-    return body.str();
+	if (!pathToIndexFile.empty()) {
+		handleFile(response, pathToIndexFile);
+        extension = Utils::getExtension(pathToIndexFile);
+    } else if (_config.isAutoindexEnabled()) {
+		extension = "html";
+		body = getAutoindexBody(path, _request.findHeaderValue("Host"), _request.getUri());
+	} else {
+		response.setStatusCode("403");
+	}
+	if (!body.empty()) {
+		setBodyToResponse(response, extension, body);
+	}
 }
 
 void GetHandler::handleFile(Response& response, string& path) {
-    response.setStatusCode("200 OK");
-    response.setBody(FileReader::readFile(path));
-    response.addHeader("Content-Length", std::to_string(response.getBody().size()));
+	string body = FileReader::readFile(path);
+
+	if (!body.empty()) {
+		string extension = Utils::getExtension(path);
+		setBodyToResponse(response, extension, body);
+	}
+}
+
+std::string GetHandler::findPathToIndexFile(string& root) const {
+	std::vector<std::string> indexFiles = _config.getIndexFiles();
+
+	if (root.back() != '/') {
+		root.append("/");
+	}
+	for (int i = 0; i < indexFiles.size(); ++i) {
+		string indexFileName = indexFiles[i];
+		string pathToIndexFile = root + indexFileName;
+		if (Utils::isFileExists(pathToIndexFile)) {
+			return pathToIndexFile;
+		}
+	}
+	return "";
+}
+
+string GetHandler::getAutoindexBody(const std::string& path, const std::string& host, const std::string& uri) {
+	std::ostringstream body;
+	body << ("<!DOCTYPE html>\n"
+	         "<html>\n"
+	         "<head>\n"
+	         "   <title>  List of files </title>\n"
+	         "   <style>h1 {font-size: 200%;\n"
+	         "   font-family: Verdana, Arial, Helvetica, sans-serif;\n"
+	         "   color: #333366;}\n"
+	         "   a {font-size: 100%;"
+	         "   font-family: Verdana, Arial, Helvetica, sans-serif;\n"
+	         "   color: #333366;}\n"
+	         "   li :hover{font-size: 100%;"
+	         "   font-family: Verdana, Arial, Helvetica, sans-serif;\n"
+	         "   color: #ba2200;}\n"
+	         "   li :active{font-size: 100%;"
+	         "   font-family: Verdana, Arial, Helvetica, sans-serif;\n"
+	         "   color: #918e00;}\n"
+	         "<style>footer {\n"
+	         "    position: fixed;\n"
+	         "    color: #333366;}\n"
+	         "    left: 0; bottom: 0;\n"
+	         "   color: #333366;}\n"
+	         "</style>\n"
+	         "</head>\n"
+	         "<body>\n"
+	         "<h1 align=\"left\"> List of files</h1>");
+	std::vector<string> fileNames = getFileNamesFromDirectory(path);
+	for (int i = 0; i < fileNames.size(); ++i) {
+		body << "<li align=\"left\">"
+		     << "<a href =\"http://"
+		     << host
+		     << uri
+		     << "/" + fileNames[i] + "\""
+		     << ">" + fileNames[i]
+		     << "</a></li><br>";
+	}
+	body << ("<footer>\n"
+	         "&copy;    nbirdper   igearhea     warhchang    2022\n"
+	         "</footer>\n"
+	         "</body>\n"
+	         "</html>\n"
+	);
+	return body.str();
 }
 
 std::vector<std::string> GetHandler::getFileNamesFromDirectory(const std::string& path) {
-    std::vector<std::string> fileNames;
-    struct dirent* di_struct;
-    DIR* dir = opendir(path.c_str());
+	std::vector<std::string> fileNames;
+	struct dirent* di_struct;
+	DIR* dir = opendir(path.c_str());
 
-    if (dir != nullptr) {
-        while ((di_struct = readdir(dir)) != nullptr) {
-            fileNames.push_back(di_struct->d_name);
-        }
-        closedir(dir);
-    }
-    return fileNames;
-}
-
-
-string GetHandler::getErrorPage(const string& errorCode) {
-//    string pathToErrorPage = _config.findErrorPagePath("403");
-    string pathToErrorPage;
-    if (!pathToErrorPage.empty()) {
-        return FileReader::readFile(pathToErrorPage);
-    }
-     return "";
+	if (dir != nullptr) {
+		while ((di_struct = readdir(dir)) != nullptr) {
+			fileNames.push_back(di_struct->d_name);
+		}
+		closedir(dir);
+	}
+	return fileNames;
 }

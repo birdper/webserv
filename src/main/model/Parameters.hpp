@@ -22,6 +22,7 @@ public:
     std::string pathCGI;
     std::string extensionCGI;
     std::string clientMaxBodySize;
+    std::string uploadStorePath;
 
     MapErrorPagePaths errorPagePaths;
     std::vector<std::string> indexNameFiles;
@@ -38,10 +39,11 @@ public:
             redirect(p.redirect),
             pathCGI(p.pathCGI),
             extensionCGI(p.extensionCGI),
-            clientMaxBodySize(p.clientMaxBodySize)
-//            errorPagePaths(p.errorPagePaths),
-//            indexNameFiles(p.indexNameFiles),
-//            forbiddenMethods(p.forbiddenMethods)
+            clientMaxBodySize(p.clientMaxBodySize),
+			uploadStorePath(p.uploadStorePath),
+            errorPagePaths(p.errorPagePaths),
+            indexNameFiles(p.indexNameFiles),
+            forbiddenMethods(p.forbiddenMethods)
             {
     }
 
@@ -55,11 +57,16 @@ public:
             pathCGI = p.pathCGI;
             extensionCGI = p.extensionCGI;
             clientMaxBodySize = p.clientMaxBodySize;
-//            errorPagePaths = p.errorPagePaths;
-//            indexNameFiles = p.indexNameFiles;
-//            forbiddenMethods = p.forbiddenMethods;
+            uploadStorePath = p.uploadStorePath;
+            errorPagePaths = p.errorPagePaths;
+            indexNameFiles = p.indexNameFiles;
+            forbiddenMethods = p.forbiddenMethods;
         }
         return *this;
+    }
+
+    void addErrorPage(const std::string& key, const std::string& value) {
+        errorPagePaths.insert(std::make_pair(key, value));
     }
 
 };

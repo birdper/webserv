@@ -124,7 +124,6 @@ void Server::handleEvents() {
 }
 
 void Server::readClient(Client* client) {
-
 //	TODO Хватит ли объёма буфера?
     char buffer[BUFFER_SIZE];
     ssize_t bytesReadCount = recv(client->getSocketDescriptor(),
@@ -135,8 +134,8 @@ void Server::readClient(Client* client) {
     if (bytesReadCount < 0) {
         Utils::printStatus("PRINT_STATUS() recv() error");
         cerr << "STRERROR: recv() failure: " << strerror(errno) << endl;
-        perror("PERROR: recv() failure");
         disconnectClient(client, false);
+		return;
 //        return POLLHUP;
     }
     if (bytesReadCount == 0) {
@@ -148,93 +147,66 @@ void Server::readClient(Client* client) {
 	Utils::printStatus(">>> " + sd + "\n" + string(buffer));
 	cout << "========================" << endl;
 */
-
-    client->appendToBuffer(buffer);
-    requestParser.parse(client->getBuffer(), client->getRequest(), *client);
+    client->appendToBuffer(string (buffer, bytesReadCount));
+	requestParser.parse(client->getRequest(), *client);
+//	TODO delete debug print
     Utils::printStatus("request parsed");
-
+	std::cout << std::endl;
 }
 
 void Server::handleRequest(Client* client) {
     Config& config = findConfig(*client, client->getRequest());
 
-    Response response = RequestHandler::getInstance(client->getRequest(), config).handle();
+    Response& response = RequestHandler::getInstance(client->getRequest(), config).handle();
 
     client->setResponse(&response);
 
 }
 
 Config& Server::findConfig(const Client& client, const Request& request) {
+    Socket* listenSocket = listenSockets.find(client.getListenSocketDescriptor())->second;
 
-    Socket& listenSocket = *listenSockets.find(client.getListenSocketDescriptor())->second;
-    VirtualServer virtualServer = configRepository.getServerConfig(listenSocket.getIp(),
-                                                                   listenSocket.getPortString(),
+    VirtualServer virtualServer = configRepository.getServerConfig(listenSocket->getIp(),
+                                                                   listenSocket->getPortString(),
                                                                    request.findHeaderValue("Host"));
 
     Config* config = configRepository.findLocationConfigByUri(virtualServer, request.getUri());
     if (config == nullptr) {
-        bool isLocation = false;
-        config = new Config(virtualServer.getParameters(), isLocation);
+        config = configRepository.getLocationConfig(virtualServer.getParameters());
     }
     return *config;
 }
 
 short Server::writeClient(Client* client) {
     Utils::printStatus(" >>>> write client");
+    Response* response = client->getResponse();
 
-    client->setIsReadyRequest(false);
-    Response& response = *client->getResponse();
-
-    string buff = response.serialize();
-
-    ssize_t countSendBytes = send(client->getSocketDescriptor(), buff.c_str(), buff.size(),
-                                  MsgNoFlag);
-
-    /*  Utils::printStatus("<<< write");
-      string body = "<html>\n"
-                    "<body>\n"
-                    "<h1>Hello, World!</h1>\n"
-                    "</body>\n"
-                    "</html>\n";
-
-      string buffer = "HTTP/1.1 200 OK\n"
-                      "Content-Length: " + std::to_string(body.size()) + "\n"
-                                                                         "Connection: close\r\n"
-                                                                         "\r\n" +
-                      body;
-
-
-
-      ssize_t countSendBytes = send(client->getSocketDescriptor(), buffer.c_str(), buffer.size(),
-                                    MsgNoFlag);*/
-    return POLLIN;
-    /*
-//	if (!client)
-//		return false;
-
-//	requestHandler.formResponse(client);
-//	if (!client->getResponse()->toSend.empty()) {
-
-
-	if (!response->toSend.empty()) {
-		string buffer = client->getResponse()->toSend;
-
-		ssize_t countSendBytes = send(client->getSocketDescriptor(), buffer.c_str(), buffer.size(),
-									  MsgNoFlag);
-
-		if (countSendBytes < 0) {
-			return false;
-		}
-		if (countSendBytes > 0) {
-			client->getResponse()->toSend = buffer.substr(countSendBytes);
-			cout << "Sent " << countSendBytes << " bytes to fd: "
-					  << client->getSocketDescriptor() << endl;
-			if (client->getResponse()->toSend.empty())
-				client->update();
-		}
+	string buffer;
+	if (client->getBuffer().empty()) {
+		buffer = response->serialize();
+	} else {
+		buffer = client->getBuffer();
 	}
- */
-    return true;
+	std::cout << "Before: buffer->size(): " << buffer.size() << std::endl;
+    ssize_t countSendBytes = send(client->getSocketDescriptor(),
+                                  buffer.c_str(),
+                                  buffer.size(),
+                                  MsgNoFlag);
+	std::cout << "send bytes " << countSendBytes << std::endl;
+
+	if (countSendBytes < 0) {
+        Utils::printStatus("Client ended the userfd! " + client->getSocketDescriptor());
+    }
+
+    client->setBuffer(buffer.substr(countSendBytes));
+//    delete buffer;
+
+    if (client->getBuffer().empty()) {
+        client->setIsReadyRequest(false);
+//        printResponse(client->getResponse());
+//        client->clear();
+//        events = POLLIN;
+    }
 }
 
 void Server::disconnectClient(Client* client, bool isShouldRemoveClient) {
@@ -258,27 +230,10 @@ void Server::disconnectClient(Client* client, bool isShouldRemoveClient) {
         }
     }
     close(client->getSocketDescriptor());
-    delete client;
+//	TODO sega
+//    delete client;
 }
 
 void Server::putListenSocket(Socket& socket) {
     listenSockets[socket.getSocketDescriptor()] = &socket;
 }
-
-/* TODO uncomment?
- * void Server::closeConnections() {
-	nfds_t numberOfClients = clients.size();
-
-	for (nfds_t i = 0; i < numberOfClients; ++i) {
-		WebClient*& client = clients[i];
-
-		if (client->getStatus() == Client::Close) {
-			close(client->getSocketDescriptor());
-			delete client;
-			clients.erase(clients.begin() + i);
-			pollFds.erase(pollFds.begin() + i + countListenSockets);
-		}
-	}
-}*/
-
-

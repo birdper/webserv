@@ -14,19 +14,23 @@
 
 
 class BaseHandler {
+protected:
+	Config& _config;
+    Request& _request;
+
 public:
-    BaseHandler();
+	explicit BaseHandler(Request& request, Config& config);
     virtual ~BaseHandler();
 
-    virtual Response handle() = 0;
+    virtual void handle(Response& response) = 0;
 
-//    virtual  BaseHandler* getInstance(Request& request, Config& config) = 0;
 protected:
 
     void readfileToBody(Response& response, const std::string& path);
     std::string getRedirectPageBody(std::pair<int, std::string> redirect);
 
     string getResourcePath(const string& locationUri,
-                           string root,
+                           const string& root,
                            const string& requestUri) const;
+	void setBodyToResponse(Response& response, const string& extension, const string& body);
 };

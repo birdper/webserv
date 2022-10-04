@@ -3,28 +3,11 @@
 
 Tokenizer::Tokenizer() :
 		context(NONE_CONTEXT) {
-//	TODO delete
-/*
-	mapperParameters.push_back("server");
-	mapperParameters.push_back("listen");
-	mapperParameters.push_back("server_name");
-	mapperParameters.push_back("location");
-	mapperParameters.push_back("root");
-	mapperParameters.push_back("index");
-	mapperParameters.push_back("autoindex");
-	mapperParameters.push_back("error_page");
-	mapperParameters.push_back("methods");
-	mapperParameters.push_back("cgi_extension");
-	mapperParameters.push_back("cgi_path");
-	mapperParameters.push_back("return");
-	mapperParameters.push_back("client_max_body_size");
- */
-
 	mapperParameters["unknown_type"] = UNKNOWN_TYPE;
 	mapperParameters["server"] = SERVER;
 	mapperParameters["listen"] = LISTEN;
 	mapperParameters["server_name"] = SERVER_NAME;
-	mapperParameters["}"] = ENDSERVER;
+	mapperParameters["}"] = BLOCK_END;
 	mapperParameters["location"] = LOCATION;
 	mapperParameters["root"] = ROOT;
 	mapperParameters["upload_directory"] = UPLOAD_DIRECTORY;
@@ -57,7 +40,7 @@ std::vector<Token> Tokenizer::tokenize(std::istringstream& configText) {
 				case LOCATION:
 					content = defineLocation(issLine);
 					break;
-				case ENDSERVER:
+				case BLOCK_END:
 					 defineCloseBrace();
 					break;
 				case UNKNOWN_TYPE:
@@ -68,6 +51,7 @@ std::vector<Token> Tokenizer::tokenize(std::istringstream& configText) {
 					content = getDirectiveContent(issLine);
 					break;
 			}
+//          TODO delete
 /*			Token currentToken;
 //			currentToken.typeName = word;
 			currentToken.content = content;
