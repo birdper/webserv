@@ -14,8 +14,8 @@ Tokenizer::Tokenizer() :
 	mapperParameters["index"] = INDEX;
 	mapperParameters["autoindex"] = AUTOINDEX;
 	mapperParameters["error_page"] = ERROR_PAGE;
-//	mapperParameters["cgi_extension"] = CGI_EXTENSION;
-//	mapperParameters["cgi_path"] = CGI_PATH;
+	mapperParameters["cgi_extension"] = EXTENSION_CGI;
+	mapperParameters["cgi_path"] = PATH_CGI;
 	mapperParameters["return"] = REDIRECT;
 	mapperParameters["client_max_body_size"] = CLIENT_MAX_BODY_SIZE;
 	mapperParameters["forbidden_methods"] = FORBIDDEN_METHODS;

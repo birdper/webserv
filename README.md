@@ -60,17 +60,16 @@ server {
 
 ### Parameters:
 [server](#server)  
-[location](#location)  
-[server_name](#server_name)  
 [listen](#listen)  
+[server_name](#server_name)  
+[location](#location)  
 [root](#root)  
 [index](#index)  
+[autoindex](#autoindex)  
 [error_page](#error_page)  
 [client_max_body_size](#client_max_body_size)  
-[autoindex](#autoindex)  
-[cgi](#cgi)  
-[upload_store](#upload_store)  
-
+[cgi_path](#cgi_path)  
+[upload_directory](#upload_directory)  
 
 
 <a name="server"><h3>server</h3></a>  
@@ -83,9 +82,8 @@ server {
 name-based (на основании поля “Host” заголовка запроса) нет.   
 Вместо этого директивами `listen` описываются все адреса и порты, 
 на которых нужно принимать соединения для этого сервера, а в директиве `server_name` указываются все имена серверов.
+***
 
-
----
 
 
 <a name="listen"><h3>listen</h3></a>
@@ -105,8 +103,8 @@ listen localhost:8000;
 ```
 Если указан только адрес, то используется порт 80.
 Cервером по умолчанию будет первый сервер, в котором описана пара `адрес:порт`.
+***
 
----
 
 
 <a name="server_name"><h3>server_name</h3></a>
@@ -122,8 +120,8 @@ server {
 }
 ```
 Первое имя становится основным именем сервера.
+***
 
----
 
 
 <a name="location"><h3>location</h3></a>
@@ -133,8 +131,27 @@ server {
 Контекст:	server
 ```
 Устанавливает конфигурацию в зависимости от URI запроса.
+***
 
----
+
+
+<a name="root"><h3>root</h3></a>
+```
+Синтаксис: root путь;
+Умолчание: root html;
+Контекст: server, location
+```
+Задаёт корневой каталог для запросов. Например, при такой конфигурации
+```
+location /i/ {
+    root /data/w3;
+}
+```
+в ответ на запрос `/i/top.gif` будет отдан файл `/data/w3/top.gif`.
+
+Путь к файлу формируется путём замены URI к значению директивы root.
+***
+
 
 
 <a name="index"><h3>index</h3></a>
@@ -145,70 +162,8 @@ server {
 ```
 Определяет файлы, которые будут использоваться в качестве индекса.  
 Наличие файлов проверяется в порядке их перечисления.
----
+***
 
-
-<a name="error_page"><h3>error_page</h3></a>
-```
-Синтаксис:	error_page код ... [=[ответ]] uri;  
-Умолчание:	—  
-Контекст:	server, location  
-```
-
-Пример:
-```
-error_page 404             /404.html;
-error_page 500 502 503 504 /50x.html;
-```
-
-
----
-
-<a name="client_max_body_size"><h3>client_max_body_size</h3></a>
-```
-Синтаксис:	client_max_body_size размер;
-Умолчание:	client_max_body_size 1m;
-Контекст:	server, location
-```
-Задаёт максимально допустимый размер тела запроса клиента. Если размер больше заданного, то клиенту возвращается ошибка 413 (Request Entity Too Large).  
-Установка параметра размер в 0 отключает проверку размера тела запроса клиента.
-
----
-
-
-<a name="root"><h3>root</h3></a>
-```
-Синтаксис: root путь;
-Умолчание: root html;
-Контекст: server, location
-```
-
-Задаёт корневой каталог для запросов. Например, при такой конфигурации
-```
-location /i/ {
-    root /data/w3;
-}
-```
-в ответ на запрос `/i/top.gif` будет отдан файл `/data/w3/top.gif`.
-
-Путь к файлу формируется путём замены URI к значению директивы root.  
-
----
-
-
-<a name="methods_allowed"><h3>methods_allowed</h3></a>
-```
-Синтаксис: methods_allowed метод ... ;
-Умолчание: 
-Контекст: server, location
-```
-Содержит методы которые разрешены в контексте.
-
-Example:
-```
-methods_allowed post, delete;
-```
----
 
 
 <a name="autoindex"><h3>autoindex</h3></a>
@@ -218,22 +173,76 @@ methods_allowed post, delete;
 Контекст:	server, location
 ```
 Разрешает или запрещает вывод листинга каталога.
+***
 
----
 
-<a name="upload_store"><h3>upload_store</h3></a>
+
+<a name="error_page"><h3>error_page</h3></a>
 ```
-Синтаксис:	upload_store <directry>;
+Синтаксис:	error_page код ... [=[ответ]] uri;  
+Умолчание:	—  
+Контекст:	server, location  
+```
+Пример:
+```
+error_page 404             /404.html;
+error_page 500 502 503 504 /50x.html;
+```
+***
+
+
+
+<a name="client_max_body_size"><h3>client_max_body_size</h3></a>
+```
+Синтаксис:	client_max_body_size размер;
+Умолчание:	client_max_body_size 1m;
+Контекст:	server, location
+```
+Задаёт максимально допустимый размер тела запроса клиента. Если размер больше заданного, то клиенту возвращается ошибка 413 (Request Entity Too Large).  
+Установка параметра размер в 0 отключает проверку размера тела запроса клиента.
+***
+
+
+
+<a name="methods_allowed"><h3>methods_allowed</h3></a>
+```
+Синтаксис: methods_allowed метод ... ;
+Умолчание: 
+Контекст: server, location
+```
+Содержит методы которые разрешены в контексте.  
+
+Example:
+```
+methods_allowed post, delete;
+```
+***
+
+
+
+<a name="upload_directory"><h3>upload_directory</h3></a>
+```
+Синтаксис:	upload_directory <directry>;
 Умолчание:	none;
 Контекст:	server, location
 ```
 Указывает каталог в который будут записаны загружаемые файлы
+***
 
----
+
+<a name="cgi_path"><h3>cgi_path</h3></a>
+```
+Синтаксис:	cgi_path <directry>;
+Умолчание:	none;
+Контекст:	server, location
+```
+Указывает cgi обработчик
+***
+
+
 
 [//]: # (```)
 [//]: # (cgi_extension)
-[//]: # (cgi_path)
 [//]: # (return 301 - [String] &#40;path or url to redirect&#41;  )
 [//]: # (```)
 
