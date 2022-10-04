@@ -21,26 +21,20 @@ Response& RequestHandler::handle() {
     if (isValidResponse(response)) {
         _methods[_request.getMethodString()]->handle(response);
     }
+	if (_config.isCGI() && Utils::getExtension(_request.getUri()) == _config.getExtensionCGI()) {
+		handleCGI(response);
+	}
     setErrorPageBodyIfHas(response);
     setStatusCodeAndDescription(response);
 
-    if (_config.isCGI()) {
-
-        string resource = "/" + response.getResource();
-        std::cout << "resource: " << resource << std::endl;
-        CGI* cgi = initCgi(resource, _request.findHeaderValue("Host"), "80");
-
-        const string& body = cgi->execute(response.getBody());
-
-        std::cout << "CGI body size: " << body.size() << std::endl;
-        std::cout << "CGI body: " << body << std::endl;
-
-        response.setBody(body);
-    }
-    // TODO delete
-    Utils::printStatus("request handled");
-
     return response;
+}
+
+void RequestHandler::handleCGI(Response& response) const {
+	CGIHandler cgiHandler;
+	response.setStatusCode(cgiHandler.handle(_config.getPathCGI(), response.getResource(), &_request));
+	string body = cgiHandler.getBody();
+	response.setBody(body);
 }
 
 bool RequestHandler::isValidResponse(Response& response) {
@@ -102,15 +96,4 @@ string RequestHandler::getErrorPage(const string& errorCode) {
     }
 
     return body;
-}
-
-CGI* RequestHandler::initCgi(const string& resource, const string& ip, const string& port) {
-    return new CGI(_request,
-                    resource,
-                   _config.getPathCGI(),
-                   _config.getExtensionCGI(),
-                   _config.getRoot(),
-                   ip,
-                   port
-    );
 }

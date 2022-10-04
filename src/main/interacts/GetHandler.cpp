@@ -14,7 +14,6 @@ GetHandler::~GetHandler() {
 }
 
 void GetHandler::handle(Response& response) {
-
 	std::string path = getResourcePath(_config.getLocationUri(),
 	                                   _config.getRoot(),
 	                                   _request.getUri());
