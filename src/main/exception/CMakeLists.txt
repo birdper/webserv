@@ -8,7 +8,5 @@ add_library(${MODULE_NAME}
         FileNotFoundException.hpp FileNotFoundException.cpp
         ParseRequestException.hpp ParseRequestException.cpp
         CGIException.hpp CGIException.cpp
+        NumberFormatException.cpp NumberFormatException.hpp
         )
-
-target_include_directories(${MODULE_NAME} PUBLIC ../util)
-

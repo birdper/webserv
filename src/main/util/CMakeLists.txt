@@ -13,6 +13,6 @@ target_include_directories(${MODULE_NAME} PUBLIC
         ../exception
         )
 
-#include_directories(${MODULE_NAME} PUBLIC
-#        ../exception
-#        )
+include_directories(${MODULE_NAME} PUBLIC
+        ../exception
+        )

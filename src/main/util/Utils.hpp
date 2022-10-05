@@ -9,6 +9,7 @@
 #include <sys/stat.h>
 #include <vector>
 #include "usings.hpp"
+#include "../exception/NumberFormatException.hpp"
 
 class Utils {
 public:
