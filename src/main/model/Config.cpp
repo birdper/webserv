@@ -24,12 +24,12 @@ Config::Config(Parameters& parameters,
 		_isLocationConfig(isLocationConfig) {}
 
 bool Config::isMethodAllowed(HttpMethod method) const {
-	std::vector<HttpMethod>::const_iterator it = std::find(_parameters->forbiddenMethods.begin(),
-	                                                       _parameters->forbiddenMethods.end(),
+	std::vector<HttpMethod>::const_iterator it = std::find(_parameters->allowedMethods.begin(),
+	                                                       _parameters->allowedMethods.end(),
 	                                                       method);
-	if (it == _parameters->forbiddenMethods.end())
-		return true;
-	return false;
+	if (it == _parameters->allowedMethods.end())
+		return false;
+	return true;
 }
 
 bool Config::isAutoindexEnabled() const {
@@ -60,7 +60,7 @@ const string& Config::getExtensionCGI() const {
 	return _parameters->extensionCGI;
 }
 
-const string& Config::getClientMaxBody() const {
+const string& Config::getClientMaxBodySize() const {
 	return _parameters->clientMaxBodySize;
 }
 

@@ -40,7 +40,7 @@ public:
 	const string& getRedirect() const;
 	const string& getPathCGI() const;
 	const string& getExtensionCGI() const;
-	const string& getClientMaxBody() const;
+	const string& getClientMaxBodySize() const;
 	const string& getErrorPageRelativePath(const string& errorCode) const;
 	std::vector<string> getIndexFiles() const;
 	string getPathErrorPageWithRoot(const string& errorCode);

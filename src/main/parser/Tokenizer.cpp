@@ -18,7 +18,7 @@ Tokenizer::Tokenizer() :
 	mapperParameters["cgi_path"] = PATH_CGI;
 	mapperParameters["return"] = REDIRECT;
 	mapperParameters["client_max_body_size"] = CLIENT_MAX_BODY_SIZE;
-	mapperParameters["forbidden_methods"] = FORBIDDEN_METHODS;
+	mapperParameters["allowed_methods"] = ALLOWED_METHODS;
 }
 
 std::vector<Token> Tokenizer::tokenize(std::istringstream& configText) {

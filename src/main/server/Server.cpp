@@ -149,8 +149,6 @@ void Server::readClient(Client* client) {
 */
     client->appendToBuffer(string (buffer, bytesReadCount));
 	requestParser.parse(client->getRequest(), *client);
-//	TODO delete debug print
-    Utils::printStatus("request parsed");
 	std::cout << std::endl;
 }
 

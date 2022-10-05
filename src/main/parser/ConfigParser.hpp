@@ -26,8 +26,8 @@ private:
     void parseErrorPagePaths(Parameters* params, const std::string& input);
 
     void parseListen(const std::string &input, VirtualServer &virtualServer);
-    bool checkPort(const std::string &str);
-    bool checkIpAndPort(const std::string &ipStr, const std::string &portStr);
+    void checkPort(const std::string &str);
+    void checkIpAndPort(const std::string &ipStr, const std::string &portStr);
 
 	bool isDigits(const std::string &str);
 

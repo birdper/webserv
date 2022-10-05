@@ -26,24 +26,26 @@ public:
 
     MapErrorPagePaths errorPagePaths;
     std::vector<std::string> indexNameFiles;
-    std::vector<HttpMethod> forbiddenMethods;
+    std::vector<HttpMethod> allowedMethods;
 
-    Parameters() {}
+    Parameters() {
+	    allowedMethods.push_back(GET);
+	}
 
     Parameters(const Parameters& p)
             :
-            hasAutoindexEnabled(p.hasAutoindexEnabled),
-            hasUploadEnabled(p.hasUploadEnabled),
-            uri(p.uri),
-            root(p.root),
-            redirect(p.redirect),
-            pathCGI(p.pathCGI),
-            extensionCGI(p.extensionCGI),
-            clientMaxBodySize(p.clientMaxBodySize),
-			uploadStorePath(p.uploadStorePath),
-            errorPagePaths(p.errorPagePaths),
-            indexNameFiles(p.indexNameFiles),
-            forbiddenMethods(p.forbiddenMethods)
+		    hasAutoindexEnabled(p.hasAutoindexEnabled),
+		    hasUploadEnabled(p.hasUploadEnabled),
+		    uri(p.uri),
+		    root(p.root),
+		    redirect(p.redirect),
+		    pathCGI(p.pathCGI),
+		    extensionCGI(p.extensionCGI),
+		    clientMaxBodySize(p.clientMaxBodySize),
+		    uploadStorePath(p.uploadStorePath),
+		    errorPagePaths(p.errorPagePaths),
+		    indexNameFiles(p.indexNameFiles),
+		    allowedMethods(p.allowedMethods)
             {
     }
 
@@ -60,7 +62,7 @@ public:
             uploadStorePath = p.uploadStorePath;
             errorPagePaths = p.errorPagePaths;
             indexNameFiles = p.indexNameFiles;
-            forbiddenMethods = p.forbiddenMethods;
+	        allowedMethods = p.allowedMethods;
         }
         return *this;
     }

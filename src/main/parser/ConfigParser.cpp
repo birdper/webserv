@@ -87,17 +87,17 @@ void ConfigParser::parseConfig(const std::string &configFileName,
             case ERROR_PAGE:
                 parseErrorPagePaths(currentParams, token.content);
                 break;
-            case FORBIDDEN_METHODS:
+            case ALLOWED_METHODS:
                 std::vector<std::string> methods = Utils::split(token.content, " ");
                 for (int j = 0; j < methods.size(); ++j) {
-                    if (methods[j] == "POST")
-                        currentParams->forbiddenMethods.push_back(POST);
-                    else if (methods[j] == "PUT")
-                        currentParams->forbiddenMethods.push_back(PUT);
-                    else if (methods[j] == "DELETE")
-                        currentParams->forbiddenMethods.push_back(DELETE);
+                    if (methods[j] == "post")
+                        currentParams->allowedMethods.push_back(POST);
+                    else if (methods[j] == "put")
+                        currentParams->allowedMethods.push_back(PUT);
+                    else if (methods[j] == "delete")
+                        currentParams->allowedMethods.push_back(DELETE);
                     else
-                        fatalError("Forbidden methods may be only 'PUT', 'POST' or 'DELETE'");
+                        fatalError("Forbidden methods may be only 'put', 'post' or 'delete'");
                 }
                 break;
         }
@@ -128,7 +128,7 @@ void ConfigParser::parseListen(const std::string &input, VirtualServer &virtualS
     virtualServer.setHost(ip + ":" + port);
 }
 
-bool ConfigParser::checkPort(const std::string &str) {
+void ConfigParser::checkPort(const std::string &str) {
 	std::string errorMessagePortMustBeNumber = "Failed to parse 'listen'. Port must be number from 1 to 65355";
 
 	if (!isDigits(Utils::rtrim(str, " "))) {
@@ -144,7 +144,7 @@ bool ConfigParser::checkPort(const std::string &str) {
     }
 }
 
-bool ConfigParser::checkIpAndPort(const std::string &ipStr, const std::string &portStr) {
+void ConfigParser::checkIpAndPort(const std::string &ipStr, const std::string &portStr) {
     std::vector<std::string> ip = Utils::split(ipStr, ".");
     if (ip.size() != 4) {
         fatalError("The listen directive must have the format ip:port or only port");
