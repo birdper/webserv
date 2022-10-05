@@ -95,8 +95,8 @@ bool Config::isCGI() {
 	return !getPathCGI().empty();
 }
 
-const string& Config::getUploadStorePath() const {
-	return _parameters->uploadStorePath;
+const string& Config::getUploadDirectory() const {
+	return _parameters->uploadDirectory;
 }
 
 string Config::getMimeTypeByExtension(const string& extension) const {

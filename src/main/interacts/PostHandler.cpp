@@ -19,13 +19,13 @@ PostHandler::~PostHandler() {
 void PostHandler::handle(Response& response) {
 	Utils::printStatus("POST HANDLER!");
 
-	if (_config.getUploadStorePath().empty()) {
+	if (_config.getUploadDirectory().empty()) {
 		Utils::printStatus("Upload directory not defined");
 		response.setStatusCode("405");
 		return;
 	}
 
-	string fileName = getResourcePath(_config.getLocationUri(), _config.getUploadStorePath(), _request.getUri());
+	string fileName = getResourcePath(_config.getLocationUri(), _config.getUploadDirectory(), _request.getUri());
 	Utils::printStatus("POST HANDLER: getResourcePath: " + fileName);
 
 	if (!saveBodyToFile(fileName, _request.getBody())) {

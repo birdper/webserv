@@ -82,7 +82,7 @@ void ConfigParser::parseConfig(const std::string &configFileName,
                 currentParams->clientMaxBodySize = token.content;
                 break;
 			case UPLOAD_DIRECTORY:
-				currentParams->uploadStorePath = token.content;
+				currentParams->uploadDirectory = token.content;
 				break;
             case ERROR_PAGE:
                 parseErrorPagePaths(currentParams, token.content);

@@ -22,7 +22,7 @@ public:
     std::string pathCGI;
     std::string extensionCGI;
     std::string clientMaxBodySize;
-    std::string uploadStorePath;
+    std::string uploadDirectory;
 
     MapErrorPagePaths errorPagePaths;
     std::vector<std::string> indexNameFiles;
@@ -59,7 +59,7 @@ public:
             pathCGI = p.pathCGI;
             extensionCGI = p.extensionCGI;
             clientMaxBodySize = p.clientMaxBodySize;
-            uploadStorePath = p.uploadStorePath;
+	        uploadDirectory = p.uploadDirectory;
             errorPagePaths = p.errorPagePaths;
             indexNameFiles = p.indexNameFiles;
 	        allowedMethods = p.allowedMethods;

@@ -35,7 +35,7 @@ public:
     bool isCGI();
 
     const string& getLocationUri() const;
-    const string& getUploadStorePath() const;
+    const string& getUploadDirectory() const;
 	const string& getRoot() const;
 	const string& getRedirect() const;
 	const string& getPathCGI() const;
