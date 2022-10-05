@@ -69,6 +69,8 @@ server {
 [error_page](#error_page)  
 [client_max_body_size](#client_max_body_size)  
 [cgi_path](#cgi_path)  
+[cgi_extension](#cgi_extension)  
+[redirect](#redirect)  
 [upload_directory](#upload_directory)  
 
 
@@ -240,10 +242,23 @@ methods_allowed post, delete;
 ***
 
 
+<a name="cgi_extension"><h3>cgi_extension</h3></a>
+```
+Синтаксис:	cgi_extension <extension>;
+Умолчание:	none;
+Контекст:	server, location
+```
+Указывает расширение файлов, которые будет обрабатывать cgi 
+***
 
-[//]: # (```)
-[//]: # (cgi_extension)
-[//]: # (return 301 - [String] &#40;path or url to redirect&#41;  )
-[//]: # (```)
+
+<a name="redirect"><h3>redirect</h3></a>
+```
+Синтаксис:	return <code> <url>;
+Умолчание:	-
+Контекст:	server, location
+```
+Завершает обработку и возвращает клиенту указанный код. 
+***
 
 [//]: # (Example configurations files are server.conf, tester_config.conf)
