@@ -32,4 +32,5 @@ private:
 	bool isDigits(const std::string &str);
 
 	void fatalError(const std::string &msg);
+	void parseRedirect(Parameters* params, const string& input);
 };

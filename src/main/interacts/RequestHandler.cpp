@@ -88,7 +88,7 @@ void RequestHandler::setErrorPageBody(Response& response) {
 
 void RequestHandler::setStatusCodeAndDescription(Response& response) {
 	const string& statusCode = response.getStatusCode();
-	string description = _config.getDescriptionErrorByCode(statusCode);
+	string description = _config.getDescriptionByCode(statusCode);
 
 	response.setStatusCode(statusCode + " " + description);
 }

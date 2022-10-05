@@ -76,7 +76,7 @@ void ConfigParser::parseConfig(const std::string &configFileName,
                 currentParams->extensionCGI = token.content;
                 break;
             case REDIRECT:
-                currentParams->redirect = token.content;
+				parseRedirect(currentParams, token.content);
                 break;
             case CLIENT_MAX_BODY_SIZE:
                 currentParams->clientMaxBodySize = token.content;
@@ -167,12 +167,32 @@ void ConfigParser::checkIpAndPort(const std::string &ipStr, const std::string &p
     checkPort(portStr);
 }
 
-void ConfigParser::parseErrorPagePaths(Parameters* params, const std::string& input) {
-    std::vector<std::string> vec = Utils::split(input, " ");
+void ConfigParser::parseRedirect(Parameters* params, const std::string& input) {
+	std::vector<std::string> redirect = Utils::split(input, " ");
+	if (redirect.size() == 2) {
+		try {
+			params->redirectCode = Utils::stringToInt(redirect[0], 10);
+			if (params->redirectCode != 307 && params->redirectCode != 308
+					&& (params->redirectCode <= 300 || params->redirectCode >= 305)) {
+				fatalError("The redirect code can only be: 301, 302, 304, 307, 308");
+			}
+		} catch (NumberFormatException &ex) {
+			cerr << ex.what() << endl;
+			fatalError("The redirect code can only be: 301, 302, 304, 307, 308");
+		}
+		params->redirectUri = redirect[1];
+	} else {
+		fatalError("Directive redirect must be: \'return <code> <uri>;\'");
+	}
+}
 
-    if (vec.size() == 2) {
-        params->addErrorPage(vec[0], vec[1]);
-    }
+void ConfigParser::parseErrorPagePaths(Parameters* params, const std::string& input) {
+    std::vector<std::string> errorPage = Utils::split(input, " ");
+    if (errorPage.size() == 2) {
+        params->addErrorPage(errorPage[0], errorPage[1]);
+    } else {
+		fatalError("Directive error_page must be: \'error_page <code> <error_page_file_name>;\'");
+	}
 }
 
 bool ConfigParser::isDigits(const std::string &str) {

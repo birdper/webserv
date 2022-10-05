@@ -18,7 +18,8 @@ public:
 
     std::string uri;
     std::string root;
-    std::string redirect;
+    int redirectCode;
+    std::string redirectUri;
     std::string pathCGI;
     std::string extensionCGI;
     std::string clientMaxBodySize;
@@ -34,18 +35,19 @@ public:
 
     Parameters(const Parameters& p)
             :
-		    hasAutoindexEnabled(p.hasAutoindexEnabled),
-		    hasUploadEnabled(p.hasUploadEnabled),
-		    uri(p.uri),
-		    root(p.root),
-		    redirect(p.redirect),
-		    pathCGI(p.pathCGI),
-		    extensionCGI(p.extensionCGI),
-		    clientMaxBodySize(p.clientMaxBodySize),
+			hasAutoindexEnabled(p.hasAutoindexEnabled),
+			hasUploadEnabled(p.hasUploadEnabled),
+			uri(p.uri),
+			root(p.root),
+			redirectCode(p.redirectCode),
+			redirectUri(p.redirectUri),
+			pathCGI(p.pathCGI),
+			extensionCGI(p.extensionCGI),
+			clientMaxBodySize(p.clientMaxBodySize),
 			uploadDirectory(p.uploadDirectory),
-		    errorPagePaths(p.errorPagePaths),
-		    indexNameFiles(p.indexNameFiles),
-		    allowedMethods(p.allowedMethods)
+			errorPagePaths(p.errorPagePaths),
+			indexNameFiles(p.indexNameFiles),
+			allowedMethods(p.allowedMethods)
             {
     }
 
@@ -55,7 +57,8 @@ public:
             hasUploadEnabled = p.hasUploadEnabled;
             uri = p.uri;
             root = p.root;
-            redirect = p.redirect;
+			redirectCode = p.redirectCode;
+			redirectUri = p.redirectUri;
             pathCGI = p.pathCGI;
             extensionCGI = p.extensionCGI;
             clientMaxBodySize = p.clientMaxBodySize;

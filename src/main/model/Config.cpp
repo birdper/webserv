@@ -48,8 +48,12 @@ const string& Config::getRoot() const {
 	return _parameters->root;
 }
 
-const string& Config::getRedirect() const {
-	return _parameters->redirect;
+int Config::getRedirectCode() const {
+	return _parameters->redirectCode;
+}
+
+const string& Config::getRedirectUri() const {
+	return _parameters->redirectUri;
 }
 
 const string& Config::getPathCGI() const {

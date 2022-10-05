@@ -37,7 +37,8 @@ public:
     const string& getLocationUri() const;
     const string& getUploadDirectory() const;
 	const string& getRoot() const;
-	const string& getRedirect() const;
+	int getRedirectCode() const;
+	const string& getRedirectUri() const;
 	const string& getPathCGI() const;
 	const string& getExtensionCGI() const;
 	const string& getClientMaxBodySize() const;
