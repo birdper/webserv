@@ -15,12 +15,12 @@ Config::Config(Parameters& parameters, bool isLocation) :
 */
 
 Config::Config(Parameters& parameters,
-               MimeTypesRepo* mimeTypesRepo,
-               DefaultErrorPagesRepo* defaultErrorPagesRepo,
-               bool isLocationConfig) :
+			   MimeTypesRepo* mimeTypesRepo,
+			   DefaultStatusCodeRepo* defaultStatusCodeRepo,
+			   bool isLocationConfig) :
 		_parameters(&parameters),
 		_mimeTypesRepo(mimeTypesRepo),
-		_defaultErrorPagesRepo(defaultErrorPagesRepo),
+		_statusCodeRepo(defaultStatusCodeRepo),
 		_isLocationConfig(isLocationConfig) {}
 
 bool Config::isMethodAllowed(HttpMethod method) const {
@@ -112,8 +112,8 @@ string Config::findCustomErrorPage(const string& errorCode) {
     return it->second;
 }
 
-string Config::getDescriptionErrorByCode(const string& errorCode) {
-    return _defaultErrorPagesRepo->getDescriptionErrorByCode(errorCode);
+string Config::getDescriptionByCode(const string& code) {
+    return _statusCodeRepo->getDescriptionByCode(code);
 }
 
 string Config::getDefaultErrorPage(const string& errorCode) {
@@ -135,7 +135,7 @@ string Config::getDefaultErrorPage(const string& errorCode) {
            "</head>\n"
            "<body>\n"
            "<h1>Error " + errorCode + ".</h1>\n"
-            "<p>" + _defaultErrorPagesRepo->getDescriptionErrorByCode(errorCode) + ".</p>\n"
+            "<p>" + _statusCodeRepo->getDescriptionByCode(errorCode) + ".</p>\n"
            "</body>\n"
            "</html>";
 }

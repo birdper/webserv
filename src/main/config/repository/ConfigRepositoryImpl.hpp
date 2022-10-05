@@ -10,12 +10,12 @@
 #include "ConfigStorage.hpp"
 #include "ConfigRepository.hpp"
 #include "MimeTypesRepo.hpp"
-#include "DefaultErrorPagesRepo.hpp"
+#include "DefaultStatusCodeRepo.hpp"
 
 class ConfigRepositoryImpl : public ConfigRepository {
 private:
     ConfigStorage* storage;
-	DefaultErrorPagesRepo defaultErrorPagesRepo;
+	DefaultStatusCodeRepo statusCodeRepo;
 	MimeTypesRepo mimeTypesRepo;
 
 

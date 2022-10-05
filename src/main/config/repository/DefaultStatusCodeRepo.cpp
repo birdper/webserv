@@ -1,7 +1,7 @@
 
-#include "DefaultErrorPagesRepo.hpp"
+#include "DefaultStatusCodeRepo.hpp"
 
-DefaultErrorPagesRepo::DefaultErrorPagesRepo() {
+DefaultStatusCodeRepo::DefaultStatusCodeRepo() {
 	errors["200"] = "OK";
 	errors["201"] = "Created";
 	errors["202"] = "Accepted";
@@ -9,8 +9,10 @@ DefaultErrorPagesRepo::DefaultErrorPagesRepo() {
 	errors["204"] = "No Content";
 	errors["301"] = "Moved Permanently";
 	errors["302"] = "Found";
+	errors["303"] = "See Other";
 	errors["304"] = "Not Modified";
 	errors["307"] = "Temporary Redirect";
+	errors["308"] = "Permanent Redirect";
 	errors["400"] = "Bad Request";
 	errors["403"] = "Forbidden";
 	errors["404"] = "Page Not Found";
@@ -33,7 +35,7 @@ DefaultErrorPagesRepo::DefaultErrorPagesRepo() {
 	errors["505"] = "HTTP Version Not Supported";
 }
 
-std::string& DefaultErrorPagesRepo::getDescriptionErrorByCode(const std::string& code) {
+std::string& DefaultStatusCodeRepo::getDescriptionByCode(const std::string& code) {
 	std::map<std::string, std::string>::iterator it = errors.find(code);
 	if (it == errors.end())
 		return *new std::string("");

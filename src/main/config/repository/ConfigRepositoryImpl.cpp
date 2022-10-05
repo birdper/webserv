@@ -85,10 +85,10 @@ Config* ConfigRepositoryImpl::findLocationConfigByUri(const VirtualServer& virtu
 
 Config* ConfigRepositoryImpl::getLocationConfig(Parameters& parameters)  {
 	bool isLocation = true;
-	return new Config(parameters, &mimeTypesRepo, &defaultErrorPagesRepo, isLocation);
+	return new Config(parameters, &mimeTypesRepo, &statusCodeRepo, isLocation);
 }
 
 Config* ConfigRepositoryImpl::getServerConfig(Parameters& parameters)  {
 	bool isLocation = false;
-	return new Config(parameters, &mimeTypesRepo, &defaultErrorPagesRepo, isLocation);
+	return new Config(parameters, &mimeTypesRepo, &statusCodeRepo, isLocation);
 }

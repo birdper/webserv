@@ -10,13 +10,13 @@
 #include "Parameters.hpp"
 #include "../exception/ErrorPagePathNotFoundException.hpp"
 #include "MimeTypesRepo.hpp"
-#include "../config/repository/DefaultErrorPagesRepo.hpp"
+#include "../config/repository/DefaultStatusCodeRepo.hpp"
 
 class Config {
 private:
 	Parameters* _parameters;
 	MimeTypesRepo* _mimeTypesRepo;
-	DefaultErrorPagesRepo* _defaultErrorPagesRepo;
+	DefaultStatusCodeRepo* _statusCodeRepo;
     bool _isLocationConfig;
 
 public:
@@ -24,9 +24,9 @@ public:
 //	explicit Config(Parameters& parameters);
 //    explicit Config(Parameters& parameters, bool isLocation);
 	Config(Parameters& parameters,
-	       MimeTypesRepo* mimeTypesRepo,
-	       DefaultErrorPagesRepo* defaultErrorPagesRepo,
-	       bool isLocationConfig);
+		   MimeTypesRepo* mimeTypesRepo,
+		   DefaultStatusCodeRepo* defaultStatusCodeRepo,
+		   bool isLocationConfig);
 
 	bool isLocationConfig() const;
 	bool isMethodAllowed(HttpMethod method) const;
@@ -48,5 +48,5 @@ public:
 	string getMimeTypeByExtension(const string& extension) const;
     string findCustomErrorPage(const string& errorCode);
     string getDefaultErrorPage(const string& errorCode);
-    string getDescriptionErrorByCode(const string& errorCode);
+    string getDescriptionByCode(const string& code);
 };

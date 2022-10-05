@@ -9,7 +9,7 @@ add_library(${MODULE_NAME}
         model/Location.cpp model/Location.hpp
         model/VirtualServer.cpp model/VirtualServer.hpp
         storage/ConfigStorage.cpp storage/ConfigStorage.hpp
-        repository/DefaultErrorPagesRepo.cpp repository/DefaultErrorPagesRepo.hpp
+        repository/DefaultStatusCodeRepo.cpp repository/DefaultStatusCodeRepo.hpp
         repository/ConfigRepositoryImpl.cpp repository/ConfigRepositoryImpl.hpp
         )
 
