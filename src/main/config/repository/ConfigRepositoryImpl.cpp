@@ -60,6 +60,10 @@ Config* ConfigRepositoryImpl::findLocationConfigByUri(const VirtualServer& virtu
         Location* currentLocation = locations[i];
         string locationUri = locations[i]->getUri();
 
+		if (!currentLocation->getParameters().pathCGI.empty() && currentLocation->getParameters().extensionCGI != Utils::getExtension(locationUri)) {
+			continue;
+		}
+
         if (requestUri.compare(0, locationUri.length(), locationUri) == 0) {
             size_t curLen = locationUri.length();
             if (curLen > maxLength) {
@@ -71,6 +75,7 @@ Config* ConfigRepositoryImpl::findLocationConfigByUri(const VirtualServer& virtu
 
     Config* config = nullptr;
     if (foundLocation != nullptr) {
+//		TODO delete
 //        config = new Config(foundLocation->getParameters(), true);
 		config = getLocationConfig(foundLocation->getParameters());
     }
