@@ -42,7 +42,7 @@ public:
 		    pathCGI(p.pathCGI),
 		    extensionCGI(p.extensionCGI),
 		    clientMaxBodySize(p.clientMaxBodySize),
-		    uploadStorePath(p.uploadStorePath),
+			uploadDirectory(p.uploadDirectory),
 		    errorPagePaths(p.errorPagePaths),
 		    indexNameFiles(p.indexNameFiles),
 		    allowedMethods(p.allowedMethods)
