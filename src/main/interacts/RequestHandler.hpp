@@ -22,7 +22,9 @@ private:
     RequestHandler(Request& request, Config& config);
     bool isValidResponse(Response& response);
     string getErrorPage(const string& errorCode);
-    void setErrorPageBodyIfHas(Response& response);
+    void setErrorPageBody(Response& response);
     void setStatusCodeAndDescription(Response& response);
 	void handleCGI(Response& response) const;
+	bool isCgiRequest();
+	bool isErrorResponse(Response& response);
 };
