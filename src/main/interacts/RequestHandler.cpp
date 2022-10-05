@@ -20,15 +20,27 @@ Response& RequestHandler::handle() {
 	Response& response = *new Response();
 
 	if (isValidResponse(response)) {
-		_methods[_request.getMethodString()]->handle(response);
+		string redirectUri = _config.getRedirectUri();
+		if (_config.getRedirectCode() != 0) {
+			response.addHeader("Location", redirectUri);
+			response.setStatusCode(std::to_string(_config.getRedirectCode()));
+			response.setBody(getRedirectPageBody());
+		} else {
+			_methods[_request.getMethodString()]->handle(response);
+
+			if (isCgiRequest()) {
+				handleCGI(response);
+			}
+		}
+
 	}
-	if (isCgiRequest()) {
-		handleCGI(response);
-	}
+
 	if (isErrorResponse(response)) {
 		setErrorPageBody(response);
 	}
+
 	response.addHeader("Connection", "close");
+	response.addHeader("Server", WEBSERV_NAME);
 	setStatusCodeAndDescription(response);
 
 	return response;
@@ -58,7 +70,10 @@ bool RequestHandler::isValidResponse(Response& response) {
 		response.setStatusCode("405");
 		return false;
 	}
-	if (Utils::stringToInt(_config.getClientMaxBodySize(), 10) < Utils::stringToInt(_request.findHeaderValue("Content-Length"), 10)) {
+
+	int clientMaxBodySize = Utils::stringToInt(_config.getClientMaxBodySize(), 10);
+	int contentLength = Utils::stringToInt(_request.findHeaderValue("Content-Length"), 10);
+	if (clientMaxBodySize < contentLength) {
 		response.setStatusCode("413");
 		return false;
 	}
@@ -110,4 +125,20 @@ string RequestHandler::getErrorPageBody(const string& errorCode) {
 	}
 
 	return body;
+}
+
+string RequestHandler::getRedirectPageBody() {
+	string redirectCodeString = std::to_string(_config.getRedirectCode());
+	string redirectType = _config.getDescriptionByCode(redirectCodeString);
+	return "<html>\n"
+		   "<head>\n"
+		   "	<title>" + redirectType + "</title>\n" +
+		   "</head>\n" +
+		   "<body>\n" +
+		   "	<center>\n" +
+		   "		<h1>" + redirectType + "</h1>\n" +
+		   "	</center>\n" +
+		   "<hr><center>webserv</center>\n" +
+		   "</body>\n" +
+		   "</html>";
 }
