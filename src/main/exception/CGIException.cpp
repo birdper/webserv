@@ -6,3 +6,7 @@ CGIException::CGIException(const std::string& cause)
 const char* CGIException::what() const throw() {
     return _cause.c_str();
 }
+
+CGIException::~CGIException() throw() {
+
+}

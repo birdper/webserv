@@ -1,15 +1,14 @@
-#ifndef WEBSERV_CGIEXCEPTION_HPP
-#define WEBSERV_CGIEXCEPTION_HPP
+#pragma once
 
 #include <iostream>
 #include <exception>
 
 class CGIException : public std::exception {
 private:
-    const std::string& _cause;
+    const std::string _cause;
+
 public:
     explicit CGIException(const std::string& cause);
     const char* what() const throw();
+	~CGIException() _NOEXCEPT;
 };
-
-#endif //WEBSERV_CGIEXCEPTION_HPP

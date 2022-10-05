@@ -9,10 +9,12 @@
 
 class ParseRequestException : public std::exception {
 private:
-    const std::string& _cause;
+    const std::string _cause;
+
 public:
     explicit ParseRequestException(const std::string& cause);
     const char* what() const throw();
+	virtual ~ParseRequestException() _NOEXCEPT;
 };
 
 

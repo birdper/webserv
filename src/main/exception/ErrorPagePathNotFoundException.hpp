@@ -5,10 +5,10 @@
 
 class ErrorPagePathNotFoundException : public std::exception {
 private:
-	const std::string& path;
+	const std::string path;
 
 public:
 	explicit ErrorPagePathNotFoundException(const std::string& path);
 	const char* what() const throw();
-
+	~ErrorPagePathNotFoundException() _NOEXCEPT;
 };

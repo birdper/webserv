@@ -8,3 +8,7 @@ FileNotFoundException::FileNotFoundException(const std::string& cause) :
 const char* FileNotFoundException::what() const throw() {
     return _cause.c_str();
 }
+
+FileNotFoundException::~FileNotFoundException() throw() {
+
+}

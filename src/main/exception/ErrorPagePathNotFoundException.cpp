@@ -6,3 +6,7 @@ ErrorPagePathNotFoundException::ErrorPagePathNotFoundException(const std::string
 const char* ErrorPagePathNotFoundException::what() const throw() {
 	return (new std::string(path + " not found"))->c_str();
 }
+
+ErrorPagePathNotFoundException::~ErrorPagePathNotFoundException() throw() {
+
+}

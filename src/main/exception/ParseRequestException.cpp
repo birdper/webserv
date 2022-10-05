@@ -11,3 +11,6 @@ ParseRequestException::ParseRequestException(const std::string& cause) :
 const char* ParseRequestException::what() const throw() {
     return _cause.c_str();
 }
+
+ParseRequestException::~ParseRequestException() throw() {
+}
