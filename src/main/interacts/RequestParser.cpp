@@ -8,8 +8,15 @@ void RequestParser::parse(Request& request, Client& client) const {
 		string headersString = requestBuffer.substr(0, borderLinePosition);
 		std::vector<string> headerLines = Utils::split(headersString, END_OF_LINE);
 
-		parseStartLine(headerLines[0], request);
-		parseHeaders(headerLines, request);
+		try {
+			parseStartLine(headerLines[0], request);
+			parseHeaders(headerLines, request);
+		} catch (ParseRequestException &ex) {
+			request.setBadStatus();
+			client.setIsReadyRequest(true);
+			client.setBuffer("");
+			return;
+		}
 
 		client.setBuffer(requestBuffer.substr(borderLinePosition + HTTP_BORDER_LINE.length()));
 
@@ -21,7 +28,6 @@ void RequestParser::parse(Request& request, Client& client) const {
 		printRequest(headerLines);
 	}
 	if (request.getHttpMethod() == POST || request.getHttpMethod() == PUT) {
-
 		string contentLength = request.findHeaderValue("Content-Length");
 		if (request.findHeaderValue("Transfer-Encoding") == "chunked") {
 			parseChunked(request, client);
@@ -29,13 +35,6 @@ void RequestParser::parse(Request& request, Client& client) const {
 			parseBodyContent(request, client.getBuffer(), client);
 		}
 	}
-	/*    try {
-
-    } catch (ParseRequestException& ex) {
-        Utils::printStatus(ex.what());
-        request.setBadStatus();
-    }
-    return request;*/
 }
 
 bool RequestParser::isHasHeaders(const Request& request) const {
@@ -65,6 +64,7 @@ void RequestParser::parseMethod(Request& request, const string& httpMethod) cons
 	} else if (httpMethod == "DELETE") {
 		request.setMethodEnum(DELETE);
 	} else {
+		request.setMethodEnum(UNKNOWN_METHOD);
 		throw ParseRequestException("Wrong HTTP Method '" + httpMethod + "'");
 	}
 }
@@ -133,10 +133,6 @@ void RequestParser::parseChunked(Request& request, Client& client) const {
 }
 
 void RequestParser::parseBodyContent(Request& request, const string& buffer, Client& client) const {
-//    TODO перенести в PostHandler
-//    string fileName = Utils::getFileName(request.getLocationUri());
-//    request.setFileName(fileName);
-
 	size_t contentLength = Utils::stringToInt(request.findHeaderValue("Content-Length"), 10);
 //    if (request.getBody().size() > contentLength) {
 //        throw ParseRequestException("400 BAD REQUEST! RECV size > then MUST BE");
