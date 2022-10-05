@@ -49,20 +49,10 @@ const string& HttpMessage::getHttpVersion() const {
     return _httpVersion;
 }
 
-const string& HttpMessage::getParseErrorString() const {
-    return parseErrorString;
-}
-
 void HttpMessage::setHttpVersion(const string& httpVersion) {
     HttpMessage::_httpVersion = httpVersion;
-}
-
-void HttpMessage::setParseErrorString(const string& parseErrorString) {
-    HttpMessage::parseErrorString = parseErrorString;
 }
 
 const std::map<string, string>& HttpMessage::getHeaders() const {
     return _headers;
 }
-
-

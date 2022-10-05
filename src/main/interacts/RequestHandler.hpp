@@ -21,7 +21,7 @@ public:
 private:
     RequestHandler(Request& request, Config& config);
     bool isValidResponse(Response& response);
-    string getErrorPage(const string& errorCode);
+    string getErrorPageBody(const string& errorCode);
     void setErrorPageBody(Response& response);
     void setStatusCodeAndDescription(Response& response);
 	void handleCGI(Response& response) const;

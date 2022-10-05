@@ -75,7 +75,7 @@ void RequestHandler::setErrorPageBody(Response& response) {
 
 	string errorPageFileName = _config.findCustomErrorPage(statusCode);
 
-	string body = getErrorPage(statusCode);
+	string body = getErrorPageBody(statusCode);
 	if (!body.empty()) {
 		string extension = Utils::getExtension(errorPageFileName);
 		string contentType = _config.getMimeTypeByExtension(extension);
@@ -93,7 +93,7 @@ void RequestHandler::setStatusCodeAndDescription(Response& response) {
 	response.setStatusCode(statusCode + " " + description);
 }
 
-string RequestHandler::getErrorPage(const string& errorCode) {
+string RequestHandler::getErrorPageBody(const string& errorCode) {
 	string errorPageFileName = _config.findCustomErrorPage(errorCode);
 	string body;
 	if (!errorPageFileName.empty()) {
@@ -102,8 +102,8 @@ string RequestHandler::getErrorPage(const string& errorCode) {
 		if (errorPageFileName.front() != '/' && root.back() != '/') {
 			root.append("/");
 		}
-
 		string pathToErrorPage = root + errorPageFileName;
+
 		body = FileReader::readFile(pathToErrorPage);
 	} else {
 		body = _config.getDefaultErrorPage(errorCode);

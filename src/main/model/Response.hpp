@@ -12,7 +12,6 @@ class Response : public HttpMessage {
 private:
 	std::string statusCode;
 
-    // Возможно стоит перенести боди в клиента
     std::string body;
     std::string resource;
 

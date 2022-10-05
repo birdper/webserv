@@ -49,20 +49,6 @@ void BaseHandler::readfileToBody(Response& response, const std::string& path) {
     }
 }
 
-//TODO АДАПТИРОВАТЬ
-std::string BaseHandler::getRedirectPageBody(std::pair<int, std::string> redirect) {
-    int redirectCode = redirect.first;
-
-    if ((redirectCode > 300 && redirectCode < 303) || redirectCode == 307 || redirectCode == 308) {
-        std::string redirectMsg = std::to_string(redirectCode);
-        return "<html>\n"
-               "<head><title>" + redirectMsg + "</title></head>\n" + "<body>\n" + "<center><h1>" +
-               redirectMsg + "</h1></center>\n" + "<hr><center>webserv</center>\n" + "</body>\n" +
-               "</html>";
-    } else
-        return redirect.second;
-}
-
 /*bool validateFile(const string& path) {
     if (Utils::isFileExists(path) && !Utils::isDirectory(path) &&
         !access(path.c_str(), W_OK)) {
