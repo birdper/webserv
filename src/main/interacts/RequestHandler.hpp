@@ -28,4 +28,5 @@ private:
 	bool isCgiRequest(const string& resource);
 	bool isErrorResponse(Response& response);
 	string getRedirectPageBody();
+	string generateCookieId(const int len);
 };

@@ -21,6 +21,11 @@ Response& RequestHandler::handle() {
 
 	if (isValidResponse(response)) {
 		string redirectUri = _config.getRedirectUri();
+
+		if (_request.findHeaderValue("Cookie").empty()) {
+			response.addHeader("Set-Cookie", generateCookieId(8));
+		}
+
 		if (_config.getRedirectCode() != 0) {
 			response.addHeader("Location", redirectUri);
 			response.setStatusCode(std::to_string(_config.getRedirectCode()));
@@ -141,4 +146,18 @@ string RequestHandler::getRedirectPageBody() {
 		   "<hr><center>webserv</center>\n" +
 		   "</body>\n" +
 		   "</html>";
+}
+
+std::string RequestHandler::generateCookieId(const int len) {
+
+	std::string tmp_s;
+	static const char alphanum[] =
+			"0123456789"
+			"ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+			"abcdefghijklmnopqrstuvwxyz";
+	srand( (unsigned) time(NULL) * getpid());
+	tmp_s.reserve(len);
+	for (int i = 0; i < len; ++i)
+		tmp_s += alphanum[rand() % (sizeof(alphanum) - 1)];
+	return tmp_s;
 }
