@@ -133,7 +133,7 @@ std::streamsize CGIHandler::calculateFileSize(const string& fileName) const {
 std::string CGIHandler::getBody() {
 	std::string body;
 
-	if (Utils::getFileName(_cgiName) == "cgi_tester.cgi") {
+	if (Utils::getFileName(_cgiName) == "cgi_tester") {
 		std::ifstream file(CGI_OUTPUT, std::ifstream::in);
 		body.reserve(calculateFileSize(CGI_OUTPUT));
 		file.seekg(58);

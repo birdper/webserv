@@ -31,7 +31,5 @@ private:
 	void addToEnv(char** env, const string& newEnvValue);
 	string generateNewEnv(const string& key, const string& value);
 	char** generateEnv(Request* request);
-//	string generateResponse();
-//	string generateHeader();
 	long calculateFileSize(const string& fileName) const;
 };
