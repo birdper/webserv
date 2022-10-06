@@ -11,7 +11,7 @@ void RequestParser::parse(Request& request, Client& client) const {
 		try {
 			parseStartLine(headerLines[0], request);
 			parseHeaders(headerLines, request);
-		} catch (ParseRequestException &ex) {
+		} catch (ParseRequestException& ex) {
 			request.setBadStatus();
 			client.setIsReadyRequest(true);
 			client.setBuffer("");
@@ -63,6 +63,16 @@ void RequestParser::parseMethod(Request& request, const string& httpMethod) cons
 		request.setMethodEnum(POST);
 	} else if (httpMethod == "DELETE") {
 		request.setMethodEnum(DELETE);
+	} else if (httpMethod == "HEAD") {
+		request.setMethodEnum(HEAD);
+	} else if (httpMethod == "CONNECT") {
+		request.setMethodEnum(CONNECT);
+	}else if (httpMethod == "OPTIONS") {
+		request.setMethodEnum(OPTIONS);
+	}  else if (httpMethod == "TRACE") {
+		request.setMethodEnum(TRACE);
+	} else if (httpMethod == "PATCH") {
+		request.setMethodEnum(PATCH);
 	} else {
 		request.setMethodEnum(UNKNOWN_METHOD);
 		throw ParseRequestException("Wrong HTTP Method '" + httpMethod + "'");

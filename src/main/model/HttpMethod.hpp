@@ -9,5 +9,10 @@ enum HttpMethod {
 	PUT,
 	POST,
 	DELETE,
+	HEAD,
+	CONNECT,
+	OPTIONS,
+	TRACE,
+	PATCH,
 	UNKNOWN_METHOD
 };
