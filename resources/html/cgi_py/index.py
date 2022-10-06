@@ -1,0 +1,8 @@
+print('<html>')
+print('<head>')
+print('<title>Hi! It is CGI python!</title>')
+print('</head>')
+print('<body>')
+print('<h2>It\'s python cgi!</h2>')
+print('</body>')
+print('</html>')

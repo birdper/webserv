@@ -25,9 +25,6 @@ void Utils::printStatus(const string& message) {
 }
 
 bool Utils::isFileExists(const string& pathToFile) {
-//    TODO delete unuse comments
-//	std::ifstream file(pathToFile);
-//	return file.is_open();
     struct stat file;
     return (stat(pathToFile.c_str(), &file) == 0);
 }

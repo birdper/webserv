@@ -5,11 +5,9 @@
 #include "DefaultParameters.hpp"
 
 DefaultParameters::DefaultParameters() {
-//	TODO установить текущий каталог
 	params.root = "";
-//	TODO установить каталог
 	params.pathCGI = "";
-	params.extensionCGI = ".php";
+	params.extensionCGI = "";
 	params.clientMaxBodySize = "10m";
 	params.indexNameFiles.push_back("index");
 	params.indexNameFiles.push_back("index.html");

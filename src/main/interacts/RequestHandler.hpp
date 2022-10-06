@@ -25,7 +25,7 @@ private:
     void setErrorPageBody(Response& response);
     void setStatusCodeAndDescription(Response& response);
 	void handleCGI(Response& response) const;
-	bool isCgiRequest();
+	bool isCgiRequest(const string& resource);
 	bool isErrorResponse(Response& response);
 	string getRedirectPageBody();
 };

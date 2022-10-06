@@ -18,8 +18,6 @@ void GetHandler::handle(Response& response) {
 	                                   _config.getRoot(),
 	                                   _request.getUri());
     response.setResource(path);
-// TODO delete
-	Utils::printStatus("GET REQUEST HANDLER: resource_path = " + path);
 
 	response.setStatusCode("200");
 	if (Utils::isDirectory(path)) {

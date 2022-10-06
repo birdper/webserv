@@ -10,7 +10,6 @@ ConfigParser::~ConfigParser() {
 
 void ConfigParser::parseConfig(const std::string &configFileName,
                                ConfigStorage *storage) {
-// TODO 1: Определить как создаются VirtualServer и Location
 
     string configString = FileReader::readFile(configFileName);
     std::istringstream iss(configString);

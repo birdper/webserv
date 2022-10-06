@@ -6,28 +6,6 @@
 #include <vector>
 #include "Token.hpp"
 
-// TODO куда перенести TokenType?
-//enum TokenType {
-//	UNKNOWN_TYPE,
-//	SERVER,
-//	LISTEN,
-//	SERVER_NAME,
-//	ENDSERVER,
-//	LOCATION,
-//	ROOT,
-//	UPLOAD_DIRECTORY,
-//	INDEX,
-//	AUTOINDEX,
-//	CGI_EXTENSION,
-//	CGI_PATH,
-//	ACCESS_LOG,
-//	ERROR_LOG,
-//	REDIRECT,
-//	ERROR_PAGE,
-//	CLIENT_MAX_BODY_SIZE,
-//	FORBIDDEN_METHODS
-//};
-
 class Tokenizer {
 
 private:

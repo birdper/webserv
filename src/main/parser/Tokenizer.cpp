@@ -51,15 +51,7 @@ std::vector<Token> Tokenizer::tokenize(std::istringstream& configText) {
 					content = getDirectiveContent(issLine);
 					break;
 			}
-//          TODO delete
-/*			Token currentToken;
-//			currentToken.typeName = word;
-			currentToken.content = content;
-			currentToken.type = type;
-			currentToken.context = static_cast<Context>(context);
-			*/
 			Token currentToken(
-//					word,
 					content,
 					type,
 					static_cast<Context>(context)

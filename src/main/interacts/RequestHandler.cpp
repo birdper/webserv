@@ -28,7 +28,7 @@ Response& RequestHandler::handle() {
 		} else {
 			_methods[_request.getMethodString()]->handle(response);
 
-			if (isCgiRequest()) {
+			if (isCgiRequest(response.getResource())) {
 				handleCGI(response);
 			}
 		}
@@ -46,8 +46,8 @@ Response& RequestHandler::handle() {
 	return response;
 }
 
-bool RequestHandler::isCgiRequest() {
-	return !_config.getPathCGI().empty() && Utils::getExtension(_request.getUri()) == _config.getExtensionCGI();
+bool RequestHandler::isCgiRequest(const string& resource) {
+	return !_config.getPathCGI().empty() && Utils::getExtension(resource) == _config.getExtensionCGI();
 }
 
 void RequestHandler::handleCGI(Response& response) const {
